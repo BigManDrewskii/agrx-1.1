@@ -44,6 +44,8 @@ export function HoldingsHeader({ hasTrades }: HoldingsHeaderProps) {
           variant="chip"
           onPress={() => router.push("/trade-history" as any)}
           style={[styles.historyChip, { backgroundColor: colors.surfaceSecondary }]}
+          accessibilityLabel="View trade history"
+          accessibilityHint="Opens your trade history"
         >
           <IconSymbol name="clock" size={12} color={colors.muted} />
           <Caption1 color="muted" style={{ fontFamily: FontFamily.semibold }}>

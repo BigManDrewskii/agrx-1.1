@@ -58,6 +58,9 @@ export function PortfolioHeader({
               styles.headerIconButton,
               { backgroundColor: colors.surfaceSecondary },
             ]}
+            accessibilityLabel="Share portfolio"
+            accessibilityHint="Share your portfolio"
+            hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
           >
             <IconSymbol name="square.and.arrow.up" size={18} color={colors.primary} />
           </AnimatedPressable>

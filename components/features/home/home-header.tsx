@@ -58,7 +58,11 @@ export function HomeHeader({
         <View style={styles.headerActions}>
           {isPro && <LiveBadge isLive={isLive} lastUpdated={lastUpdated} />}
           {isPro && (
-            <View style={styles.streakBadge}>
+            <View
+              style={styles.streakBadge}
+              accessibilityRole="text"
+              accessibilityLabel={`${userStreak} day streak`}
+            >
               <IconSymbol name="flame.fill" size={14} color={colors.warning} />
               <Caption1
                 color="warning"
@@ -75,6 +79,9 @@ export function HomeHeader({
               styles.iconButton,
               { backgroundColor: colors.surfaceSecondary },
             ]}
+            accessibilityLabel={`Notifications${unreadCount > 0 ? ` (${unreadCount > 9 ? "9+" : unreadCount} unread)` : ""}`}
+            accessibilityHint="View notification history"
+            hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
           >
             <IconSymbol
               name="bell.fill"
@@ -103,6 +110,9 @@ export function HomeHeader({
               styles.iconButton,
               { backgroundColor: colors.surfaceSecondary },
             ]}
+            accessibilityLabel="Settings"
+            accessibilityHint="Open app settings"
+            hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
           >
             <IconSymbol name="gearshape.fill" size={18} color={colors.muted} />
           </AnimatedPressable>

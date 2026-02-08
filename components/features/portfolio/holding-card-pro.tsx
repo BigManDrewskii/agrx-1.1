@@ -124,6 +124,9 @@ export function HoldingCardPro({
               variant="icon"
               onPress={onShare}
               style={[styles.holdingShareButton, { backgroundColor: colors.surfaceSecondary }]}
+              accessibilityLabel={`Share ${ticker} holding`}
+              accessibilityHint="Share this holding"
+              hitSlop={7}
             >
               <IconSymbol name="square.and.arrow.up" size={13} color={colors.muted} />
             </AnimatedPressable>

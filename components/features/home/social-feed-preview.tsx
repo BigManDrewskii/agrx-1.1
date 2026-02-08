@@ -41,6 +41,8 @@ export function SocialFeedPreview() {
               borderColor: colors.border,
             },
           ]}
+          accessibilityLabel={`Post by ${post.username}`}
+          accessibilityHint={`${post.likes} likes, ${post.comments} comments`}
         >
           <View style={styles.socialHeader}>
             <View style={[styles.avatar, { backgroundColor: colors.primaryAlpha }]}>
@@ -59,7 +61,11 @@ export function SocialFeedPreview() {
           <Subhead numberOfLines={2} style={{ marginBottom: 10 }}>
             {post.content}
           </Subhead>
-          <View style={styles.socialFooter}>
+          <View
+            style={styles.socialFooter}
+            accessibilityRole="text"
+            accessibilityLabel={`${post.likes} likes, ${post.comments} comments`}
+          >
             <View style={styles.socialStat}>
               <IconSymbol name="star.fill" size={14} color={colors.muted} />
               <Caption1 color="muted" style={{ fontFamily: FontFamily.semibold }}>

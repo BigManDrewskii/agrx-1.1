@@ -94,7 +94,11 @@ export function PortfolioHero({
               strokeWidth={1.8}
             />
           </View>
-          <View style={styles.timePeriodRow}>
+          <View
+            style={styles.timePeriodRow}
+            accessibilityRole="text"
+            accessibilityLabel="Performance time period"
+          >
             {["1D", "1W", "1M", "3M", "1Y", "ALL"].map((period, i) => (
               <AnimatedPressable
                 key={period}
@@ -103,6 +107,10 @@ export function PortfolioHero({
                   styles.timePeriodButton,
                   i === 0 && { backgroundColor: colors.primaryAlpha },
                 ]}
+                accessibilityLabel={`${period} performance`}
+                accessibilityHint={`View portfolio ${period.toLowerCase()} performance`}
+                accessibilityState={{ selected: i === 0 }}
+                accessibilityRole="button"
               >
                 <Caption1
                   color={i === 0 ? "primary" : "muted"}

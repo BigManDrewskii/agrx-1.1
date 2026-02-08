@@ -44,6 +44,8 @@ export function WatchlistSection({ watchlistedStocks, isPro, isLoading }: Watchl
             styles.emptyWatchlistCard,
             { backgroundColor: colors.surface, borderColor: colors.border },
           ]}
+          accessibilityLabel="Browse markets to add stocks to watchlist"
+          accessibilityHint="Opens Markets screen where you can star stocks"
         >
           <IconSymbol name="star.fill" size={24} color={colors.border} />
           <Subhead color="muted" style={{ fontFamily: FontFamily.medium, marginTop: 8 }}>

@@ -30,20 +30,31 @@ export function DailyChallengeCard() {
             borderColor: colors.warningAlpha,
           },
         ]}
+        accessibilityLabel={`Daily challenge: ${DAILY_CHALLENGE.title}`}
+        accessibilityHint={`${DAILY_CHALLENGE.description}. Progress: ${DAILY_CHALLENGE.progress}/${DAILY_CHALLENGE.total}`}
+        accessibilityRole="button"
       >
         <View style={styles.challengeHeader}>
           <View style={styles.challengeLeft}>
             <IconSymbol name="trophy.fill" size={18} color={colors.warning} />
             <Headline style={{ fontSize: 15 }}>{DAILY_CHALLENGE.title}</Headline>
           </View>
-          <View style={[styles.rewardBadge, { backgroundColor: colors.warningAlpha }]}>
+          <View
+            style={[styles.rewardBadge, { backgroundColor: colors.warningAlpha }]}
+            accessibilityRole="text"
+            accessibilityLabel={`Reward: ${DAILY_CHALLENGE.reward}`}
+          >
             <Caption1 color="warning" style={{ fontFamily: FontFamily.bold }}>
               {DAILY_CHALLENGE.reward}
             </Caption1>
           </View>
         </View>
         <Footnote color="muted">{DAILY_CHALLENGE.description}</Footnote>
-        <View style={styles.progressContainer}>
+        <View
+          style={styles.progressContainer}
+          accessibilityRole="text"
+          accessibilityLabel={`Progress: ${DAILY_CHALLENGE.progress} of ${DAILY_CHALLENGE.total} completed`}
+        >
           <View style={[styles.progressBar, { backgroundColor: colors.warningAlpha }]}>
             <View
               style={[
