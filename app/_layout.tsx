@@ -55,7 +55,6 @@ function InnerLayout() {
         <Stack.Screen name="notification-history" options={{ animation: "slide_from_right" }} />
         <Stack.Screen name="trade-history" options={{ animation: "slide_from_right" }} />
         <Stack.Screen name="oauth/callback" />
-        <Stack.Screen name="test-cds" options={{ animation: "slide_from_right" }} />
       </Stack>
       <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
     </>

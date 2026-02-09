@@ -127,6 +127,21 @@ function calculateSeedBalance(): number {
   return DEMO_BALANCE - seedCost;
 }
 
+// ─── Financial Precision Helper ───────────────────────────────────────────
+
+/**
+ * Round financial values to specified decimal places to prevent floating point precision errors.
+ * Uses Math.round to avoid binary floating point representation issues.
+ *
+ * @param value - The value to round
+ * @param decimals - Number of decimal places (default: 2 for currency, 4 for shares)
+ * @returns Rounded value with precise decimal representation
+ */
+function roundFinancial(value: number, decimals: number = 2): number {
+  const multiplier = Math.pow(10, decimals);
+  return Math.round(value * multiplier) / multiplier;
+}
+
 // ─── Initial State ──────────────────────────────────────────────────────
 
 const initialState: DemoState = {
@@ -174,19 +189,76 @@ export function DemoProvider({ children }: { children: ReactNode }) {
             AsyncStorage.getItem(STORAGE_KEY_STREAK),
           ]);
 
+        // Safely parse each field with validation - prevents partial state corruption
+        const parseBalance = (): number | null => {
+          if (balanceStr == null) return null;
+          try {
+            const parsed = JSON.parse(balanceStr);
+            return typeof parsed === "number" ? parsed : null;
+          } catch {
+            return null;
+          }
+        };
+
+        const parseHoldings = (): Record<string, DemoHolding> | null => {
+          if (holdingsStr == null) return null;
+          try {
+            const parsed = JSON.parse(holdingsStr);
+            return typeof parsed === "object" && parsed != null ? parsed : null;
+          } catch {
+            return null;
+          }
+        };
+
+        const parseTrades = (): DemoTrade[] | null => {
+          if (tradesStr == null) return null;
+          try {
+            const parsed = JSON.parse(tradesStr);
+            return Array.isArray(parsed) ? parsed : null;
+          } catch {
+            return null;
+          }
+        };
+
+        const parseXP = (): number | null => {
+          if (xpStr == null) return null;
+          try {
+            const parsed = JSON.parse(xpStr);
+            return typeof parsed === "number" ? parsed : null;
+          } catch {
+            return null;
+          }
+        };
+
+        const parseStreak = (): number | null => {
+          if (streakStr == null) return null;
+          try {
+            const parsed = JSON.parse(streakStr);
+            return typeof parsed === "number" ? parsed : null;
+          } catch {
+            return null;
+          }
+        };
+
+        // Only update fields that successfully parsed - prevents data corruption
+        const loadedBalance = parseBalance();
+        const loadedHoldings = parseHoldings();
+        const loadedTrades = parseTrades();
+        const loadedXP = parseXP();
+        const loadedStreak = parseStreak();
+
         setState((prev) => ({
           ...prev,
-          balance: balanceStr != null ? JSON.parse(balanceStr) : prev.balance,
-          holdings:
-            holdingsStr != null ? JSON.parse(holdingsStr) : prev.holdings,
-          trades: tradesStr != null ? JSON.parse(tradesStr) : prev.trades,
-          xp: xpStr != null ? JSON.parse(xpStr) : prev.xp,
-          streak: streakStr != null ? JSON.parse(streakStr) : prev.streak,
-          level: xpStr != null ? Math.floor(JSON.parse(xpStr) / 100) + 1 : prev.level,
+          balance: loadedBalance ?? prev.balance,
+          holdings: loadedHoldings ?? prev.holdings,
+          trades: loadedTrades ?? prev.trades,
+          xp: loadedXP ?? prev.xp,
+          streak: loadedStreak ?? prev.streak,
+          level: loadedXP != null ? Math.floor(loadedXP / 100) + 1 : prev.level,
           isLoaded: true,
         }));
       } catch {
-        // If loading fails, just mark as loaded with defaults
+        // If loading fails catastrophically, just mark as loaded with defaults
         setState((prev) => ({ ...prev, isLoaded: true }));
       }
     })();
@@ -206,7 +278,8 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   const executeTrade = useCallback(
     (input: TradeInput): TradeResult => {
       const { stockId, ticker, name, type, amount, price } = input;
-      const shares = amount / price;
+      // Round shares to 4 decimal places to prevent floating point precision errors
+      const shares = roundFinancial(amount / price, 4);
 
       // Validation
       if (amount <= 0) {
@@ -234,8 +307,8 @@ export function DemoProvider({ children }: { children: ReactNode }) {
           const newHolding: DemoHolding = existing
             ? {
                 ...existing,
-                shares: existing.shares + shares,
-                totalCost: existing.totalCost + amount,
+                shares: roundFinancial(existing.shares + shares, 4),
+                totalCost: roundFinancial(existing.totalCost + amount, 2),
               }
             : {
                 stockId,
@@ -280,10 +353,11 @@ export function DemoProvider({ children }: { children: ReactNode }) {
           }
 
           // Calculate proportional cost basis being removed
-          const avgCost = existing.totalCost / existing.shares;
-          const costRemoved = avgCost * shares;
+          // Round to 2 decimal places to prevent floating point precision errors
+          const avgCost = roundFinancial(existing.totalCost / existing.shares, 2);
+          const costRemoved = roundFinancial(avgCost * shares, 2);
           const newShares = existing.shares - shares;
-          const newTotalCost = existing.totalCost - costRemoved;
+          const newTotalCost = roundFinancial(existing.totalCost - costRemoved, 2);
 
           // Build updated holdings
           const updatedHoldings = { ...prev.holdings };
@@ -294,7 +368,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
             updatedHoldings[stockId] = {
               ...existing,
               shares: newShares,
-              totalCost: Math.max(0, newTotalCost),
+              totalCost: newTotalCost, // No longer needs Math.max - rounding prevents negative precision errors
             };
           }
 
