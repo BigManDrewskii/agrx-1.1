@@ -2,8 +2,8 @@
  * Trade Screen — Buy and sell stocks with demo trading
  *
  * Three states: Stock Picker → Order Sheet → Success Screen.
- * Responsive layout with proper spacing and visual consistency.
- * Uses design tokens for all spacing, colors, and radii.
+ * Order sheet uses flex layout with fixed bottom SwipeToConfirm
+ * that is always visible regardless of content height.
  */
 import React, { useState, useCallback, useMemo, useRef } from "react";
 import {
@@ -14,9 +14,12 @@ import {
   ScrollView,
   Keyboard,
   Dimensions,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import { useRouter, useLocalSearchParams } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScreenContainer } from "@/components/screen-container";
 import { SearchBarWithClear } from "@/components/features/markets";
 import { BuySellToggle, AmountInput, QuickAmountChips, OrderPreview, TradeSuccessScreen } from "@/components/features/trading";
@@ -65,6 +68,7 @@ export default function TradeScreen() {
   const isDark = colorScheme === "dark";
   const router = useRouter();
   const params = useLocalSearchParams();
+  const insets = useSafeAreaInsets();
   const { isSimple, isPro } = useViewMode();
   const [search, setSearch] = useState("");
   const [selectedAsset, setSelectedAsset] = useState<SelectedStock | null>(null);
@@ -205,6 +209,10 @@ export default function TradeScreen() {
     };
   }, [selectedAsset, parsedAmount, isBuy]);
 
+  // Tab bar height for bottom padding
+  const tabBarBottomPad = Platform.OS === "web" ? 12 : Math.max(insets.bottom, 8);
+  const tabBarHeight = 60 + tabBarBottomPad;
+
   // ─── Success Screen ─────────────────────────────────────────────
   if (showSuccess && selectedAsset && parsedAmount) {
     const shares = (parsedAmount / selectedAsset.price).toFixed(4);
@@ -237,8 +245,12 @@ export default function TradeScreen() {
 
     return (
       <ScreenContainer>
-        <View style={styles.orderSheetContainer}>
-          {/* Scrollable content */}
+        <KeyboardAvoidingView
+          style={styles.orderRoot}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          keyboardVerticalOffset={Platform.OS === "ios" ? tabBarHeight : 0}
+        >
+          {/* ── Scrollable content ── */}
           <ScrollView
             contentContainerStyle={styles.sheetScroll}
             keyboardShouldPersistTaps="handled"
@@ -436,11 +448,14 @@ export default function TradeScreen() {
             )}
           </ScrollView>
 
-          {/* Fixed bottom: Swipe to Confirm */}
+          {/* ── Fixed bottom: Swipe to Confirm ── */}
           <View
             style={[
               styles.stickyBottom,
-              { borderTopColor: colors.foregroundAlpha4 },
+              {
+                borderTopColor: colors.foregroundAlpha4,
+                paddingBottom: tabBarHeight + Spacing[2],
+              },
             ]}
           >
             <SwipeToConfirm
@@ -455,7 +470,7 @@ export default function TradeScreen() {
               disabledLabel={amountText ? "Fix amount to continue" : "Enter an amount"}
             />
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </ScreenContainer>
     );
   }
@@ -502,26 +517,41 @@ export default function TradeScreen() {
         <FlatList
           data={filteredStocks}
           keyExtractor={(item) => item.id}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.listContent}
-          renderItem={({ item }) => (
-            <AssetRow
-              asset={{
-                id: item.id,
-                ticker: item.ticker,
-                name: item.name,
-                price: item.price,
-                change: item.change,
-                changePercent: item.changePercent,
-                sparkline: item.sparkline,
-                category: item.category,
-              }}
-              onPress={() => setSelectedAsset(item)}
-            />
+          renderItem={({ item, index }) => (
+            <Animated.View entering={FadeInDown.duration(250).delay(index * 40)}>
+              <AssetRow
+                id={item.id}
+                name={item.name}
+                ticker={item.ticker}
+                price={item.price}
+                changePercent={item.changePercent}
+                sparkline={item.sparkline}
+                onPress={() => {
+                  setSelectedAsset(item);
+                  setAmountText("");
+                  setTradeError(null);
+                }}
+              />
+            </Animated.View>
           )}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Callout style={{ color: colors.muted }}>No stocks found</Callout>
+              <IconSymbol
+                name="magnifyingglass"
+                size={32}
+                color={colors.muted}
+              />
+              <Callout
+                style={{
+                  color: colors.muted,
+                  marginTop: Spacing[3],
+                  textAlign: "center",
+                }}
+              >
+                No stocks found for "{search}"
+              </Callout>
             </View>
           }
         />
@@ -553,12 +583,12 @@ const styles = StyleSheet.create({
   },
 
   // Order Sheet
-  orderSheetContainer: {
+  orderRoot: {
     flex: 1,
   },
   sheetScroll: {
     flexGrow: 1,
-    paddingBottom: Spacing[4],
+    paddingBottom: Spacing[2],
   },
   sheetHeader: {
     flexDirection: "row",
@@ -571,7 +601,7 @@ const styles = StyleSheet.create({
   closeButton: {
     width: 32,
     height: 32,
-    borderRadius: Radius.full,
+    borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -584,7 +614,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginHorizontal: Spacing[4],
-    marginBottom: IS_SMALL ? Spacing[3] : Spacing[4],
+    marginBottom: IS_SMALL ? Spacing[2] : Spacing[3],
     paddingHorizontal: Spacing[3],
     paddingVertical: 10,
     borderRadius: Radius[300],
@@ -606,7 +636,7 @@ const styles = StyleSheet.create({
   },
   availableRow: {
     marginTop: 2,
-    marginBottom: 6,
+    marginBottom: 4,
     paddingHorizontal: Spacing[4],
     alignItems: "center",
   },
@@ -647,7 +677,6 @@ const styles = StyleSheet.create({
   stickyBottom: {
     paddingHorizontal: Spacing[4],
     paddingTop: Spacing[2],
-    paddingBottom: IS_SMALL ? Spacing[4] : Spacing[6],
     borderTopWidth: StyleSheet.hairlineWidth,
   },
 });

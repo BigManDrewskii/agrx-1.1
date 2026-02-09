@@ -13,14 +13,13 @@ import Animated, {
 } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { useColors } from "@/hooks/use-colors";
+import { useColors, colorAlpha } from "@/hooks/use-colors";
 import { useThemeContext } from "@/lib/theme-provider";
 import { Subhead } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
-import { Spacing, Radius } from "@/constants/spacing";
 
-const THUMB_SIZE = 48;
-const TRACK_HEIGHT = 56;
+const THUMB_SIZE = 52;
+const TRACK_HEIGHT = 60;
 const COMPLETION_THRESHOLD = 0.88;
 const THUMB_MARGIN = 4;
 
@@ -72,7 +71,6 @@ export function SwipeToConfirm({
   }, [onConfirm]);
 
   const activeColor = variant === "buy" ? colors.success : colors.error;
-  const activeColorAlpha = variant === "buy" ? colors.successAlpha : colors.errorAlpha;
 
   const panGesture = Gesture.Pan()
     .enabled(enabled)
@@ -136,38 +134,37 @@ export function SwipeToConfirm({
     return withTiming(isCompleted.value ? 1 : 0, { duration: 150 });
   });
 
+  // ─── Disabled state ─────────────────────────────────────────────
   if (!enabled) {
     return (
-      <View style={styles.container}>
-        <View
-          style={[
-            styles.track,
-            {
-              backgroundColor: colors.foregroundAlpha4,
-              borderColor: colors.foregroundAlpha8,
-            },
-          ]}
-          accessible={true}
-          accessibilityRole="text"
-          accessibilityLabel={disabledLabel}
+      <View
+        style={[
+          styles.track,
+          {
+            backgroundColor: colors.foregroundAlpha4,
+            borderColor: colors.foregroundAlpha8,
+          },
+        ]}
+        accessible={true}
+        accessibilityRole="text"
+        accessibilityLabel={disabledLabel}
+      >
+        <Subhead
+          style={{
+            fontFamily: FontFamily.medium,
+            color: colors.muted,
+            textAlign: "center",
+          }}
         >
-          <Subhead
-            style={{
-              fontFamily: FontFamily.medium,
-              color: colors.muted,
-              textAlign: "center",
-            }}
-          >
-            {disabledLabel}
-          </Subhead>
-        </View>
+          {disabledLabel}
+        </Subhead>
       </View>
     );
   }
 
+  // ─── Active state ───────────────────────────────────────────────
   return (
     <View
-      style={styles.container}
       accessible={true}
       accessibilityRole="button"
       accessibilityLabel={label}
@@ -178,10 +175,8 @@ export function SwipeToConfirm({
         style={[
           styles.track,
           {
-            backgroundColor: activeColorAlpha,
-            borderColor: isDark
-              ? colorAlpha(activeColor, 0.19)
-              : colorAlpha(activeColor, 0.13),
+            backgroundColor: colorAlpha(activeColor, isDark ? 0.12 : 0.08),
+            borderColor: colorAlpha(activeColor, isDark ? 0.22 : 0.15),
           },
         ]}
         onLayout={onTrackLayout}
@@ -189,7 +184,9 @@ export function SwipeToConfirm({
         <Animated.View
           style={[
             styles.fill,
-            { backgroundColor: isDark ? colorAlpha(activeColor, 0.19) : colorAlpha(activeColor, 0.10) },
+            {
+              backgroundColor: colorAlpha(activeColor, isDark ? 0.18 : 0.10),
+            },
             fillStyle,
           ]}
         />
@@ -232,10 +229,6 @@ export function SwipeToConfirm({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: Spacing[4],
-    paddingVertical: Spacing[5],
-  },
   track: {
     height: TRACK_HEIGHT,
     borderRadius: TRACK_HEIGHT / 2,
