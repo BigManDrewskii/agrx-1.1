@@ -404,77 +404,79 @@ export function SwipeToConfirm({
 
         {/* Draggable thumb */}
         <GestureDetector gesture={panGesture}>
-          {/* Shadow layer 1 - light */}
-          <Animated.View
-            style={[
-              styles.thumbShadow,
-              {
-                backgroundColor: "#000000",
-                opacity: SHADOW_LIGHT_OPACITY,
-                width: THUMB_SIZE,
-                height: THUMB_SIZE,
-                left: TRACK_PADDING + SHADOW_LIGHT_OFFSET,
-                top: SHADOW_LIGHT_OFFSET,
-                borderRadius: THUMB_SIZE / 2,
-              },
-              thumbStyle,
-            ]}
-          />
-          {/* Shadow layer 2 - medium */}
-          <Animated.View
-            style={[
-              styles.thumbShadow,
-              {
-                backgroundColor: "#000000",
-                opacity: SHADOW_MEDIUM_OPACITY,
-                width: THUMB_SIZE,
-                height: THUMB_SIZE,
-                left: TRACK_PADDING + SHADOW_MEDIUM_OFFSET,
-                top: SHADOW_MEDIUM_OFFSET,
-                borderRadius: THUMB_SIZE / 2,
-              },
-              thumbStyle,
-            ]}
-          />
-          {/* Shadow layer 3 - heavy */}
-          <Animated.View
-            style={[
-              styles.thumbShadow,
-              {
-                backgroundColor: "#000000",
-                opacity: SHADOW_HEAVY_OPACITY,
-                width: THUMB_SIZE,
-                height: THUMB_SIZE,
-                left: TRACK_PADDING + SHADOW_HEAVY_OFFSET,
-                top: SHADOW_HEAVY_OFFSET,
-                borderRadius: THUMB_SIZE / 2,
-              },
-              thumbStyle,
-            ]}
-          />
-          <Animated.View
-            style={[
-              styles.thumb,
-              {
-                backgroundColor: "#FFFFFF",
-                borderWidth: INNER_GLOW_WIDTH,
-                borderColor: `${activeColor}${Math.round(INNER_GLOW_OPACITY * 255).toString(16).padStart(2, '0')}`,
-              },
-              thumbStyle,
-            ]}
-          >
-            {/* Arrow icon with translate animation */}
-            <Animated.View style={[arrowStyle, thumbIconStyle]}>
-              <IconSymbol
-                name="chevron.right"
-                size={24}
-                color={activeColor}
-              />
-            </Animated.View>
+          <Animated.View style={styles.thumbHitArea}>
+            {/* Shadow layer 1 - light */}
+            <Animated.View
+              style={[
+                styles.thumbShadow,
+                {
+                  backgroundColor: "#000000",
+                  opacity: SHADOW_LIGHT_OPACITY,
+                  width: THUMB_SIZE,
+                  height: THUMB_SIZE,
+                  left: TRACK_PADDING + SHADOW_LIGHT_OFFSET,
+                  top: SHADOW_LIGHT_OFFSET,
+                  borderRadius: THUMB_SIZE / 2,
+                },
+                thumbStyle,
+              ]}
+            />
+            {/* Shadow layer 2 - medium */}
+            <Animated.View
+              style={[
+                styles.thumbShadow,
+                {
+                  backgroundColor: "#000000",
+                  opacity: SHADOW_MEDIUM_OPACITY,
+                  width: THUMB_SIZE,
+                  height: THUMB_SIZE,
+                  left: TRACK_PADDING + SHADOW_MEDIUM_OFFSET,
+                  top: SHADOW_MEDIUM_OFFSET,
+                  borderRadius: THUMB_SIZE / 2,
+                },
+                thumbStyle,
+              ]}
+            />
+            {/* Shadow layer 3 - heavy */}
+            <Animated.View
+              style={[
+                styles.thumbShadow,
+                {
+                  backgroundColor: "#000000",
+                  opacity: SHADOW_HEAVY_OPACITY,
+                  width: THUMB_SIZE,
+                  height: THUMB_SIZE,
+                  left: TRACK_PADDING + SHADOW_HEAVY_OFFSET,
+                  top: SHADOW_HEAVY_OFFSET,
+                  borderRadius: THUMB_SIZE / 2,
+                },
+                thumbStyle,
+              ]}
+            />
+            <Animated.View
+              style={[
+                styles.thumb,
+                {
+                  backgroundColor: "#FFFFFF",
+                  borderWidth: INNER_GLOW_WIDTH,
+                  borderColor: `${activeColor}${Math.round(INNER_GLOW_OPACITY * 255).toString(16).padStart(2, '0')}`,
+                },
+                thumbStyle,
+              ]}
+            >
+              {/* Arrow icon with translate animation */}
+              <Animated.View style={[arrowStyle, thumbIconStyle]}>
+                <IconSymbol
+                  name="chevron.right"
+                  size={24}
+                  color={activeColor}
+                />
+              </Animated.View>
 
-            {/* Checkmark icon (on completion) */}
-            <Animated.View style={[styles.thumbCheckmark, checkmarkStyle]}>
-              <IconSymbol name="checkmark" size={22} color={activeColor} />
+              {/* Checkmark icon (on completion) */}
+              <Animated.View style={[styles.thumbCheckmark, checkmarkStyle]}>
+                <IconSymbol name="checkmark" size={22} color={activeColor} />
+              </Animated.View>
             </Animated.View>
           </Animated.View>
         </GestureDetector>
@@ -541,6 +543,13 @@ const styles = StyleSheet.create({
     position: "absolute",
     alignItems: "center",
     justifyContent: "center",
+  },
+  thumbHitArea: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
   },
   thumbShadow: {
     position: "absolute",
