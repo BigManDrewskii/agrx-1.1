@@ -19,7 +19,7 @@ import { useRouter } from "expo-router";
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { ScreenContainer } from "@/components/screen-container";
-import { useColors } from "@/hooks/use-colors";
+import { useColors, colorAlpha } from "@/hooks/use-colors";
 import { useDemo, type DemoTrade } from "@/lib/demo-context";
 import { useStockQuotes } from "@/hooks/use-stocks";
 import { IconSymbol } from "@/components/ui/icon-symbol";
@@ -296,7 +296,7 @@ export default function TradeHistoryScreen() {
             <View
               style={[
                 styles.sideIndicator,
-                { backgroundColor: sideColor + "33" },
+                { backgroundColor: colorAlpha(sideColor, 0.20) },
               ]}
             >
               <IconSymbol name={sideIcon as any} size={16} color={sideColor} />

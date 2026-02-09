@@ -28,44 +28,50 @@ function buildSchemePalette(colors: ThemeColorTokens): SchemePalette {
 
 export const SchemeColors = buildSchemePalette(ThemeColors);
 
+/**
+ * Full runtime palette — the single source of truth for ALL colors in the app.
+ *
+ * Every color used anywhere in the app MUST come from this type.
+ * No CDS theme colors, no hardcoded hex values, no hex suffix hacks.
+ *
+ * Tokens from theme.config.js are spread in via `...base`.
+ * Computed tokens (aliases, alpha overlays) are added below.
+ */
 type RuntimePalette = SchemePaletteItem & {
+  // ─── Aliases (backward compatibility) ───
   text: string;
-  background: string;
   tint: string;
   icon: string;
   tabIconDefault: string;
   tabIconSelected: string;
-  border: string;
-  surfaceSubtle: string;
-  surfaceElevated: string;
-  borderSubtle: string;
-  // Enhanced alpha tokens for icon backgrounds & tints
+
+  // ─── Computed alpha overlays ───
+  // These use rgba() strings with known-good values.
+  // Components should use these instead of colorAlpha() for foreground tints.
+  foregroundAlpha4: string;
   foregroundAlpha8: string;
   foregroundAlpha12: string;
   foregroundAlpha16: string;
-  foregroundAlpha4: string;
 };
 
 function buildRuntimePalette(scheme: ColorScheme): RuntimePalette {
   const base = SchemeColors[scheme];
-  const isDark = scheme === "dark";
   return {
     ...base,
+
+    // ─── Aliases ───
     text: base.foreground,
-    background: base.background,
     tint: base.primary,
     icon: base.muted,
     tabIconDefault: base.muted,
     tabIconSelected: base.primary,
-    border: base.border,
-    surfaceSubtle: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-    surfaceElevated: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
-    borderSubtle: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
-    // Standardized alpha overlays — use these instead of `${color}14` hex hacks
-    foregroundAlpha4: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)',
-    foregroundAlpha8: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
-    foregroundAlpha12: isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)',
-    foregroundAlpha16: isDark ? 'rgba(255,255,255,0.16)' : 'rgba(0,0,0,0.12)',
+
+    // ─── Foreground alpha overlays ───
+    // Derived from foreground color (white in dark, black in light)
+    foregroundAlpha4:  scheme === "dark" ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)",
+    foregroundAlpha8:  scheme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)",
+    foregroundAlpha12: scheme === "dark" ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)",
+    foregroundAlpha16: scheme === "dark" ? "rgba(255,255,255,0.16)" : "rgba(0,0,0,0.12)",
   };
 }
 

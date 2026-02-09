@@ -180,8 +180,8 @@ export function SwipeToConfirm({
           {
             backgroundColor: activeColorAlpha,
             borderColor: isDark
-              ? `${activeColor}30`
-              : `${activeColor}20`,
+              ? colorAlpha(activeColor, 0.19)
+              : colorAlpha(activeColor, 0.13),
           },
         ]}
         onLayout={onTrackLayout}
@@ -189,7 +189,7 @@ export function SwipeToConfirm({
         <Animated.View
           style={[
             styles.fill,
-            { backgroundColor: isDark ? `${activeColor}30` : `${activeColor}18` },
+            { backgroundColor: isDark ? colorAlpha(activeColor, 0.19) : colorAlpha(activeColor, 0.10) },
             fillStyle,
           ]}
         />

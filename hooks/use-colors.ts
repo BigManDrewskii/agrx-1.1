@@ -1,89 +1,98 @@
+/**
+ * useColors — Single source of truth for all runtime colors.
+ *
+ * Returns the resolved color palette for the current theme (light/dark).
+ * ALL values come from constants/theme.ts → theme.config.js.
+ * NO CDS theme colors are read at runtime.
+ *
+ * Usage:
+ *   const colors = useColors();
+ *   <View style={{ backgroundColor: colors.surface }} />
+ */
 import { Colors, type ColorScheme, type ThemeColorPalette } from "@/constants/theme";
 import { useColorScheme } from "./use-color-scheme";
-import { useTheme } from "@coinbase/cds-mobile/hooks/useTheme";
+
+// ─── Color Alpha Utility ────────────────────────────────────────────────────
 
 /**
- * Utility: convert a hex color + 0-1 opacity into an rgba string.
- * Works for both #RGB and #RRGGBB hex values.
+ * Parse any color string into { r, g, b, a }.
+ * Handles: #RGB, #RRGGBB, #RRGGBBAA, rgb(), rgba().
  */
-function hexAlpha(hex: string, alpha: number): string {
-  const clean = hex.replace("#", "");
-  let r: number, g: number, b: number;
-  if (clean.length === 3) {
-    r = parseInt(clean[0] + clean[0], 16);
-    g = parseInt(clean[1] + clean[1], 16);
-    b = parseInt(clean[2] + clean[2], 16);
-  } else {
-    r = parseInt(clean.slice(0, 2), 16);
-    g = parseInt(clean.slice(2, 4), 16);
-    b = parseInt(clean.slice(4, 6), 16);
+function parseColorToRGB(color: string): { r: number; g: number; b: number; a: number } | null {
+  if (!color || typeof color !== "string") return null;
+  const trimmed = color.trim();
+
+  // Handle hex: #RGB, #RRGGBB, #RRGGBBAA
+  if (trimmed.startsWith("#")) {
+    const hex = trimmed.slice(1);
+    if (hex.length === 3) {
+      return {
+        r: parseInt(hex[0] + hex[0], 16),
+        g: parseInt(hex[1] + hex[1], 16),
+        b: parseInt(hex[2] + hex[2], 16),
+        a: 1,
+      };
+    }
+    if (hex.length === 6) {
+      return {
+        r: parseInt(hex.slice(0, 2), 16),
+        g: parseInt(hex.slice(2, 4), 16),
+        b: parseInt(hex.slice(4, 6), 16),
+        a: 1,
+      };
+    }
+    if (hex.length === 8) {
+      return {
+        r: parseInt(hex.slice(0, 2), 16),
+        g: parseInt(hex.slice(2, 4), 16),
+        b: parseInt(hex.slice(4, 6), 16),
+        a: parseInt(hex.slice(6, 8), 16) / 255,
+      };
+    }
+    return null;
   }
-  return `rgba(${r},${g},${b},${alpha.toFixed(2)})`;
+
+  // Handle rgb(r, g, b) and rgba(r, g, b, a)
+  const rgbaMatch = trimmed.match(
+    /^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+)\s*)?\)$/,
+  );
+  if (rgbaMatch) {
+    return {
+      r: parseInt(rgbaMatch[1], 10),
+      g: parseInt(rgbaMatch[2], 10),
+      b: parseInt(rgbaMatch[3], 10),
+      a: rgbaMatch[4] !== undefined ? parseFloat(rgbaMatch[4]) : 1,
+    };
+  }
+
+  return null;
 }
 
 /**
+ * Create an rgba string from any color value + alpha.
+ * Safe fallback: returns neutral gray if parsing fails (prevents Reanimated crashes).
+ *
+ * Usage:
+ *   colorAlpha("#0052FF", 0.10) → "rgba(0,82,255,0.10)"
+ *   colorAlpha("rgba(0,82,255,1)", 0.10) → "rgba(0,82,255,0.10)"
+ */
+export function colorAlpha(color: string, alpha: number): string {
+  const parsed = parseColorToRGB(color);
+  if (!parsed || isNaN(parsed.r) || isNaN(parsed.g) || isNaN(parsed.b)) {
+    // Fallback: neutral gray at requested alpha — prevents Reanimated crashes
+    return `rgba(128,128,128,${alpha.toFixed(2)})`;
+  }
+  return `rgba(${parsed.r},${parsed.g},${parsed.b},${alpha.toFixed(2)})`;
+}
+
+// ─── Hook ───────────────────────────────────────────────────────────────────
+
+/**
  * Returns the current theme's color palette.
- * Integrates CDS semantic colors with AGRX brand colors.
- * Usage: const colors = useColors(); then colors.text, colors.background, etc.
+ * All values come from AGRX's own theme.config.js — zero CDS dependency.
  */
 export function useColors(colorSchemeOverride?: ColorScheme): ThemeColorPalette {
   const colorSchema = useColorScheme();
   const scheme = (colorSchemeOverride ?? colorSchema ?? "light") as ColorScheme;
-  const agrxColors = Colors[scheme];
-
-  // Get CDS theme colors
-  const cdsTheme = useTheme();
-
-  // Merge CDS colors with AGRX brand colors
-  return {
-    // CDS semantic colors
-    foreground: cdsTheme.color.fg,
-    background: cdsTheme.color.bg,
-    surfaceSubtle: agrxColors.surfaceSubtle,
-    surface: cdsTheme.color.bgAlternate,
-    surfaceSecondary: cdsTheme.color.bgTertiary,
-    surfaceElevated: agrxColors.surfaceElevated,
-    primary: cdsTheme.color.fgPrimary,
-    primaryAlpha: cdsTheme.color.fgPrimary + "20", // Add transparency
-    muted: cdsTheme.color.fgMuted,
-    onPrimary: cdsTheme.color.bgInverse,
-    border: agrxColors.border,
-    borderSubtle: agrxColors.borderSubtle,
-
-    // Standardized alpha overlays for icon backgrounds, tints, etc.
-    foregroundAlpha4: agrxColors.foregroundAlpha4,
-    foregroundAlpha8: agrxColors.foregroundAlpha8,
-    foregroundAlpha12: agrxColors.foregroundAlpha12,
-    foregroundAlpha16: agrxColors.foregroundAlpha16,
-
-    // AGRX brand colors (preserve for trading interface)
-    success: agrxColors.success,
-    successAlpha: agrxColors.successAlpha,
-    warning: agrxColors.warning || "#F59E0B",
-    warningAlpha: agrxColors.warningAlpha || "#F59E0B20",
-    error: agrxColors.error,
-    errorAlpha: agrxColors.errorAlpha,
-    gold: agrxColors.gold,
-    bronze: agrxColors.bronze || "#CD7F32",
-    accent: agrxColors.accent || "#4257E9",
-    accentAlpha: agrxColors.accentAlpha || "rgba(66,87,233,0.10)",
-    silver: agrxColors.silver || "#89909E",
-
-    // Computed colors for backward compatibility
-    text: cdsTheme.color.fg,
-    tint: cdsTheme.color.fgPrimary,
-    icon: cdsTheme.color.fgMuted,
-    tabIconDefault: cdsTheme.color.fgMuted,
-    tabIconSelected: cdsTheme.color.fgPrimary,
-  };
+  return Colors[scheme];
 }
-
-/**
- * Create a tinted alpha background from any hex color.
- * Replaces the broken `${color}14` pattern used throughout the app.
- *
- * Usage:
- *   import { colorAlpha } from "@/hooks/use-colors";
- *   backgroundColor: colorAlpha(colors.success, 0.10)
- */
-export { hexAlpha as colorAlpha };

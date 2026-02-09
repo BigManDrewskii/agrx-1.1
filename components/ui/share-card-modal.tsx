@@ -16,7 +16,7 @@ import {
   Platform,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useColors } from "@/hooks/use-colors";
+import { useColors, colorAlpha } from "@/hooks/use-colors";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { CDSButton } from "@/components/ui/cds-button";
@@ -126,7 +126,7 @@ export function ShareCardModal({
       transparent
       onRequestClose={onClose}
     >
-      <View style={[styles.overlay, { backgroundColor: `${colors.background}D9` }]}>
+      <View style={[styles.overlay, { backgroundColor: colorAlpha(colors.background, 0.85) }]}>
         {/* Close button */}
         <View style={styles.header}>
           <AnimatedPressable
@@ -171,8 +171,8 @@ export function ShareCardModal({
                   styles.timeFrameButton,
                   {
                     backgroundColor: isActive
-                      ? `${colors.primary}33`
-                      : `${colors.surface}0F`,
+                      ? colorAlpha(colors.primary, 0.20)
+                      : colorAlpha(colors.surface, 0.06),
                   },
                   pressed && { opacity: 0.6 },
                 ]}

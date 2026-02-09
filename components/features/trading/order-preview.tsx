@@ -47,7 +47,7 @@ function Row({ label, value, valueColor, badge, badgeColor, bold, colors }: RowP
           <View
             style={[
               styles.badge,
-              { backgroundColor: `${badgeColor}18` },
+              { backgroundColor: colorAlpha(badgeColor, 0.10) },
             ]}
           >
             <Caption1

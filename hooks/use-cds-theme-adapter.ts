@@ -1,51 +1,36 @@
 /**
  * CDS Theme Adapter
  *
- * Maps AGRX brand colors to CDS component themes.
- * Allows CDS components to use AGRX trading colors (success, error, gold).
+ * Maps AGRX brand colors for trading components.
+ * Previously read CDS theme colors — now fully self-contained using AGRX palette.
  *
  * Usage:
  *   import { useCDSThemeAdapter } from '@/hooks/use-cds-theme-adapter';
  *
  *   function MyComponent() {
- *     const { agrx, cds } = useCDSThemeAdapter();
+ *     const { agrx } = useCDSThemeAdapter();
  *     return <View style={{ backgroundColor: agrx.success }} />;
  *   }
  */
 import { useColors } from "@/hooks/use-colors";
-import { useTheme as useCDSTheme } from "@coinbase/cds-mobile/hooks/useTheme";
 
 /**
- * Theme adapter hook that merges AGRX brand colors with CDS theme.
+ * Theme adapter hook — provides AGRX brand colors for trading UI.
  *
  * Returns:
- * - cds: CDS semantic colors (fg, bg, fgPrimary, fgPositive, etc.)
  * - agrx: AGRX brand colors (success, error, warning, gold, primary)
  * - getTradingColor: Helper to get color based on trading intent
  */
 export function useCDSThemeAdapter() {
   const agrxColors = useColors();
-  const cdsTheme = useCDSTheme();
 
   return {
-    /** CDS semantic colors - use these when you want pure CDS styling */
-    cds: cdsTheme.color,
-
-    /** AGRX brand colors - preserved for trading interface */
+    /** AGRX brand colors — the only color source */
     agrx: {
-      /** Success/buy state - #00CC6A */
       success: agrxColors.success,
-
-      /** Error/sell state - #FF5A5F */
       error: agrxColors.error,
-
-      /** Warning state - #F59E0B */
       warning: agrxColors.warning,
-
-      /** Gold/premium - #FFB800 */
       gold: agrxColors.gold,
-
-      /** Primary blue - #0052FF (AGRX version, may differ from CDS blue) */
       primary: agrxColors.primary,
     },
 

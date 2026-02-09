@@ -51,10 +51,10 @@ export function TradeSuccessScreen({
         style={styles.iconWrapper}
       >
         <View
-          style={[styles.iconRingOuter, { backgroundColor: `${accentColor}0C` }]}
+          style={[styles.iconRingOuter, { backgroundColor: colorAlpha(accentColor, 0.05) }]}
         >
           <View
-            style={[styles.iconRingInner, { backgroundColor: `${accentColor}1A` }]}
+            style={[styles.iconRingInner, { backgroundColor: colorAlpha(accentColor, 0.10) }]}
           >
             <View
               style={[styles.iconCircle, { backgroundColor: accentColor }]}

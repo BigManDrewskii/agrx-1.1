@@ -15,7 +15,7 @@ import Animated, {
   FadeIn,
 } from "react-native-reanimated";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
-import { useColors } from "@/hooks/use-colors";
+import { useColors, colorAlpha } from "@/hooks/use-colors";
 import { FontFamily } from "@/constants/typography";
 import { Caption1 } from "@/components/ui/cds-typography";
 
@@ -144,8 +144,8 @@ export const AmountInput = forwardRef<TextInput, AmountInputProps>(
           style={[
             styles.maxButton,
             {
-              backgroundColor: `${accentColor}12`,
-              borderColor: `${accentColor}25`,
+              backgroundColor: colorAlpha(accentColor, 0.07),
+              borderColor: colorAlpha(accentColor, 0.15),
             },
           ]}
         >

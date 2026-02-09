@@ -252,7 +252,7 @@ export default function NotificationHistoryScreen() {
           <View
             style={[
               styles.iconCircle,
-              { backgroundColor: iconColor + "33" },
+              { backgroundColor: colorAlpha(iconColor, 0.20) },
             ]}
           >
             <IconSymbol name={config.icon} size={18} color={iconColor} />

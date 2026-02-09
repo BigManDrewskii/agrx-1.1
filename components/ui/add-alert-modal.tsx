@@ -149,7 +149,7 @@ export function AddAlertModal({
       >
         <AnimatedPressable
           variant="card"
-          style={[styles.backdrop, { backgroundColor: `${colors.background}80` }]}
+          style={[styles.backdrop, { backgroundColor: colorAlpha(colors.background, 0.50) }]}
           onPress={onClose}
           haptic={false}
           accessibilityLabel="Close modal"
