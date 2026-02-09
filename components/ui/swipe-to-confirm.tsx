@@ -14,6 +14,7 @@ import Animated, {
   clamp,
 } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
+import { LinearGradient } from "expo-linear-gradient";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { FontFamily } from "@/constants/typography";
@@ -21,11 +22,33 @@ import { Spacing, Size } from "@/constants/spacing";
 import { Caption1, Callout } from "@/components/ui/cds-typography";
 
 // ─── Constants ──────────────────────────────────────────────────────────
-const THUMB_SIZE = 48; // 48px (12 * 4) - Fixed to 4px grid ✅
+const THUMB_SIZE = 60; // 60px (15 * 4) - Fixed to 4px grid ✅
 const TRACK_HEIGHT = 52; // 52px (13 * 4) - Fixed to 4px grid ✅
 const TRACK_PADDING = Spacing[2]; // 8px - Fixed to 4px grid ✅
-const COMPLETION_THRESHOLD = 0.85; // 85% of track to trigger
+const COMPLETION_THRESHOLD = 0.95; // 95% of track to trigger
 const HAPTIC_MILESTONES = [0.25, 0.5, 0.75]; // light haptic at these points
+
+// Shadow layers for depth effect
+const SHADOW_LIGHT_OFFSET = 2;
+const SHADOW_LIGHT_RADIUS = 4;
+const SHADOW_LIGHT_OPACITY = 0.1;
+
+const SHADOW_MEDIUM_OFFSET = 4;
+const SHADOW_MEDIUM_RADIUS = 8;
+const SHADOW_MEDIUM_OPACITY = 0.15;
+
+const SHADOW_HEAVY_OFFSET = 8;
+const SHADOW_HEAVY_RADIUS = 16;
+const SHADOW_HEAVY_OPACITY = 0.2;
+
+// Inner glow effect
+const INNER_GLOW_WIDTH = 1;
+const INNER_GLOW_OPACITY = 0.3;
+
+// Shimmer effect
+const SHIMMER_WIDTH = 80;
+const SHIMMER_OPACITY_START = 0.6;
+const SHIMMER_OPACITY_END = 0.0;
 
 interface SwipeToConfirmProps {
   /** Text displayed on the track (e.g., "Slide to Buy €50.00 OPAP") */
@@ -55,6 +78,9 @@ export function SwipeToConfirm({
   const isCompleted = useSharedValue(false);
   const lastMilestone = useSharedValue(0);
   const thumbScale = useSharedValue(1);
+  const thumbIconTranslate = useSharedValue(0); // Icon moves within thumb during drag
+  const shimmerTranslate = useSharedValue(0); // Shimmer position follows thumb
+  const processingOpacity = useSharedValue(0); // "Processing..." text fade
 
   // Max distance the thumb can travel
   const maxTranslateX = trackWidth.value - THUMB_SIZE - TRACK_PADDING * 2;
@@ -65,6 +91,9 @@ export function SwipeToConfirm({
     isCompleted.value = false;
     lastMilestone.value = 0;
     thumbScale.value = 1;
+    thumbIconTranslate.value = 0;
+    shimmerTranslate.value = 0;
+    processingOpacity.value = 0;
   }, [enabled, label]);
 
   // ─── Haptic helpers (run on JS thread) ──────────────────────────────
@@ -104,6 +133,7 @@ export function SwipeToConfirm({
     .enabled(enabled)
     .onBegin(() => {
       thumbScale.value = withTiming(1.05, { duration: 80 });
+      thumbIconTranslate.value = withTiming(4, { duration: 80 });
       runOnJS(triggerLightHaptic)();
     })
     .onChange((event) => {
@@ -115,8 +145,14 @@ export function SwipeToConfirm({
       const newX = clamp(event.translationX, 0, maxX);
       translateX.value = newX;
 
-      // Check milestones for haptic feedback
+      // Progressive icon translation (0 → 8px based on progress)
       const progress = newX / maxX;
+      thumbIconTranslate.value = progress * 8;
+
+      // Update shimmer position to follow thumb center
+      shimmerTranslate.value = newX + THUMB_SIZE / 2 - SHIMMER_WIDTH / 2;
+
+      // Check milestones for haptic feedback
       for (const milestone of HAPTIC_MILESTONES) {
         if (progress >= milestone && lastMilestone.value < milestone) {
           lastMilestone.value = milestone;
@@ -131,13 +167,18 @@ export function SwipeToConfirm({
       const progress = translateX.value / maxX;
 
       if (progress >= COMPLETION_THRESHOLD) {
-        // ✅ Completed — snap to end, trigger confirm
+        // ✅ Completed — snap to end with elastic bounce, trigger confirm
         isCompleted.value = true;
-        translateX.value = withTiming(maxX, { duration: 150 });
+        translateX.value = withSpring(maxX, {
+          damping: 10,
+          stiffness: 200,
+          mass: 0.6,
+        });
         thumbScale.value = withSequence(
           withTiming(1.15, { duration: 100 }),
           withTiming(1, { duration: 150 })
         );
+        processingOpacity.value = withTiming(1, { duration: 200 });
         runOnJS(triggerSuccessHaptic)();
         runOnJS(handleConfirm)();
       } else {
@@ -153,6 +194,7 @@ export function SwipeToConfirm({
     })
     .onFinalize(() => {
       thumbScale.value = withTiming(1, { duration: 100 });
+      thumbIconTranslate.value = withTiming(0, { duration: 100 });
     });
 
   // ─── Animated styles ────────────────────────────────────────────────
@@ -175,12 +217,19 @@ export function SwipeToConfirm({
     width: translateX.value + THUMB_SIZE + TRACK_PADDING,
   }));
 
+  // Shimmer effect — follows thumb position
+  const shimmerStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: shimmerTranslate.value }],
+    };
+  });
+
   // Label opacity — fades as thumb moves
   const labelStyle = useAnimatedStyle(() => {
     const maxX = trackWidth.value - THUMB_SIZE - TRACK_PADDING * 2;
     const progress = maxX > 0 ? translateX.value / maxX : 0;
     return {
-      opacity: interpolate(progress, [0, 0.4], [1, 0]),
+      opacity: interpolate(progress, [0, 0.35], [1, 0]),
     };
   });
 
@@ -189,7 +238,7 @@ export function SwipeToConfirm({
     const maxX = trackWidth.value - THUMB_SIZE - TRACK_PADDING * 2;
     const progress = maxX > 0 ? translateX.value / maxX : 0;
     return {
-      opacity: interpolate(progress, [0, 0.3], [0.4, 0]),
+      opacity: interpolate(progress, [0, 0.25], [0.4, 0]),
     };
   });
 
@@ -211,6 +260,20 @@ export function SwipeToConfirm({
   const arrowStyle = useAnimatedStyle(() => {
     return {
       opacity: isCompleted.value ? withTiming(0, { duration: 150 }) : 1,
+    };
+  });
+
+  // Thumb icon translate — moves within thumb during drag
+  const thumbIconStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: thumbIconTranslate.value }],
+    };
+  });
+
+  // Processing text — fades in on completion
+  const processingStyle = useAnimatedStyle(() => {
+    return {
+      opacity: processingOpacity.value,
     };
   });
 
@@ -261,6 +324,20 @@ export function SwipeToConfirm({
         ]}
         onLayout={onTrackLayout}
       >
+        {/* Shimmer effect — gradient that follows thumb */}
+        <Animated.View style={[styles.shimmer, shimmerStyle]}>
+          <LinearGradient
+            colors={[
+              `${activeColor}00`,
+              activeColor,
+              `${activeColor}00`,
+            ]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.shimmerGradient}
+          />
+        </Animated.View>
+
         {/* Progress fill */}
         <Animated.View
           style={[
@@ -312,30 +389,92 @@ export function SwipeToConfirm({
           <IconSymbol name="checkmark" size={24} color={activeColor} />
         </Animated.View>
 
+        {/* Processing text — fades in on completion */}
+        <Animated.View style={[styles.processingText, processingStyle]}>
+          <Callout
+            style={{
+              fontFamily: FontFamily.semibold,
+              color: activeColor,
+              textAlign: "center",
+            }}
+          >
+            Processing...
+          </Callout>
+        </Animated.View>
+
         {/* Draggable thumb */}
         <GestureDetector gesture={panGesture}>
+          {/* Shadow layer 1 - light */}
+          <Animated.View
+            style={[
+              styles.thumbShadow,
+              {
+                backgroundColor: "#000000",
+                opacity: SHADOW_LIGHT_OPACITY,
+                width: THUMB_SIZE,
+                height: THUMB_SIZE,
+                left: TRACK_PADDING + SHADOW_LIGHT_OFFSET,
+                top: SHADOW_LIGHT_OFFSET,
+                borderRadius: THUMB_SIZE / 2,
+              },
+              thumbStyle,
+            ]}
+          />
+          {/* Shadow layer 2 - medium */}
+          <Animated.View
+            style={[
+              styles.thumbShadow,
+              {
+                backgroundColor: "#000000",
+                opacity: SHADOW_MEDIUM_OPACITY,
+                width: THUMB_SIZE,
+                height: THUMB_SIZE,
+                left: TRACK_PADDING + SHADOW_MEDIUM_OFFSET,
+                top: SHADOW_MEDIUM_OFFSET,
+                borderRadius: THUMB_SIZE / 2,
+              },
+              thumbStyle,
+            ]}
+          />
+          {/* Shadow layer 3 - heavy */}
+          <Animated.View
+            style={[
+              styles.thumbShadow,
+              {
+                backgroundColor: "#000000",
+                opacity: SHADOW_HEAVY_OPACITY,
+                width: THUMB_SIZE,
+                height: THUMB_SIZE,
+                left: TRACK_PADDING + SHADOW_HEAVY_OFFSET,
+                top: SHADOW_HEAVY_OFFSET,
+                borderRadius: THUMB_SIZE / 2,
+              },
+              thumbStyle,
+            ]}
+          />
           <Animated.View
             style={[
               styles.thumb,
               {
-                backgroundColor: activeColor,
-                shadowColor: activeColor,
+                backgroundColor: "#FFFFFF",
+                borderWidth: INNER_GLOW_WIDTH,
+                borderColor: `${activeColor}${Math.round(INNER_GLOW_OPACITY * 255).toString(16).padStart(2, '0')}`,
               },
               thumbStyle,
             ]}
           >
-            {/* Arrow icon */}
-            <Animated.View style={arrowStyle}>
+            {/* Arrow icon with translate animation */}
+            <Animated.View style={[arrowStyle, thumbIconStyle]}>
               <IconSymbol
                 name="chevron.right"
-                size={22}
-                color={colors.onPrimary}
+                size={24}
+                color={activeColor}
               />
             </Animated.View>
 
             {/* Checkmark icon (on completion) */}
             <Animated.View style={[styles.thumbCheckmark, checkmarkStyle]}>
-              <IconSymbol name="checkmark" size={22} color={colors.onPrimary} />
+              <IconSymbol name="checkmark" size={22} color={activeColor} />
             </Animated.View>
           </Animated.View>
         </GestureDetector>
@@ -365,6 +504,18 @@ const styles = StyleSheet.create({
     bottom: 0,
     borderRadius: TRACK_HEIGHT / 2,
   },
+  shimmer: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: SHIMMER_WIDTH,
+    overflow: "hidden",
+  },
+  shimmerGradient: {
+    width: "100%",
+    height: "100%",
+  },
   labelContainer: {
     position: "absolute",
     left: THUMB_SIZE + TRACK_PADDING + Spacing[2],
@@ -386,6 +537,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  processingText: {
+    position: "absolute",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  thumbShadow: {
+    position: "absolute",
+    borderRadius: THUMB_SIZE / 2,
+  },
   thumb: {
     position: "absolute",
     left: TRACK_PADDING,
@@ -394,10 +554,6 @@ const styles = StyleSheet.create({
     borderRadius: THUMB_SIZE / 2,
     alignItems: "center",
     justifyContent: "center",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
   },
   thumbCheckmark: {
     position: "absolute",
