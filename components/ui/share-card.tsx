@@ -7,13 +7,14 @@
  * Design references: Robinhood confetti share, Coinbase share card, Binance PnL card.
  *
  * Features:
- *   - Gradient background (dark mode always — looks premium on social)
+ *   - Multi-layer background with gradient overlay
  *   - Stock ticker + company name
  *   - P&L amount and percentage with color coding
- *   - Mini sparkline chart
+ *   - Mini sparkline chart with gradient fill
  *   - Sentiment badge (Bullish/Bearish/Neutral)
  *   - Time frame label (Today / This Week / All Time)
  *   - AGRX branding footer with app logo reference
+ *   - Light/dark theme support
  */
 
 import React from "react";
@@ -28,6 +29,8 @@ import Svg, {
   Circle,
 } from "react-native-svg";
 import { FontFamily } from "@/constants/typography";
+import { useColors } from "@/hooks/use-colors";
+import { Spacing, Radius } from "@/constants/spacing";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -59,60 +62,37 @@ export interface ShareCardData {
   tradeType?: "buy" | "sell";
   /** Trade amount in euros (for trade confirmation cards) */
   tradeAmount?: number;
+  /** Theme preference for the share card */
+  theme?: "light" | "dark";
 }
 
-// ─── Color Palette (always dark mode for social sharing) ────────────────────
-
-const CARD_COLORS = {
-  // Background gradient
-  bgTop: "#0D0F14",
-  bgBottom: "#0A0B0D",
-  // Surfaces
-  surface: "#1A1C23",
-  surfaceLight: "#262830",
-  // Text
-  white: "#FFFFFF",
-  textPrimary: "#EEF0F3",
-  textSecondary: "#89909E",
-  textTertiary: "#5B616E",
-  // Brand
-  primary: "#578BFA",
-  primaryGlow: "rgba(87,139,250,0.20)",
-  // Status
-  success: "#27AD74",
-  successGlow: "rgba(39,173,116,0.25)",
-  successLight: "rgba(39,173,116,0.12)",
-  error: "#ED5966",
-  errorGlow: "rgba(237,89,102,0.25)",
-  errorLight: "rgba(237,89,102,0.12)",
-  warning: "#EBBA00",
-  warningLight: "rgba(235,186,0,0.12)",
-  // Border
-  border: "#282A30",
-};
-
 // ─── Mini Chart Component ───────────────────────────────────────────────────
+
+interface ShareCardChartProps {
+  data: number[];
+  width: number;
+  height: number;
+  positive: boolean;
+  theme: "light" | "dark";
+  colors: ReturnType<typeof useColors>;
+}
 
 function ShareCardChart({
   data,
   width,
   height,
   positive,
-}: {
-  data: number[];
-  width: number;
-  height: number;
-  positive: boolean;
-}) {
+  theme,
+  colors,
+}: ShareCardChartProps) {
   if (!data || data.length < 2) return null;
 
-  const color = positive ? CARD_COLORS.success : CARD_COLORS.error;
-  const glowColor = positive ? CARD_COLORS.successGlow : CARD_COLORS.errorGlow;
+  const color = positive ? colors.success : colors.error;
 
   const min = Math.min(...data);
   const max = Math.max(...data);
   const range = max - min || 1;
-  const padding = 4;
+  const padding = Spacing[1]; // 4px
   const chartW = width - padding * 2;
   const chartH = height - padding * 2;
 
@@ -129,12 +109,16 @@ function ShareCardChart({
     .map((p) => `L${p.x},${p.y}`)
     .join(" ")} L${points[points.length - 1].x},${height} L${points[0].x},${height} Z`;
 
+  // Gradient opacity based on theme
+  const gradientStart = theme === 'dark' ? 0.30 : 0.20;
+  const gradientMid = theme === 'dark' ? 0.05 : 0.02;
+
   return (
     <Svg width={width} height={height}>
       <Defs>
         <LinearGradient id="shareChartGrad" x1="0" y1="0" x2="0" y2="1">
-          <Stop offset="0" stopColor={color} stopOpacity="0.20" />
-          <Stop offset="0.7" stopColor={color} stopOpacity="0.05" />
+          <Stop offset="0" stopColor={color} stopOpacity={gradientStart} />
+          <Stop offset="0.7" stopColor={color} stopOpacity={gradientMid} />
           <Stop offset="1" stopColor={color} stopOpacity="0" />
         </LinearGradient>
       </Defs>
@@ -153,19 +137,31 @@ function ShareCardChart({
 
 // ─── Sentiment Badge ────────────────────────────────────────────────────────
 
-function SentimentBadge({ sentiment }: { sentiment: ShareSentiment }) {
+interface SentimentBadgeProps {
+  sentiment: ShareSentiment;
+  theme: "light" | "dark";
+  colors: ReturnType<typeof useColors>;
+}
+
+function SentimentBadge({ sentiment, theme, colors }: SentimentBadgeProps) {
+  // Helper function to add alpha to hex color
+  const addAlpha = (hex: string, alpha: number) => {
+    const alphaHex = Math.round(alpha * 255).toString(16).padStart(2, '0');
+    return `${hex}${alphaHex}`;
+  };
+
   const bgColor =
     sentiment === "Bullish"
-      ? CARD_COLORS.successLight
+      ? addAlpha(colors.success, theme === 'dark' ? 0.12 : 0.15)
       : sentiment === "Bearish"
-      ? CARD_COLORS.errorLight
-      : CARD_COLORS.warningLight;
+      ? addAlpha(colors.error, theme === 'dark' ? 0.12 : 0.15)
+      : addAlpha(colors.warning, theme === 'dark' ? 0.12 : 0.15);
   const textColor =
     sentiment === "Bullish"
-      ? CARD_COLORS.success
+      ? colors.success
       : sentiment === "Bearish"
-      ? CARD_COLORS.error
-      : CARD_COLORS.warning;
+      ? colors.error
+      : colors.warning;
   const icon = sentiment === "Bullish" ? "▲" : sentiment === "Bearish" ? "▼" : "●";
 
   return (
@@ -179,6 +175,9 @@ function SentimentBadge({ sentiment }: { sentiment: ShareSentiment }) {
 // ─── Main Share Card ────────────────────────────────────────────────────────
 
 export function ShareCard({ data, ref }: { data: ShareCardData; ref?: React.Ref<View> }) {
+    const colors = useColors();
+    const theme = data.theme ?? 'dark'; // Default to dark mode
+
     const {
       ticker,
       companyName,
@@ -194,17 +193,35 @@ export function ShareCard({ data, ref }: { data: ShareCardData; ref?: React.Ref<
     } = data;
 
     const isPositive = pnlPercent >= 0;
-    const pnlColor = isPositive ? CARD_COLORS.success : CARD_COLORS.error;
-    const pnlGlow = isPositive ? CARD_COLORS.successGlow : CARD_COLORS.errorGlow;
+    const pnlColor = isPositive ? colors.success : colors.error;
+
+    // Helper function to add alpha to hex color
+    const addAlpha = (hex: string, alpha: number) => {
+      const alphaHex = Math.round(alpha * 255).toString(16).padStart(2, '0');
+      return `${hex}${alphaHex}`;
+    };
+
+    // Theme-aware colors
+    const bgColor = theme === 'dark' ? colors.background : colors.surface;
+    const bgGradientColor = theme === 'dark' ? '#0A0B0D' : colors.surface;
+    const pnlGlow = addAlpha(pnlColor, theme === 'dark' ? 0.25 : 0.15);
+    const surfaceColor = theme === 'dark' ? '#1A1C23' : colors.surface;
+    const surfaceLightColor = addAlpha(colors.muted, theme === 'dark' ? 0.15 : 0.08);
+    const primaryColor = colors.primary;
+
+    const textPrimary = theme === 'dark' ? '#EEF0F3' : colors.foreground;
+    const textSecondary = theme === 'dark' ? '#89909E' : colors.muted;
+    const textTertiary = theme === 'dark' ? '#5B616E' : colors.muted;
+
     const arrow = isPositive ? "▲" : "▼";
     const sign = isPositive ? "+" : "";
 
     const isTrade = tradeType !== undefined;
 
     return (
-      <View ref={ref} style={styles.card} collapsable={false}>
+      <View ref={ref} style={[styles.card, { backgroundColor: bgColor }]} collapsable={false}>
         {/* Background gradient overlay */}
-        <View style={styles.bgGradient}>
+        <View style={[styles.bgGradient, { backgroundColor: bgGradientColor }]}>
           {/* Subtle radial glow behind P&L */}
           <View
             style={[
@@ -218,10 +235,10 @@ export function ShareCard({ data, ref }: { data: ShareCardData; ref?: React.Ref<
         <View style={styles.content}>
           {/* Top Row: Time frame + Sentiment */}
           <View style={styles.topRow}>
-            <View style={styles.timeFrameBadge}>
-              <Text style={styles.timeFrameText}>{timeFrame}</Text>
+            <View style={[styles.timeFrameBadge, { backgroundColor: surfaceLightColor }]}>
+              <Text style={[styles.timeFrameText, { color: textSecondary }]}>{timeFrame}</Text>
             </View>
-            {sentiment && <SentimentBadge sentiment={sentiment} />}
+            {sentiment && <SentimentBadge sentiment={sentiment} theme={theme} colors={colors} />}
           </View>
 
           {/* Trade Type Badge (for trade confirmations) */}
@@ -231,12 +248,11 @@ export function ShareCard({ data, ref }: { data: ShareCardData; ref?: React.Ref<
                 style={[
                   styles.tradeTypeDot,
                   {
-                    backgroundColor:
-                      tradeType === "buy" ? CARD_COLORS.success : CARD_COLORS.error,
+                    backgroundColor: tradeType === "buy" ? colors.success : colors.error,
                   },
                 ]}
               />
-              <Text style={styles.tradeTypeText}>
+              <Text style={[styles.tradeTypeText, { color: textSecondary }]}>
                 {tradeType === "buy" ? "Bought" : "Sold"}
                 {tradeAmount ? ` €${tradeAmount.toFixed(0)}` : ""}
               </Text>
@@ -245,19 +261,19 @@ export function ShareCard({ data, ref }: { data: ShareCardData; ref?: React.Ref<
 
           {/* Stock Ticker + Name */}
           <View style={styles.tickerSection}>
-            <View style={styles.tickerIconContainer}>
-              <Text style={styles.tickerIconText}>{ticker.slice(0, 2)}</Text>
+            <View style={[styles.tickerIconContainer, { backgroundColor: surfaceColor, borderColor: addAlpha(colors.border, 0.3) }]}>
+              <Text style={[styles.tickerIconText, { color: primaryColor }]}>{ticker.slice(0, 2)}</Text>
             </View>
             <View style={styles.tickerInfo}>
-              <Text style={styles.tickerText}>{ticker}</Text>
-              <Text style={styles.companyText} numberOfLines={1}>
+              <Text style={[styles.tickerText, { color: textPrimary }]}>{ticker}</Text>
+              <Text style={[styles.companyText, { color: textSecondary }]} numberOfLines={1}>
                 {companyName}
               </Text>
             </View>
           </View>
 
           {/* Price */}
-          <Text style={styles.priceText}>
+          <Text style={[styles.priceText, { color: textSecondary }]}>
             €{price.toFixed(2)}
           </Text>
 
@@ -266,7 +282,7 @@ export function ShareCard({ data, ref }: { data: ShareCardData; ref?: React.Ref<
             <Text style={[styles.pnlAmount, { color: pnlColor }]}>
               {sign}€{Math.abs(pnlAmount).toFixed(2)}
             </Text>
-            <View style={[styles.pnlPercentBadge, { backgroundColor: isPositive ? CARD_COLORS.successLight : CARD_COLORS.errorLight }]}>
+            <View style={[styles.pnlPercentBadge, { backgroundColor: addAlpha(pnlColor, theme === 'dark' ? 0.12 : 0.15) }]}>
               <Text style={[styles.pnlPercentText, { color: pnlColor }]}>
                 {arrow} {sign}{Math.abs(pnlPercent).toFixed(2)}%
               </Text>
@@ -275,7 +291,7 @@ export function ShareCard({ data, ref }: { data: ShareCardData; ref?: React.Ref<
 
           {/* Shares info */}
           {shares !== undefined && shares > 0 && (
-            <Text style={styles.sharesText}>
+            <Text style={[styles.sharesText, { color: textTertiary }]}>
               {shares.toFixed(4)} shares
             </Text>
           )}
@@ -287,25 +303,27 @@ export function ShareCard({ data, ref }: { data: ShareCardData; ref?: React.Ref<
               width={280}
               height={120}
               positive={isPositive}
+              theme={theme}
+              colors={colors}
             />
           </View>
 
           {/* Divider */}
-          <View style={styles.divider} />
+          <View style={[styles.divider, { backgroundColor: addAlpha(colors.border, 0.3) }]} />
 
           {/* Footer: AGRX Branding */}
           <View style={styles.footer}>
             <View style={styles.brandRow}>
-              <View style={styles.logoContainer}>
+              <View style={[styles.logoContainer, { backgroundColor: primaryColor }]}>
                 <Text style={styles.logoText}>AGRX</Text>
               </View>
               <View style={styles.brandInfo}>
-                <Text style={styles.brandName}>AGRX</Text>
-                <Text style={styles.brandTagline}>Greek Stock Trading</Text>
+                <Text style={[styles.brandName, { color: textPrimary }]}>AGRX</Text>
+                <Text style={[styles.brandTagline, { color: textTertiary }]}>Greek Stock Trading</Text>
               </View>
             </View>
-            <View style={styles.qrPlaceholder}>
-              <Text style={styles.downloadText}>Download{"\n"}the app</Text>
+            <View style={[styles.qrPlaceholder, { backgroundColor: surfaceColor, borderColor: addAlpha(colors.border, 0.3) }]}>
+              <Text style={[styles.downloadText, { color: textTertiary }]}>Download{"\n"}the app</Text>
             </View>
           </View>
         </View>
@@ -322,13 +340,11 @@ const styles = StyleSheet.create({
   card: {
     width: CARD_WIDTH,
     height: CARD_HEIGHT,
-    backgroundColor: CARD_COLORS.bgTop,
-    borderRadius: 24,
+    borderRadius: Radius[300], // 24px
     overflow: "hidden",
   },
   bgGradient: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: CARD_COLORS.bgBottom,
   },
   pnlGlow: {
     position: "absolute",
@@ -341,7 +357,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 24,
+    padding: Spacing[6], // 24px
     justifyContent: "space-between",
   },
 
@@ -350,18 +366,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 16,
+    marginBottom: Spacing[4], // 16px
   },
   timeFrameBadge: {
-    backgroundColor: CARD_COLORS.surfaceLight,
     paddingHorizontal: 12,
     paddingVertical: 5,
-    borderRadius: 8,
+    borderRadius: Radius[100], // 8px (pill)
   },
   timeFrameText: {
     fontFamily: FontFamily.semibold,
     fontSize: 12,
-    color: CARD_COLORS.textSecondary,
     letterSpacing: 0.5,
     textTransform: "uppercase",
   },
@@ -372,7 +386,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 10,
     paddingVertical: 5,
-    borderRadius: 8,
+    borderRadius: Radius[100], // 8px (pill)
     gap: 4,
   },
   sentimentIcon: {
@@ -391,40 +405,36 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    marginBottom: 8,
+    marginBottom: Spacing[2], // 8px
   },
   tradeTypeDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: Spacing[2], // 8px
+    height: Spacing[2], // 8px
+    borderRadius: Radius[100], // 4px
   },
   tradeTypeText: {
     fontFamily: FontFamily.medium,
     fontSize: 13,
-    color: CARD_COLORS.textSecondary,
   },
 
   // Ticker
   tickerSection: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
-    marginBottom: 16,
+    gap: Spacing[3], // 12px
+    marginBottom: Spacing[4], // 16px
   },
   tickerIconContainer: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: CARD_COLORS.surface,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: CARD_COLORS.border,
   },
   tickerIconText: {
     fontFamily: FontFamily.bold,
     fontSize: 16,
-    color: CARD_COLORS.primary,
   },
   tickerInfo: {
     flex: 1,
@@ -432,13 +442,11 @@ const styles = StyleSheet.create({
   tickerText: {
     fontFamily: FontFamily.bold,
     fontSize: 22,
-    color: CARD_COLORS.textPrimary,
     letterSpacing: 0.5,
   },
   companyText: {
     fontFamily: FontFamily.medium,
     fontSize: 13,
-    color: CARD_COLORS.textSecondary,
     marginTop: 1,
   },
 
@@ -446,16 +454,15 @@ const styles = StyleSheet.create({
   priceText: {
     fontFamily: FontFamily.monoBold,
     fontSize: 16,
-    color: CARD_COLORS.textSecondary,
-    marginBottom: 4,
+    marginBottom: Spacing[1], // 4px
   },
 
   // P&L
   pnlSection: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
-    marginBottom: 4,
+    gap: Spacing[3], // 12px
+    marginBottom: Spacing[1], // 4px
   },
   pnlAmount: {
     fontFamily: FontFamily.monoBold,
@@ -465,7 +472,7 @@ const styles = StyleSheet.create({
   pnlPercentBadge: {
     paddingHorizontal: 10,
     paddingVertical: 5,
-    borderRadius: 8,
+    borderRadius: Radius[100], // 8px (pill)
   },
   pnlPercentText: {
     fontFamily: FontFamily.monoBold,
@@ -476,21 +483,19 @@ const styles = StyleSheet.create({
   sharesText: {
     fontFamily: FontFamily.mono,
     fontSize: 13,
-    color: CARD_COLORS.textTertiary,
-    marginBottom: 8,
+    marginBottom: Spacing[2], // 8px
   },
 
   // Chart
   chartContainer: {
     alignItems: "center",
-    marginVertical: 8,
+    marginVertical: Spacing[2], // 8px
   },
 
   // Divider
   divider: {
     height: 1,
-    backgroundColor: CARD_COLORS.border,
-    marginVertical: 12,
+    marginVertical: Spacing[3], // 12px
   },
 
   // Footer
@@ -507,44 +512,38 @@ const styles = StyleSheet.create({
   logoContainer: {
     width: 36,
     height: 36,
-    borderRadius: 10,
-    backgroundColor: CARD_COLORS.primary,
+    borderRadius: Radius[200], // 10px
     alignItems: "center",
     justifyContent: "center",
   },
   logoText: {
     fontFamily: FontFamily.bold,
     fontSize: 10,
-    color: CARD_COLORS.white,
+    color: "#FFFFFF",
     letterSpacing: 0.5,
   },
   brandInfo: {},
   brandName: {
     fontFamily: FontFamily.bold,
     fontSize: 16,
-    color: CARD_COLORS.textPrimary,
     letterSpacing: 1,
   },
   brandTagline: {
     fontFamily: FontFamily.medium,
     fontSize: 11,
-    color: CARD_COLORS.textTertiary,
     marginTop: 1,
   },
   qrPlaceholder: {
     width: 48,
     height: 48,
-    borderRadius: 10,
-    backgroundColor: CARD_COLORS.surface,
+    borderRadius: Radius[200], // 10px
     borderWidth: 1,
-    borderColor: CARD_COLORS.border,
     alignItems: "center",
     justifyContent: "center",
   },
   downloadText: {
     fontFamily: FontFamily.semibold,
     fontSize: 8,
-    color: CARD_COLORS.textTertiary,
     textAlign: "center",
     lineHeight: 11,
   },

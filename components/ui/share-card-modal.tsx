@@ -1,12 +1,12 @@
 /**
  * Share Card Modal — Full-screen overlay with the P&L share card preview,
- * time frame selector, and share/close buttons.
+ * time frame selector, theme toggle, and share/close buttons.
  *
  * This modal renders the ShareCard component inside a ViewShot-compatible
- * container, lets the user pick a time frame, then captures and shares.
+ * container, lets the user pick a time frame and theme, then captures and shares.
  */
 
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useState, useCallback, useEffect } from "react";
 import {
   View,
   Modal,
@@ -15,6 +15,7 @@ import {
   ActivityIndicator,
   Platform,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
@@ -26,7 +27,7 @@ import {
 } from "@/components/ui/share-card";
 import { captureAndShare } from "@/lib/share-service";
 import { FontFamily } from "@/constants/typography";
-import { Radius } from "@/constants/spacing";
+import { Radius, Spacing } from "@/constants/spacing";
 import {
   Title3,
   Callout,
@@ -36,6 +37,7 @@ import { Caption1 } from "@/components/ui/cds-typography";
 import * as Haptics from "expo-haptics";
 
 const TIME_FRAMES: ShareTimeFrame[] = ["Today", "This Week", "This Month", "All Time"];
+const THEME_STORAGE_KEY = "@agrx_share_card_theme";
 
 interface ShareCardModalProps {
   visible: boolean;
@@ -55,6 +57,22 @@ export function ShareCardModal({
   const cardRef = useRef<View>(null);
   const [isSharing, setIsSharing] = useState(false);
   const [selectedTimeFrame, setSelectedTimeFrame] = useState<ShareTimeFrame>(data.timeFrame);
+  const [cardTheme, setCardTheme] = useState<"light" | "dark">("dark");
+
+  // Load theme preference from AsyncStorage on mount
+  useEffect(() => {
+    const loadTheme = async () => {
+      try {
+        const savedTheme = await AsyncStorage.getItem(THEME_STORAGE_KEY);
+        if (savedTheme === "light" || savedTheme === "dark") {
+          setCardTheme(savedTheme);
+        }
+      } catch (error) {
+        console.error("Failed to load share card theme preference:", error);
+      }
+    };
+    loadTheme();
+  }, []);
 
   const handleTimeFrameChange = useCallback(
     (tf: ShareTimeFrame) => {
@@ -66,6 +84,23 @@ export function ShareCardModal({
     },
     [onTimeFrameChange]
   );
+
+  const handleThemeToggle = useCallback(async () => {
+    const newTheme: "light" | "dark" = cardTheme === "dark" ? "light" : "dark";
+    setCardTheme(newTheme);
+
+    // Save to AsyncStorage
+    try {
+      await AsyncStorage.setItem(THEME_STORAGE_KEY, newTheme);
+    } catch (error) {
+      console.error("Failed to save share card theme preference:", error);
+    }
+
+    // Haptic feedback
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
+  }, [cardTheme]);
 
   const handleShare = useCallback(async () => {
     setIsSharing(true);
@@ -81,6 +116,7 @@ export function ShareCardModal({
   const cardData: ShareCardData = {
     ...data,
     timeFrame: selectedTimeFrame,
+    theme: cardTheme,
   };
 
   return (
@@ -103,7 +139,19 @@ export function ShareCardModal({
             <IconSymbol name="xmark" size={20} color={colors.foreground} />
           </AnimatedPressable>
           <Title3 style={{ color: colors.foreground }}>Share Your Gains</Title3>
-          <View style={{ width: 40 }} />
+          <AnimatedPressable
+            variant="icon"
+            onPress={handleThemeToggle}
+            style={[styles.themeToggleButton, { backgroundColor: colors.surface }]}
+            accessibilityLabel={`Switch to ${cardTheme === "dark" ? "light" : "dark"} mode`}
+            accessibilityHint="Changes the share card theme between light and dark mode"
+          >
+            <IconSymbol
+              name={cardTheme === "dark" ? "sun.max" : "moon"}
+              size={20}
+              color={colors.foreground}
+            />
+          </AnimatedPressable>
         </View>
 
         {/* Card Preview */}
@@ -181,7 +229,7 @@ export function ShareCardModal({
             style={{
               color: colors.muted,
               textAlign: "center",
-              marginTop: 12,
+              marginTop: Spacing[3], // 12px
               fontFamily: FontFamily.medium,
             }}
           >
@@ -200,7 +248,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 20,
+    paddingHorizontal: Spacing[5], // 20px
   },
   header: {
     flexDirection: "row",
@@ -208,10 +256,17 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: "100%",
     paddingTop: 60,
-    paddingHorizontal: 4,
-    marginBottom: 20,
+    paddingHorizontal: Spacing[1], // 4px
+    marginBottom: Spacing[5], // 20px
   },
   closeButton: {
+    width: 40,
+    height: 40,
+    borderRadius: Radius[500],
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  themeToggleButton: {
     width: 40,
     height: 40,
     borderRadius: Radius[500],
@@ -228,18 +283,18 @@ const styles = StyleSheet.create({
   },
   timeFrameRow: {
     flexDirection: "row",
-    gap: 8,
-    marginTop: 20,
-    marginBottom: 24,
+    gap: Spacing[2], // 8px
+    marginTop: Spacing[5], // 20px
+    marginBottom: Spacing[6], // 24px
   },
   timeFrameButton: {
     paddingHorizontal: 14,
-    paddingVertical: 8,
+    paddingVertical: Spacing[2], // 8px
     borderRadius: Radius[300],
   },
   bottomActions: {
     width: "100%",
-    paddingHorizontal: 16,
+    paddingHorizontal: Spacing[4], // 16px
   },
   shareButton: {
     height: 56,
