@@ -28,6 +28,7 @@ import {
 import { Footnote } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 import { AvatarSettingsSection } from "@/components/ui/avatar-settings-section";
+import { showError, logError } from "@/lib/error-handler";
 
 // ─── Storage Keys ────────────────────────────────────────────────────────────
 
@@ -99,10 +100,17 @@ export default function SettingsScreen() {
       if (supported) {
         await Linking.openURL(url);
       } else {
-        console.warn(`Cannot open URL: ${url}`);
+        showError(new Error(`Cannot open URL: ${url}`), {
+          title: "Unable to Open Link",
+          message: "This app doesn't have a compatible application to open this link.",
+        });
       }
     } catch (error) {
-      console.warn('Error opening URL:', error);
+      logError(error, "handleOpenURL");
+      showError(error, {
+        title: "Failed to Open Link",
+        message: "An error occurred while trying to open this link.",
+      });
     }
   }, []);
 

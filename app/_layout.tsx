@@ -29,6 +29,7 @@ import { DemoProvider } from "@/lib/demo-context";
 import { WatchlistProvider } from "@/lib/watchlist-context";
 import { NotificationProvider } from "@/lib/notification-context";
 import { ViewModeProvider } from "@/lib/viewmode-context";
+import { ErrorBoundary } from "@/components/errors/error-boundary";
 
 const DEFAULT_WEB_INSETS: EdgeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
 const DEFAULT_WEB_FRAME: Rect = { x: 0, y: 0, width: 0, height: 0 };
@@ -148,7 +149,9 @@ export default function RootLayout() {
       <trpc.Provider client={trpcClient} queryClient={queryClient}>
         <QueryClientProvider client={queryClient}>
           <NotificationProvider>
-            <InnerLayout />
+            <ErrorBoundary>
+              <InnerLayout />
+            </ErrorBoundary>
           </NotificationProvider>
         </QueryClientProvider>
       </trpc.Provider>
