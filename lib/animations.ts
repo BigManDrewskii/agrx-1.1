@@ -3,6 +3,11 @@
  *
  * Single source of truth for all animation parameters.
  * Import from here — never hardcode durations or spring configs.
+ *
+ * Inspired by Coinbase Design System motion principles:
+ * - Fast feedback for direct manipulation
+ * - Smooth transitions for navigation
+ * - Gentle easing for ambient motion
  */
 import {
   Easing,
@@ -90,13 +95,34 @@ export const PRESS = {
 // ─── Stagger Delay ───────────────────────────────────────────────
 
 /** Delay between staggered list items (ms) */
-export const STAGGER_DELAY = 30;
+export const STAGGER_DELAY = 35;
 
 /** Max items to stagger (avoid long waits on large lists) */
-export const STAGGER_MAX = 12;
+export const STAGGER_MAX = 10;
 
 /** Calculate stagger delay, capped at STAGGER_MAX */
 export function staggerDelay(index: number): number {
   "worklet";
   return Math.min(index, STAGGER_MAX) * STAGGER_DELAY;
 }
+
+// ─── List Entrance Helpers ───────────────────────────────────────
+
+/** Base delay before list items start appearing */
+export const LIST_ENTRANCE_BASE_DELAY = 100;
+
+/** FadeInDown config for list items with stagger */
+export function listItemEntering(index: number) {
+  return {
+    duration: 300,
+    delay: LIST_ENTRANCE_BASE_DELAY + staggerDelay(index),
+  };
+}
+
+// ─── Number Animation ────────────────────────────────────────────
+
+/** Duration for animated number counters (ms) */
+export const NUMBER_ANIMATION_DURATION = 600;
+
+/** Easing for number counter animations */
+export const NUMBER_EASING = Easing.out(Easing.cubic);

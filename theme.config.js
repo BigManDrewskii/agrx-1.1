@@ -30,8 +30,10 @@ const themeColors = {
   //  Dark:  Near-true-black (CDS gray0 #0A0B0D) for OLED power savings.
   //         Surface uses CDS gray5→gray10 steps for subtle elevation.
   background:          { light: '#F7F8F9', dark: '#0A0B0D' },
+  surfaceSubtle:       { light: '#F2F3F5', dark: '#12131A' },
   surface:             { light: '#FFFFFF', dark: '#1A1C23' },
   surfaceSecondary:    { light: '#EEF0F3', dark: '#262830' },
+  surfaceElevated:     { light: '#FFFFFF', dark: '#2E3038' },
 
   // ─── Text ───────────────────────────────────────────────────────────
   //  Light: Near-black for maximum readability.
@@ -46,6 +48,7 @@ const themeColors = {
   //  Light: CDS gray15 range.
   //  Dark:  CDS gray15 (#282A30) — subtle separation without harshness.
   border:         { light: '#DEE1E7', dark: '#282A30' },
+  borderSubtle:   { light: '#EEF0F3', dark: '#1E2028' },
 
   // ─── Semantic Status ────────────────────────────────────────────────
   //  Dark values lifted from CDS dark-green60/red60/orange60 range.

@@ -529,7 +529,7 @@ export default function AssetDetailScreen() {
       </ScrollView>
 
       {/* Bottom CTA */}
-      <View style={[styles.ctaContainer, { backgroundColor: colors.background, borderTopColor: colors.border }]}>
+      <View style={[styles.ctaContainer, { backgroundColor: colors.background + 'E8', borderTopColor: colors.borderSubtle }]}>
         <CDSButton
           variant="success"
           onPress={() => router.push(`/(tabs)/trade?stockId=${id}&mode=buy`)}

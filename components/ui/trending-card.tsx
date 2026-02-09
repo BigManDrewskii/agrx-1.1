@@ -1,12 +1,14 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { useColors } from "@/hooks/use-colors";
+import { useThemeContext } from "@/lib/theme-provider";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { CDSSparkline } from "./cds-sparkline";
 import { AnimatedNumber, AnimatedPnLNumber } from "./animated-number";
 import { Caption1, Caption2, Subhead } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 import { Spacing, Radius } from "@/constants/spacing";
+import { getShadow } from "@/constants/shadows";
 import { TrendingCardWidth } from "@/constants/layout";
 import type { Asset } from "@/lib/mock-data";
 
@@ -17,6 +19,10 @@ interface TrendingCardProps {
 
 export function TrendingCard({ asset, onPress }: TrendingCardProps) {
   const colors = useColors();
+  const { colorScheme } = useThemeContext();
+  const isDark = colorScheme === "dark";
+  const isPositive = asset.change >= 0;
+  const tintColor = isPositive ? colors.success : colors.error;
 
   return (
     <AnimatedPressable
@@ -26,13 +32,24 @@ export function TrendingCard({ asset, onPress }: TrendingCardProps) {
         styles.card,
         {
           backgroundColor: colors.surface,
-          borderColor: colors.border,
+          borderColor: isDark ? colors.borderSubtle : colors.border,
         },
+        getShadow("sm", isDark),
       ]}
     >
+      {/* Header: Ticker icon + name */}
       <View style={styles.header}>
-        <View style={[styles.iconCircle, { backgroundColor: colors.surfaceSecondary }]}>
-          <Caption2 color="primary" style={{ fontFamily: FontFamily.bold }}>
+        <View
+          style={[
+            styles.iconCircle,
+            {
+              backgroundColor: `${tintColor}14`,
+              borderColor: `${tintColor}20`,
+              borderWidth: 1,
+            },
+          ]}
+        >
+          <Caption2 style={{ fontFamily: FontFamily.bold, color: tintColor }}>
             {asset.ticker.slice(0, 2)}
           </Caption2>
         </View>
@@ -43,36 +60,59 @@ export function TrendingCard({ asset, onPress }: TrendingCardProps) {
           >
             {asset.ticker}
           </Subhead>
-          <Caption2 color="muted" style={{ fontFamily: FontFamily.medium }} numberOfLines={1}>
+          <Caption2
+            color="muted"
+            style={{ fontFamily: FontFamily.regular }}
+            numberOfLines={1}
+          >
             {asset.name}
           </Caption2>
         </View>
       </View>
 
+      {/* Sparkline */}
       <View style={styles.sparklineContainer}>
         <CDSSparkline
           data={asset.sparkline}
-          width={100}
-          height={32}
-          positive={asset.change >= 0}
+          width={108}
+          height={36}
+          positive={isPositive}
           showGradient={true}
           smooth={true}
         />
       </View>
 
+      {/* Footer: Price + PnL pill */}
       <View style={styles.footer}>
         <AnimatedNumber
           value={asset.price}
           prefix="€"
           decimals={2}
           style={{
-            fontSize: 14,
+            fontSize: 15,
             lineHeight: 20,
             fontFamily: FontFamily.monoMedium,
             color: colors.foreground,
           }}
         />
-        <AnimatedPnLNumber value={asset.changePercent} format="percent" size="sm" showArrow={false} successColor={colors.success} errorColor={colors.error} mutedColor={colors.muted} />
+        <View
+          style={[
+            styles.pnlPill,
+            {
+              backgroundColor: isPositive ? colors.successAlpha : colors.errorAlpha,
+            },
+          ]}
+        >
+          <AnimatedPnLNumber
+            value={asset.changePercent}
+            format="percent"
+            size="sm"
+            showArrow={false}
+            successColor={colors.success}
+            errorColor={colors.error}
+            mutedColor={colors.muted}
+          />
+        </View>
       </View>
     </AnimatedPressable>
   );
@@ -82,10 +122,11 @@ const styles = StyleSheet.create({
   card: {
     width: TrendingCardWidth,
     maxWidth: 180,
-    borderRadius: Radius.lg,
+    borderRadius: Radius[400],
     borderWidth: 1,
     padding: Spacing[4],
     marginRight: Spacing[3],
+    overflow: "hidden",
   },
   header: {
     flexDirection: "row",
@@ -95,7 +136,7 @@ const styles = StyleSheet.create({
   iconCircle: {
     width: 32,
     height: 32,
-    borderRadius: Radius.full,
+    borderRadius: Radius[300],
     alignItems: "center",
     justifyContent: "center",
     marginRight: Spacing[2],
@@ -111,5 +152,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+  pnlPill: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: Radius.xs,
   },
 });

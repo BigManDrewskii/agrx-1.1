@@ -15,11 +15,8 @@ interface AssetRowProps {
   asset: Asset;
   onPress?: () => void;
   showSparkline?: boolean;
-  /** Whether to show the star/watchlist toggle */
   showStar?: boolean;
-  /** Whether this stock is currently watchlisted */
   isWatchlisted?: boolean;
-  /** Callback when the star is toggled */
   onToggleWatchlist?: () => void;
 }
 
@@ -40,34 +37,51 @@ export function AssetRow({
     onToggleWatchlist?.();
   };
 
+  // Derive a subtle brand tint for the ticker icon
+  const isPositive = asset.change >= 0;
+  const tintColor = isPositive ? colors.success : colors.error;
+
   return (
     <AnimatedPressable
       variant="card"
       onPress={onPress}
-      style={[
-        styles.container,
-        { borderBottomColor: colors.border },
-      ]}
+      style={styles.container}
     >
       {/* Left: Icon + Name */}
       <View style={styles.left}>
-        <View style={[styles.iconCircle, { backgroundColor: colors.surfaceSecondary }]}>
+        <View
+          style={[
+            styles.iconCircle,
+            {
+              backgroundColor: `${tintColor}14`,
+              borderColor: `${tintColor}20`,
+              borderWidth: 1,
+            },
+          ]}
+        >
           <Caption1
-            color="primary"
-            style={{ fontFamily: FontFamily.bold, letterSpacing: 0.5 }}
+            style={{
+              fontFamily: FontFamily.bold,
+              letterSpacing: 0.5,
+              color: tintColor,
+            }}
           >
             {asset.ticker.slice(0, 2)}
           </Caption1>
         </View>
         <View style={styles.nameContainer}>
           <Subhead
-            style={{ fontFamily: FontFamily.semibold, marginBottom: 2 }}
+            style={{ fontFamily: FontFamily.semibold, marginBottom: 1 }}
+            numberOfLines={1}
+          >
+            {asset.ticker}
+          </Subhead>
+          <Caption1
+            color="muted"
+            style={{ fontFamily: FontFamily.regular, fontSize: 12 }}
             numberOfLines={1}
           >
             {asset.name}
-          </Subhead>
-          <Caption1 color="muted" style={{ fontFamily: FontFamily.medium }}>
-            {asset.ticker}
           </Caption1>
         </View>
       </View>
@@ -77,10 +91,10 @@ export function AssetRow({
         <View style={styles.center}>
           <CDSSparkline
             data={asset.sparkline}
-            width={56}
-            height={24}
-            positive={asset.change >= 0}
-            showGradient={true}
+            width={60}
+            height={28}
+            positive={isPositive}
+            showGradient={false}
             smooth={true}
           />
         </View>
@@ -98,30 +112,47 @@ export function AssetRow({
               lineHeight: 20,
               fontFamily: FontFamily.monoMedium,
               color: colors.foreground,
-              marginBottom: 2,
+              marginBottom: 1,
             }}
           />
-          <AnimatedPnLNumber value={asset.changePercent} format="percent" size="sm" showArrow={false} successColor={colors.success} errorColor={colors.error} mutedColor={colors.muted} />
+          <View
+            style={[
+              styles.changePill,
+              {
+                backgroundColor: isPositive
+                  ? colors.successAlpha
+                  : asset.change < 0
+                    ? colors.errorAlpha
+                    : "transparent",
+              },
+            ]}
+          >
+            <AnimatedPnLNumber
+              value={asset.changePercent}
+              format="percent"
+              size="sm"
+              showArrow={false}
+              successColor={colors.success}
+              errorColor={colors.error}
+              mutedColor={colors.muted}
+            />
+          </View>
         </View>
         {showStar && (
           <AnimatedPressable
             variant="icon"
             onPress={handleStarPress}
-            hitSlop={{ top: Spacing[2], bottom: Spacing[2], left: Spacing[2], right: Spacing[2] }} // ✅ 8px (was 14, not divisible by 4)
-            style={[styles.starButton, { minWidth: 48, minHeight: 48 }]} // ✅ 48px minimum touch target (was 44)
+            hitSlop={{ top: Spacing[2], bottom: Spacing[2], left: Spacing[2], right: Spacing[2] }}
+            style={[styles.starButton, { minWidth: 44, minHeight: 44 }]}
             accessibilityLabel={`${isWatchlisted ? "Remove from" : "Add to"} watchlist`}
             accessibilityRole="button"
             accessibilityState={{ selected: isWatchlisted }}
-            accessibilityHint={isWatchlisted
-              ? "Removes this stock from your watchlist"
-              : "Adds this stock to your watchlist"
-            }
           >
-            <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+            <View style={{ alignItems: "center", justifyContent: "center", flex: 1 }}>
               <IconSymbol
                 name="star.fill"
-                size={20}
-                color={isWatchlisted ? colors.gold : colors.border}
+                size={18}
+                color={isWatchlisted ? colors.gold : `${colors.muted}40`}
               />
             </View>
           </AnimatedPressable>
@@ -135,9 +166,8 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: Spacing[4],
+    paddingVertical: 14,
     paddingHorizontal: Spacing[4],
-    borderBottomWidth: 0.5,
   },
   left: {
     flexDirection: "row",
@@ -147,7 +177,7 @@ const styles = StyleSheet.create({
   iconCircle: {
     width: 40,
     height: 40,
-    borderRadius: Radius.full,
+    borderRadius: Radius[300],
     alignItems: "center",
     justifyContent: "center",
     marginRight: Spacing[3],
@@ -161,10 +191,15 @@ const styles = StyleSheet.create({
   rightGroup: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: 8,
   },
   right: {
     alignItems: "flex-end",
+  },
+  changePill: {
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+    borderRadius: Radius.xs,
   },
   starButton: {
     padding: Spacing[1],

@@ -16,10 +16,12 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useThemeContext } from "@/lib/theme-provider";
 import { Subhead } from "@/components/ui/cds-typography";
+import { FontFamily } from "@/constants/typography";
 
-const THUMB_SIZE = 48; // ✅ Divisible by 4 (was 52)
-const TRACK_HEIGHT = 52;
-const COMPLETION_THRESHOLD = 0.9;
+const THUMB_SIZE = 48;
+const TRACK_HEIGHT = 56;
+const COMPLETION_THRESHOLD = 0.88;
+const THUMB_MARGIN = 4;
 
 interface SwipeToConfirmProps {
   label: string;
@@ -38,6 +40,7 @@ export function SwipeToConfirm({
 }: SwipeToConfirmProps) {
   const colors = useColors();
   const { colorScheme } = useThemeContext();
+  const isDark = colorScheme === "dark";
 
   const translateX = useSharedValue(0);
   const trackWidth = useSharedValue(0);
@@ -80,17 +83,17 @@ export function SwipeToConfirm({
     .onChange((event) => {
       if (isCompleted.value) return;
 
-      const maxX = trackWidth.value - THUMB_SIZE;
+      const maxX = trackWidth.value - THUMB_SIZE - THUMB_MARGIN * 2;
       if (maxX <= 0) return;
 
       const newX = clamp(event.translationX, 0, maxX);
       translateX.value = newX;
 
       const progress = newX / maxX;
-      labelOpacity.value = interpolate(progress, [0, 0.25], [1, 0]);
+      labelOpacity.value = interpolate(progress, [0, 0.3], [1, 0]);
     })
     .onEnd(() => {
-      const maxX = trackWidth.value - THUMB_SIZE;
+      const maxX = trackWidth.value - THUMB_SIZE - THUMB_MARGIN * 2;
       if (maxX <= 0) return;
 
       const progress = translateX.value / maxX;
@@ -98,17 +101,17 @@ export function SwipeToConfirm({
       if (progress >= COMPLETION_THRESHOLD) {
         isCompleted.value = true;
         translateX.value = withSpring(maxX, {
-          damping: 12,
-          stiffness: 200,
+          damping: 14,
+          stiffness: 180,
         });
         runOnJS(triggerSuccessHaptic)();
         runOnJS(handleConfirm)();
       } else {
         translateX.value = withSpring(0, {
-          damping: 20,
+          damping: 18,
           stiffness: 200,
         });
-        labelOpacity.value = withTiming(1, { duration: 200 });
+        labelOpacity.value = withTiming(1, { duration: 250 });
       }
     });
 
@@ -117,19 +120,17 @@ export function SwipeToConfirm({
   }));
 
   const fillStyle = useAnimatedStyle(() => ({
-    width: translateX.value + THUMB_SIZE / 2,
+    width: translateX.value + THUMB_SIZE / 2 + THUMB_MARGIN,
   }));
 
   const labelStyle = useAnimatedStyle(() => ({
     opacity: labelOpacity.value,
   }));
 
-  // Arrow opacity - shown when not completed
   const arrowOpacity = useDerivedValue(() => {
     return withTiming(isCompleted.value ? 0 : 1, { duration: 150 });
   });
 
-  // Checkmark opacity - shown when completed
   const checkmarkOpacity = useDerivedValue(() => {
     return withTiming(isCompleted.value ? 1 : 0, { duration: 150 });
   });
@@ -141,8 +142,12 @@ export function SwipeToConfirm({
           style={[
             styles.track,
             {
-              backgroundColor: colors.surfaceSecondary,
-              borderColor: colors.border,
+              backgroundColor: isDark
+                ? "rgba(255,255,255,0.04)"
+                : "rgba(0,0,0,0.03)",
+              borderColor: isDark
+                ? "rgba(255,255,255,0.06)"
+                : "rgba(0,0,0,0.06)",
             },
           ]}
           accessible={true}
@@ -151,7 +156,7 @@ export function SwipeToConfirm({
         >
           <Subhead
             style={{
-              fontWeight: "600",
+              fontFamily: FontFamily.medium,
               color: colors.muted,
               textAlign: "center",
             }}
@@ -176,8 +181,8 @@ export function SwipeToConfirm({
         style={[
           styles.track,
           {
-            backgroundColor: colorScheme === 'dark' ? activeColorAlpha : activeColorAlpha,
-            borderColor: colorScheme === 'dark' ? activeColor + '60' : activeColor + '40',
+            backgroundColor: activeColorAlpha,
+            borderColor: `${activeColor}${isDark ? "30" : "20"}`,
           },
         ]}
         onLayout={onTrackLayout}
@@ -185,7 +190,7 @@ export function SwipeToConfirm({
         <Animated.View
           style={[
             styles.fill,
-            { backgroundColor: activeColor + (colorScheme === 'dark' ? '50' : '30') },
+            { backgroundColor: `${activeColor}${isDark ? "30" : "18"}` },
             fillStyle,
           ]}
         />
@@ -193,9 +198,10 @@ export function SwipeToConfirm({
         <Animated.View style={[styles.labelContainer, labelStyle]}>
           <Subhead
             style={{
-              fontWeight: "600",
+              fontFamily: FontFamily.semibold,
               color: activeColor,
               textAlign: "center",
+              letterSpacing: 0.3,
             }}
           >
             {label}
@@ -203,12 +209,21 @@ export function SwipeToConfirm({
         </Animated.View>
 
         <GestureDetector gesture={panGesture}>
-          <Animated.View style={[styles.thumb, thumbStyle, { backgroundColor: colors.surface, shadowColor: colors.muted }]}>
+          <Animated.View
+            style={[
+              styles.thumb,
+              thumbStyle,
+              {
+                backgroundColor: activeColor,
+                shadowColor: activeColor,
+              },
+            ]}
+          >
             <Animated.View style={{ opacity: arrowOpacity }}>
-              <IconSymbol size={22} name="chevron.right" color={activeColor} />
+              <IconSymbol size={20} name="chevron.right.2" color="#FFFFFF" />
             </Animated.View>
             <Animated.View style={[styles.iconOverlay, { opacity: checkmarkOpacity }]}>
-              <IconSymbol size={22} name="checkmark" color={activeColor} />
+              <IconSymbol size={22} name="checkmark" color="#FFFFFF" />
             </Animated.View>
           </Animated.View>
         </GestureDetector>
@@ -245,16 +260,16 @@ const styles = StyleSheet.create({
   },
   thumb: {
     position: "absolute",
-    left: 0,
+    left: THUMB_MARGIN,
     width: THUMB_SIZE,
     height: THUMB_SIZE,
     borderRadius: THUMB_SIZE / 2,
     alignItems: "center",
     justifyContent: "center",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 4,
   },
   iconOverlay: {
     position: "absolute",

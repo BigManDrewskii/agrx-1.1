@@ -1,18 +1,8 @@
 /**
  * HomeHeader — Home screen header
  *
- * Shows greeting, streak badge (Pro), live badge (Pro), notifications bell with badge, and settings button.
- *
- * Usage:
- *   <HomeHeader
- *     greeting="Good morning"
- *     userName="Andreas"
- *     isPro={true}
- *     isLive={true}
- *     lastUpdated={1234567890}
- *     userStreak={7}
- *     unreadCount={3}
- *   />
+ * Clean, Robinhood-inspired header with avatar, greeting,
+ * contextual badges, and action buttons.
  */
 import React from "react";
 import { View, StyleSheet } from "react-native";
@@ -24,6 +14,7 @@ import { LiveBadge } from "@/components/ui/live-badge";
 import { useColors } from "@/hooks/use-colors";
 import { Caption1, Caption2, Footnote, Title2 } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
+import { Spacing, Radius } from "@/constants/spacing";
 
 interface HomeHeaderProps {
   greeting: string;
@@ -48,24 +39,46 @@ export function HomeHeader({
   const router = useRouter();
 
   return (
-    <Animated.View entering={FadeIn.duration(200)} style={styles.header}>
+    <Animated.View entering={FadeIn.duration(250)} style={styles.header}>
       <View style={styles.headerTop}>
+        {/* Left: Avatar + Greeting */}
         <View style={styles.headerLeft}>
-          <Footnote color="muted">{greeting}</Footnote>
-          <Title2>{userName}</Title2>
+          <View style={[styles.avatar, { backgroundColor: colors.primaryAlpha }]}>
+            <Caption1
+              style={{
+                fontFamily: FontFamily.bold,
+                color: colors.primary,
+                fontSize: 15,
+              }}
+            >
+              {userName.charAt(0)}
+            </Caption1>
+          </View>
+          <View style={styles.greetingText}>
+            <Footnote color="muted" style={{ letterSpacing: 0.2 }}>
+              {greeting}
+            </Footnote>
+            <Title2 style={{ fontSize: 20 }}>{userName}</Title2>
+          </View>
         </View>
+
+        {/* Right: Badges + Actions */}
         <View style={styles.headerActions}>
           {isPro && <LiveBadge isLive={isLive} lastUpdated={lastUpdated} />}
-          {isPro && (
+          {isPro && userStreak > 0 && (
             <View
-              style={styles.streakBadge}
+              style={[styles.streakBadge, { backgroundColor: colors.warningAlpha }]}
               accessibilityRole="text"
               accessibilityLabel={`${userStreak} day streak`}
             >
-              <IconSymbol name="flame.fill" size={14} color={colors.warning} />
+              <IconSymbol name="flame.fill" size={12} color={colors.warning} />
               <Caption1
-                color="warning"
-                style={{ fontFamily: FontFamily.bold, fontVariant: ["tabular-nums"] }}
+                style={{
+                  color: colors.warning,
+                  fontFamily: FontFamily.bold,
+                  fontSize: 11,
+                  fontVariant: ["tabular-nums"],
+                }}
               >
                 {userStreak}
               </Caption1>
@@ -84,17 +97,17 @@ export function HomeHeader({
           >
             <IconSymbol
               name="bell.fill"
-              size={18}
-              color={unreadCount > 0 ? colors.primary : colors.muted}
+              size={17}
+              color={unreadCount > 0 ? colors.foreground : colors.muted}
             />
             {unreadCount > 0 && (
               <View style={[styles.badge, { backgroundColor: colors.error }]}>
                 <Caption2
                   style={{
-                    color: colors.onPrimary,
+                    color: "#FFFFFF",
                     fontFamily: FontFamily.bold,
-                    fontSize: 9,
-                    lineHeight: 12,
+                    fontSize: 8,
+                    lineHeight: 10,
                   }}
                 >
                   {unreadCount > 9 ? "9+" : unreadCount}
@@ -113,7 +126,7 @@ export function HomeHeader({
             accessibilityHint="Open app settings"
             hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
           >
-            <IconSymbol name="gearshape.fill" size={18} color={colors.muted} />
+            <IconSymbol name="gearshape.fill" size={17} color={colors.muted} />
           </AnimatedPressable>
         </View>
       </View>
@@ -123,9 +136,9 @@ export function HomeHeader({
 
 const styles = StyleSheet.create({
   header: {
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 16,
+    paddingHorizontal: Spacing[4],
+    paddingTop: Spacing[2],
+    paddingBottom: Spacing[3],
   },
   headerTop: {
     flexDirection: "row",
@@ -133,7 +146,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   headerLeft: {
-    gap: 2,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing[3],
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  greetingText: {
+    gap: 1,
   },
   headerActions: {
     flexDirection: "row",
@@ -144,6 +169,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 3,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: Radius.full,
   },
   iconButton: {
     width: 36,
@@ -154,11 +182,11 @@ const styles = StyleSheet.create({
   },
   badge: {
     position: "absolute",
-    top: 1,
-    right: 1,
-    minWidth: 15,
-    height: 15,
-    borderRadius: 7.5,
+    top: 0,
+    right: 0,
+    minWidth: 14,
+    height: 14,
+    borderRadius: 7,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 3,

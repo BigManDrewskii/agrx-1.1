@@ -17,6 +17,7 @@ import Animated, { useSharedValue, useAnimatedStyle, withSpring, runOnJS } from 
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import * as Haptics from "expo-haptics";
 import { useColors } from "@/hooks/use-colors";
+import { useThemeContext } from "@/lib/theme-provider";
 import { Caption1, Caption2 } from "@/components/ui/typography";
 import { FontFamily } from "@/constants/typography";
 
@@ -26,7 +27,7 @@ interface CDSChipProps {
   disabled?: boolean;
   onPress?: () => void;
   testID?: string;
-  count?: number; // Optional badge count
+  count?: number;
 }
 
 export function CDSChip({
@@ -38,10 +39,11 @@ export function CDSChip({
   count,
 }: CDSChipProps) {
   const colors = useColors();
+  const { colorScheme } = useThemeContext();
+  const isDark = colorScheme === "dark";
   const scale = useSharedValue(1);
 
   const handlePress = () => {
-    // Haptic feedback
     if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
@@ -69,6 +71,11 @@ export function CDSChip({
     transform: [{ scale: scale.value }],
   }));
 
+  const selectedBg = isDark ? colors.primaryAlpha : colors.primary;
+  const selectedTextColor = isDark ? colors.primary : colors.onPrimary;
+  const unselectedBg = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)";
+  const unselectedBorder = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
+
   return (
     <GestureDetector gesture={tapGesture}>
       <Animated.View
@@ -77,16 +84,17 @@ export function CDSChip({
           styles.chip,
           animatedStyle,
           {
-            backgroundColor: selected ? colors.primary : colors.surface,
-            borderColor: selected ? colors.primary : colors.border,
-            opacity: disabled ? 0.6 : 1,
+            backgroundColor: selected ? selectedBg : unselectedBg,
+            borderColor: selected ? (isDark ? colors.primary + "40" : colors.primary) : unselectedBorder,
+            opacity: disabled ? 0.5 : 1,
           },
         ]}
       >
         <Caption1
           style={{
-            color: selected ? colors.onPrimary : colors.foreground,
-            fontFamily: selected ? FontFamily.bold : FontFamily.medium,
+            color: selected ? selectedTextColor : colors.foreground,
+            fontFamily: selected ? FontFamily.semibold : FontFamily.medium,
+            letterSpacing: 0.1,
           }}
         >
           {label}
@@ -94,8 +102,9 @@ export function CDSChip({
         {count !== undefined && (
           <Caption2
             style={{
-              color: selected ? colors.onPrimary : colors.muted,
+              color: selected ? selectedTextColor : colors.muted,
               fontFamily: FontFamily.medium,
+              opacity: 0.7,
             }}
           >
             {count}
@@ -111,10 +120,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
+    paddingVertical: 7,
+    borderRadius: 10,
     borderWidth: 1,
-    gap: 6,
+    gap: 5,
   },
 });
-

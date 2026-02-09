@@ -20,13 +20,16 @@ export function useColors(colorSchemeOverride?: ColorScheme): ThemeColorPalette 
     // CDS semantic colors
     foreground: cdsTheme.color.fg,
     background: cdsTheme.color.bg,
+    surfaceSubtle: agrxColors.surfaceSubtle,
     surface: cdsTheme.color.bgAlternate,
     surfaceSecondary: cdsTheme.color.bgTertiary,
+    surfaceElevated: agrxColors.surfaceElevated,
     primary: cdsTheme.color.fgPrimary,
     primaryAlpha: cdsTheme.color.fgPrimary + "20", // Add transparency
     muted: cdsTheme.color.fgMuted,
     onPrimary: cdsTheme.color.bgInverse,
-    border: agrxColors.border, // Use AGRX border color for now
+    border: agrxColors.border,
+    borderSubtle: agrxColors.borderSubtle,
 
     // AGRX brand colors (preserve for trading interface)
     success: agrxColors.success,

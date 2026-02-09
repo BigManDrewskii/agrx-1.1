@@ -1,16 +1,8 @@
 /**
  * PortfolioHero — Home screen portfolio hero
  *
- * Shows total balance, P&L, sparkline (Pro), and time period selectors (Pro).
- *
- * Usage:
- *   <PortfolioHero
- *     totalAccountValue={10000}
- *     portfolioPnl={500}
- *     portfolioPnlPercent={5}
- *     isPro={true}
- *     portfolioSparkline={[1, 2, 3, 4, 5]}
- *   />
+ * Robinhood-inspired centered layout with prominent balance,
+ * PnL pill, and sparkline with time period selectors (Pro).
  */
 import React from "react";
 import { View, StyleSheet } from "react-native";
@@ -22,6 +14,7 @@ import { AnimatedNumber, AnimatedPnLNumber } from "@/components/ui/animated-numb
 import { Caption1 } from "@/components/ui/typography";
 import { Footnote } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
+import { Spacing, Radius } from "@/constants/spacing";
 
 interface PortfolioHeroProps {
   totalAccountValue: number;
@@ -42,25 +35,32 @@ export function PortfolioHero({
   const isPositive = portfolioPnl >= 0;
 
   return (
-    <Animated.View entering={FadeInDown.duration(250).delay(60)} style={styles.portfolioHero}>
-      <Footnote color="muted" style={{ letterSpacing: 0.3 }}>
+    <Animated.View entering={FadeInDown.duration(300).delay(60)} style={styles.portfolioHero}>
+      {/* Label */}
+      <Footnote color="muted" style={styles.label}>
         Total Balance
       </Footnote>
+
+      {/* Big number */}
       <AnimatedNumber
         value={totalAccountValue}
         prefix="€"
         decimals={2}
-        style={{
-          fontSize: 34,
-          lineHeight: 42,
-          fontFamily: FontFamily.monoBold,
-          color: colors.foreground,
-          textShadowColor: isPositive ? colors.successAlpha : colors.errorAlpha,
-          textShadowOffset: { width: 0, height: 0 },
-          textShadowRadius: 16,
-        }}
+        style={[
+          styles.bigNumber,
+          { color: colors.foreground },
+        ]}
       />
-      <View style={styles.pnlRow}>
+
+      {/* PnL pill row */}
+      <View
+        style={[
+          styles.pnlPill,
+          {
+            backgroundColor: isPositive ? colors.successAlpha : colors.errorAlpha,
+          },
+        ]}
+      >
         <AnimatedPnLNumber
           value={portfolioPnl}
           format="currency"
@@ -70,7 +70,7 @@ export function PortfolioHero({
           errorColor={colors.error}
           mutedColor={colors.muted}
         />
-        <Footnote color="muted"> · </Footnote>
+        <Footnote style={{ color: colors.muted, marginHorizontal: 4 }}>·</Footnote>
         <AnimatedPnLNumber
           value={portfolioPnlPercent}
           format="percent"
@@ -80,7 +80,6 @@ export function PortfolioHero({
           errorColor={colors.error}
           mutedColor={colors.muted}
         />
-        <Footnote color="muted"> all time</Footnote>
       </View>
 
       {/* Sparkline + time selectors — Pro only */}
@@ -90,7 +89,7 @@ export function PortfolioHero({
             <CDSSparkline
               data={portfolioSparkline}
               width={320}
-              height={44}
+              height={48}
               positive={isPositive}
               showGradient={true}
               smooth={true}
@@ -107,10 +106,11 @@ export function PortfolioHero({
                 variant="chip"
                 style={[
                   styles.timePeriodButton,
-                  i === 0 && { backgroundColor: colors.primaryAlpha },
+                  i === 0 && {
+                    backgroundColor: colors.primaryAlpha,
+                  },
                 ]}
                 accessibilityLabel={`${period} performance`}
-                accessibilityHint={`View portfolio ${period.toLowerCase()} performance`}
                 accessibilityState={{ selected: i === 0 }}
                 accessibilityRole="button"
               >
@@ -134,28 +134,43 @@ export function PortfolioHero({
 
 const styles = StyleSheet.create({
   portfolioHero: {
-    paddingHorizontal: 16,
-    paddingTop: 4,
-    paddingBottom: 16,
+    paddingHorizontal: Spacing[4],
+    paddingTop: Spacing[1],
+    paddingBottom: Spacing[5],
     alignItems: "center",
   },
-  pnlRow: {
+  label: {
+    letterSpacing: 0.5,
+    textTransform: "uppercase" as const,
+    fontSize: 11,
+    marginBottom: 4,
+  },
+  bigNumber: {
+    fontSize: 38,
+    lineHeight: 46,
+    fontFamily: FontFamily.monoBold,
+    letterSpacing: -0.5,
+  },
+  pnlPill: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 4,
+    marginTop: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: Radius.full,
   },
   sparklineContainer: {
-    marginTop: 14,
+    marginTop: 16,
     alignItems: "center",
   },
   timePeriodRow: {
     flexDirection: "row",
-    marginTop: 10,
+    marginTop: 12,
     gap: 4,
   },
   timePeriodButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 5,
-    borderRadius: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: Radius.full,
   },
 });

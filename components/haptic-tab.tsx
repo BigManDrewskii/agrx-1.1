@@ -2,8 +2,15 @@ import React from "react";
 import { BottomTabBarButtonProps } from "@react-navigation/bottom-tabs";
 import { PlatformPressable } from "@react-navigation/elements";
 import * as Haptics from "expo-haptics";
-import Animated, { useSharedValue, useAnimatedStyle, withSpring } from "react-native-reanimated";
-import { View } from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  Easing,
+} from "react-native-reanimated";
+import { View, StyleSheet } from "react-native";
+import { useColors } from "@/hooks/use-colors";
 
 /**
  * HapticTab — Tab bar button with haptic feedback
@@ -19,19 +26,17 @@ export function HapticTab(props: BottomTabBarButtonProps) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
 
-    // Scale down slightly on press
-    scale.value = withSpring(0.92, {
+    scale.value = withSpring(0.9, {
       damping: 15,
-      stiffness: 180,
+      stiffness: 200,
     });
 
     props.onPressIn?.(ev);
   };
 
   const handlePressOut = () => {
-    // Scale back to normal
     scale.value = withSpring(1, {
-      damping: 15,
+      damping: 12,
       stiffness: 180,
     });
   };
@@ -52,15 +57,10 @@ export function HapticTab(props: BottomTabBarButtonProps) {
 }
 
 /**
- * AnimatedTabIcon — Tab icon with scale animation for active state
+ * AnimatedTabIcon — Tab icon with scale animation + active dot indicator
  *
- * Adds a subtle scale animation (1.0 → 1.1) when the tab becomes active.
+ * When active: icon scales up slightly and a small dot appears beneath.
  * Uses spring physics for smooth, natural-feeling animation.
- *
- * Usage in tabBarIcon:
- *   <AnimatedTabIcon focused={focused} color={color}>
- *     <IconSymbol size={24} name="house.fill" color={color} />
- *   </AnimatedTabIcon>
  */
 export function AnimatedTabIcon({
   focused,
@@ -69,19 +69,58 @@ export function AnimatedTabIcon({
   focused: boolean;
   children: React.ReactNode;
 }) {
-  const scale = useSharedValue(focused ? 1.05 : 1);
+  const colors = useColors();
+  const scale = useSharedValue(focused ? 1.08 : 1);
+  const dotOpacity = useSharedValue(focused ? 1 : 0);
+  const dotScale = useSharedValue(focused ? 1 : 0.3);
 
-  // Animate scale when focused state changes
   React.useEffect(() => {
-    scale.value = withSpring(focused ? 1.05 : 1, {
-      damping: 12,
-      stiffness: 150,
+    scale.value = withSpring(focused ? 1.08 : 1, {
+      damping: 14,
+      stiffness: 160,
     });
-  }, [focused, scale]);
+    dotOpacity.value = withTiming(focused ? 1 : 0, {
+      duration: 200,
+      easing: Easing.out(Easing.cubic),
+    });
+    dotScale.value = withSpring(focused ? 1 : 0.3, {
+      damping: 14,
+      stiffness: 200,
+    });
+  }, [focused, scale, dotOpacity, dotScale]);
 
-  const animatedStyle = useAnimatedStyle(() => ({
+  const iconStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
 
-  return <Animated.View style={animatedStyle}>{children}</Animated.View>;
+  const dotStyle = useAnimatedStyle(() => ({
+    opacity: dotOpacity.value,
+    transform: [{ scale: dotScale.value }],
+  }));
+
+  return (
+    <View style={tabIconStyles.wrapper}>
+      <Animated.View style={iconStyle}>{children}</Animated.View>
+      <Animated.View
+        style={[
+          tabIconStyles.dot,
+          { backgroundColor: colors.primary },
+          dotStyle,
+        ]}
+      />
+    </View>
+  );
 }
+
+const tabIconStyles = StyleSheet.create({
+  wrapper: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  dot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    marginTop: 3,
+  },
+});
