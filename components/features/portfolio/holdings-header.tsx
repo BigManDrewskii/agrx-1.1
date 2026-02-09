@@ -42,7 +42,7 @@ export function HoldingsHeader({ hasTrades }: HoldingsHeaderProps) {
       {hasTrades && (
         <AnimatedPressable
           variant="chip"
-          onPress={() => router.push("/trade-history" as any)}
+          onPress={() => router.push("/trade-history")}
           style={[styles.historyChip, { backgroundColor: colors.surfaceSecondary }]}
           accessibilityLabel="View trade history"
           accessibilityHint="Opens your trade history"

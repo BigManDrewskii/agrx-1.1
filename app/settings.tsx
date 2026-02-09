@@ -221,7 +221,7 @@ export default function SettingsScreen() {
           />
           <AnimatedPressable
             variant="card"
-            onPress={() => router.push("/price-alerts" as any)}
+            onPress={() => router.push("/price-alerts")}
             style={[
               styles.row,
               {
@@ -240,7 +240,7 @@ export default function SettingsScreen() {
           </AnimatedPressable>
           <AnimatedPressable
             variant="card"
-            onPress={() => router.push("/notification-history" as any)}
+            onPress={() => router.push("/notification-history")}
             style={[
               styles.row,
               {

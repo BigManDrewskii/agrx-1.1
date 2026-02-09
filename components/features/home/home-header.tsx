@@ -74,7 +74,7 @@ export function HomeHeader({
           )}
           <AnimatedPressable
             variant="icon"
-            onPress={() => router.push("/notification-history" as any)}
+            onPress={() => router.push("/notification-history")}
             style={[
               styles.iconButton,
               { backgroundColor: colors.surfaceSecondary },
@@ -105,7 +105,7 @@ export function HomeHeader({
           </AnimatedPressable>
           <AnimatedPressable
             variant="icon"
-            onPress={() => router.push("/settings" as any)}
+            onPress={() => router.push("/settings")}
             style={[
               styles.iconButton,
               { backgroundColor: colors.surfaceSecondary },

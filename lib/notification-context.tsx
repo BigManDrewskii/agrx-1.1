@@ -253,6 +253,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
   const notificationListener = useRef<EventSubscription | undefined>(undefined);
   const responseListener = useRef<EventSubscription | undefined>(undefined);
+  const lastRegisteredCombo = useRef<string>(""); // Track last registered device/token combo to prevent duplicate registrations
 
   // tRPC mutations
   const registerMutation = trpc.notifications.registerDevice.useMutation();
@@ -327,23 +328,42 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   useEffect(() => {
     if (!deviceId || !pushToken) return;
 
-    registerMutation.mutate(
-      {
-        deviceId,
-        pushToken,
-        platform: Platform.OS === "web" ? "web" : Platform.OS === "ios" ? "ios" : "android",
-      },
-      {
-        onSuccess: (result) => {
-          if (result.success) {
-            console.log("[Notifications] Device registered with server");
-          }
+    // Create a unique combo string to track if we've already registered this device/token pair
+    const combo = `${deviceId}:${pushToken}`;
+
+    // Skip if we've already registered this exact combo (prevents duplicate registrations)
+    if (lastRegisteredCombo.current === combo) {
+      return;
+    }
+
+    // Add a small delay to debounce rapid changes (e.g., during app initialization)
+    const timeoutId = setTimeout(() => {
+      lastRegisteredCombo.current = combo;
+
+      registerMutation.mutate(
+        {
+          deviceId,
+          pushToken,
+          platform: Platform.OS === "web" ? "web" : Platform.OS === "ios" ? "ios" : "android",
         },
-        onError: (error) => {
-          console.warn("[Notifications] Registration failed:", error.message);
-        },
-      }
-    );
+        {
+          onSuccess: (result) => {
+            if (result.success) {
+              console.log("[Notifications] Device registered with server");
+            }
+          },
+          onError: (error) => {
+            console.warn("[Notifications] Registration failed:", error.message);
+            // Clear the combo on error so we can retry
+            lastRegisteredCombo.current = "";
+          },
+        }
+      );
+    }, 500); // 500ms debounce delay
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [deviceId, pushToken]);
 
   // ── Sync alerts from server ──
@@ -415,7 +435,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         });
 
         if (data?.type === "price_alert" && data?.stockId) {
-          router.push(`/asset/${data.stockId}` as any);
+          router.push(`/asset/${data.stockId}`);
         }
       }
     );

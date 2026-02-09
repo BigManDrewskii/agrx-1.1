@@ -201,7 +201,7 @@ export default function NotificationHistoryScreen() {
       }
       // Navigate to stock if applicable
       if (item.stockId) {
-        router.push(`/asset/${item.stockId}` as any);
+        router.push(`/asset/${item.stockId}`);
       }
     },
     [markAsRead, router]
@@ -391,7 +391,7 @@ export default function NotificationHistoryScreen() {
           title="No Notifications Yet"
           message="When your price alerts trigger or you receive updates, they'll appear here."
           actionLabel="Set Up Price Alerts"
-          onAction={() => router.push("/price-alerts" as any)}
+          onAction={() => router.push("/price-alerts")}
         />
       ) : (
         <FlatList

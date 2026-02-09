@@ -267,11 +267,19 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   // ── Persist state changes ─────────────────────────────────────────
   useEffect(() => {
     if (!state.isLoaded) return;
-    AsyncStorage.setItem(STORAGE_KEY_BALANCE, JSON.stringify(state.balance));
-    AsyncStorage.setItem(STORAGE_KEY_HOLDINGS, JSON.stringify(state.holdings));
-    AsyncStorage.setItem(STORAGE_KEY_TRADES, JSON.stringify(state.trades));
-    AsyncStorage.setItem(STORAGE_KEY_XP, JSON.stringify(state.xp));
-    AsyncStorage.setItem(STORAGE_KEY_STREAK, JSON.stringify(state.streak));
+
+    // Batch all AsyncStorage writes into a single operation for better performance
+    const keyValuePairPairs: [string, string][] = [
+      [STORAGE_KEY_BALANCE, JSON.stringify(state.balance)],
+      [STORAGE_KEY_HOLDINGS, JSON.stringify(state.holdings)],
+      [STORAGE_KEY_TRADES, JSON.stringify(state.trades)],
+      [STORAGE_KEY_XP, JSON.stringify(state.xp)],
+      [STORAGE_KEY_STREAK, JSON.stringify(state.streak)],
+    ];
+
+    AsyncStorage.multiSet(keyValuePairPairs).catch((error) => {
+      console.warn("[DemoProvider] Failed to persist state:", error);
+    });
   }, [state.isLoaded, state.balance, state.holdings, state.trades, state.xp, state.streak]);
 
   // ── Execute Trade ─────────────────────────────────────────────────

@@ -239,7 +239,7 @@ export default function TradeHistoryScreen() {
 
   const handleTradePress = useCallback(
     (trade: DemoTrade) => {
-      router.push(`/asset/${trade.stockId}` as any);
+      router.push(`/asset/${trade.stockId}`);
     },
     [router]
   );
@@ -513,7 +513,7 @@ export default function TradeHistoryScreen() {
           title="No Trades Yet"
           message="Your executed trades will appear here with date grouping and profit/loss tracking."
           actionLabel="Start Trading"
-          onAction={() => router.push("/(tabs)/trade" as any)}
+          onAction={() => router.push("/(tabs)/trade")}
         />
       ) : (
         <FlatList

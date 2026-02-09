@@ -4,7 +4,7 @@
  * Provides wrapper functions around Expo Router to eliminate `as any` type assertions
  * and improve type safety throughout the app.
  */
-import { useRouter } from "expo-router";
+import { useRouter, type Router } from "expo-router";
 
 type NavigateToTradeOptions = {
   stockId?: string;
@@ -39,7 +39,7 @@ export function useNavigation() {
           params: { stockId: options.stockId, mode: options.mode }
         } as any);
       } else {
-        router.push("/(tabs)/trade" as any);
+        router.push("/(tabs)/trade");
       }
     },
 
@@ -48,35 +48,35 @@ export function useNavigation() {
      * @param options.stockId - Stock ID to view
      */
     goToAsset: (options: NavigateToAssetOptions) => {
-      router.push(`/asset/${options.stockId}` as any);
+      router.push(`/asset/${options.stockId}`);
     },
 
     /**
      * Navigate to settings screen
      */
     goToSettings: () => {
-      router.push("/settings" as any);
+      router.push("/settings");
     },
 
     /**
      * Navigate to price alerts screen
      */
     goToPriceAlerts: () => {
-      router.push("/price-alerts" as any);
+      router.push("/price-alerts");
     },
 
     /**
      * Navigate to notification history screen
      */
     goToNotificationHistory: () => {
-      router.push("/notification-history" as any);
+      router.push("/notification-history");
     },
 
     /**
      * Navigate to trade history screen
      */
     goToTradeHistory: () => {
-      router.push("/trade-history" as any);
+      router.push("/trade-history");
     },
 
     /**
