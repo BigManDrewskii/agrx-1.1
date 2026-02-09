@@ -91,6 +91,20 @@ export default function SettingsScreen() {
     [],
   );
 
+  // ── URL handler ──
+  const handleOpenURL = useCallback(async (url: string) => {
+    try {
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        console.warn(`Cannot open URL: ${url}`);
+      }
+    } catch (error) {
+      console.warn('Error opening URL:', error);
+    }
+  }, []);
+
   // ── Theme options ──
   const themeOptions: { label: string; value: ThemePreference; icon: string }[] = [
     { label: "System", value: "system", icon: "📱" },
@@ -313,7 +327,7 @@ export default function SettingsScreen() {
             label="Terms of Service"
             value=""
             chevron
-            onPress={() => {}}
+            onPress={() => handleOpenURL("https://agrx.io/terms")}
             colors={colors}
             isLast={false}
           />
@@ -321,7 +335,7 @@ export default function SettingsScreen() {
             label="Privacy Policy"
             value=""
             chevron
-            onPress={() => {}}
+            onPress={() => handleOpenURL("https://agrx.io/privacy")}
             colors={colors}
             isLast={false}
           />
@@ -329,7 +343,7 @@ export default function SettingsScreen() {
             label="Open Source Licenses"
             value=""
             chevron
-            onPress={() => {}}
+            onPress={() => handleOpenURL("https://agrx.io/licenses")}
             colors={colors}
             isLast={true}
           />

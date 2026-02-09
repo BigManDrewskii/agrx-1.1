@@ -13,7 +13,7 @@ import {
   Keyboard,
 } from "react-native";
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { SearchBarWithClear } from "@/components/features/markets";
 import { BuySellToggle, AmountInput, QuickAmountChips, OrderPreview, TradeSuccessScreen } from "@/components/features/trading";
@@ -57,6 +57,7 @@ interface SelectedStock {
 export default function TradeScreen() {
   const colors = useColors();
   const router = useRouter();
+  const params = useLocalSearchParams();
   const { isSimple, isPro } = useViewMode();
   const [search, setSearch] = useState("");
   const [selectedAsset, setSelectedAsset] = useState<SelectedStock | null>(null);
@@ -68,6 +69,19 @@ export default function TradeScreen() {
   const amountInputRef = useRef<TextInput>(null);
   const { stocks, isLoading, isLive, lastUpdated } = useStockQuotes();
   const { executeTrade, state: demoState, getHolding } = useDemo();
+
+  // Handle URL params for stockId and mode from asset detail navigation
+  React.useEffect(() => {
+    if (params.stockId && stocks.length > 0) {
+      const stock = stocks.find(s => s.id === params.stockId);
+      if (stock) {
+        setSelectedAsset(stock);
+      }
+    }
+    if (params.mode === "buy" || params.mode === "sell") {
+      setIsBuy(params.mode === "buy");
+    }
+  }, [params.stockId, params.mode, stocks]);
 
   // Parse amount from text input
   const parsedAmount = useMemo(() => {

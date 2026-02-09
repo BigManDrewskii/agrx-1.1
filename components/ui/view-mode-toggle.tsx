@@ -51,7 +51,10 @@ export function ViewModeToggle({ compact = false }: ViewModeToggleProps) {
               compact && styles.segmentCompact,
               isActive && [
                 styles.segmentActive,
-                { backgroundColor: colors.surface },
+                {
+                  backgroundColor: colors.surface,
+                  shadowColor: colors.border,
+                },
               ],
             ]}
             accessibilityLabel={m.label}
@@ -99,7 +102,6 @@ const styles = StyleSheet.create({
     borderRadius: Radius[200],
   },
   segmentActive: {
-    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.08,
     shadowRadius: 2,

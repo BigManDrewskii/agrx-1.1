@@ -107,7 +107,7 @@ export function ShareCardModal({
         </View>
 
         {/* Card Preview */}
-        <View style={styles.cardWrapper}>
+        <View style={[styles.cardWrapper, { shadowColor: colors.border }]}>
           <ShareCard ref={cardRef} data={cardData} />
         </View>
 
@@ -221,7 +221,6 @@ const styles = StyleSheet.create({
   cardWrapper: {
     alignItems: "center",
     // Slight shadow for the card preview
-    shadowColor: "#000",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.4,
     shadowRadius: 24,

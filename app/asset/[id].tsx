@@ -527,7 +527,10 @@ export default function AssetDetailScreen() {
       <View style={[styles.ctaContainer, { backgroundColor: colors.background, borderTopColor: colors.border }]}>
         <AnimatedPressable
           variant="button"
-          onPress={() => router.push("/(tabs)/trade" as any)}
+          onPress={() => router.push({
+            pathname: "/(tabs)/trade",
+            params: { stockId: id, mode: "buy" }
+          } as any)}
           style={[
             styles.ctaButton,
             { backgroundColor: colors.success },
@@ -537,7 +540,10 @@ export default function AssetDetailScreen() {
         </AnimatedPressable>
         <AnimatedPressable
           variant="button"
-          onPress={() => router.push("/(tabs)/trade" as any)}
+          onPress={() => router.push({
+            pathname: "/(tabs)/trade",
+            params: { stockId: id, mode: "sell" }
+          } as any)}
           style={[
             styles.ctaButton,
             { backgroundColor: colors.error },

@@ -207,17 +207,17 @@ export default function TestCDSScreen() {
             AGRX Brand Colors (Preserved)
           </RNText>
           <View style={[styles.colorBox, { backgroundColor: colors.success }]}>
-            <RNText style={styles.colorText}>
+            <RNText style={[styles.colorText, { color: colors.onPrimary || "#FFFFFF" }]}>
               Success: {colors.success}
             </RNText>
           </View>
           <View style={[styles.colorBox, { backgroundColor: colors.error }]}>
-            <RNText style={styles.colorText}>
+            <RNText style={[styles.colorText, { color: colors.onPrimary || "#FFFFFF" }]}>
               Error: {colors.error}
             </RNText>
           </View>
           <View style={[styles.colorBox, { backgroundColor: colors.gold }]}>
-            <RNText style={styles.colorText}>
+            <RNText style={[styles.colorText, { color: colors.onPrimary || "#FFFFFF" }]}>
               Gold: {colors.gold}
             </RNText>
           </View>
@@ -229,17 +229,17 @@ export default function TestCDSScreen() {
             CDS Semantic Colors
           </RNText>
           <View style={[styles.colorBox, { backgroundColor: colors.primary }]}>
-            <RNText style={styles.colorText}>
+            <RNText style={[styles.colorText, { color: colors.onPrimary || "#FFFFFF" }]}>
               Primary: {colors.primary}
             </RNText>
           </View>
           <View style={[styles.colorBox, { backgroundColor: colors.muted }]}>
-            <RNText style={styles.colorText}>
+            <RNText style={[styles.colorText, { color: colors.onPrimary || "#FFFFFF" }]}>
               Muted: {colors.muted}
             </RNText>
           </View>
           <View style={[styles.colorBox, { backgroundColor: colors.border }]}>
-            <RNText style={styles.colorText}>
+            <RNText style={[styles.colorText, { color: colors.onPrimary || "#FFFFFF" }]}>
               Border: {colors.border}
             </RNText>
           </View>
@@ -297,7 +297,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   colorText: {
-    color: "#FFFFFF",
     fontSize: 14,
     fontWeight: "500",
   },
