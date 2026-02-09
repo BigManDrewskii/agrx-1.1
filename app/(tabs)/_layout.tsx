@@ -26,31 +26,37 @@ export default function TabLayout() {
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarLabelStyle: {
-          fontSize: 11,
+          fontSize: 12,
           fontFamily: FontFamily.semibold,
           letterSpacing: 0.2,
+          marginTop: 4,
         },
         tabBarStyle: {
-          // Floating container margins
-          marginHorizontal: Spacing[3], // 12px horizontal margin
-          marginBottom: Spacing[2], // 8px vertical margin
+          // Floating container margins - increased for better floating effect
+          marginHorizontal: Spacing[4], // 16px horizontal margin
+          marginBottom: Spacing[3], // 12px vertical margin
 
-          // Dimensions
-          height: 60, // Increased from 56
-          paddingTop: Spacing[2], // 8px (was hardcoded)
+          // Dimensions - increased for breathing room
+          height: 70,
+          paddingTop: Spacing[3], // 12px
           paddingBottom: bottomPadding,
 
-          // Styling
-          backgroundColor: colors.surface,
-          borderTopWidth: 0, // Remove border
-          borderRadius: Radius[500], // 24px corners
+          // Frosted glass background
+          backgroundColor: colorScheme === 'dark'
+            ? 'rgba(30, 30, 30, 0.7)'
+            : 'rgba(255, 255, 255, 0.7)',
+          ...(Platform.OS === 'ios' && {
+            backdropBlur: 20,
+          }),
+          borderTopWidth: 0,
+          borderRadius: Radius[500],
 
-          // Shadow for floating effect
+          // Enhanced shadow for better floating effect
           shadowColor: '#000',
-          shadowOffset: { width: 0, height: 8 },
-          shadowOpacity: 0.15,
-          shadowRadius: 16,
-          elevation: 12,
+          shadowOffset: { width: 0, height: 12 },
+          shadowOpacity: 0.2,
+          shadowRadius: 24,
+          elevation: 16,
         },
       }}
     >
