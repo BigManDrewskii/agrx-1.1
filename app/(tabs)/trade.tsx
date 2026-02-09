@@ -520,12 +520,7 @@ export default function TradeScreen() {
           renderItem={({ item, index }) => (
             <Animated.View entering={FadeInDown.duration(250).delay(index * 40)}>
               <AssetRow
-                id={item.id}
-                name={item.name}
-                ticker={item.ticker}
-                price={item.price}
-                changePercent={item.changePercent}
-                sparkline={item.sparkline}
+                asset={item}
                 onPress={() => {
                   setSelectedAsset(item);
                   setAmountText("");
