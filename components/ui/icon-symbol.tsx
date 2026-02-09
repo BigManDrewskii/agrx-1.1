@@ -46,6 +46,11 @@ const ICON_LABELS: Partial<Record<IconSymbolName, string>> = {
   "percent": "Percent",
   "line.3.horizontal.decrease": "Filter",
   "arrow.up.arrow.down": "Swap",
+  "delete.left": "Backspace",
+  "chevron.right.2": "Double chevron right",
+  "chart.xyaxis.line": "Chart",
+  "creditcard": "Credit card",
+  "banknote": "Banknote",
 };
 
 /**
@@ -88,6 +93,11 @@ const MAPPING = {
   "percent": "percent",
   "line.3.horizontal.decrease": "filter-list",
   "arrow.up.arrow.down": "swap-vert",
+  "delete.left": "backspace",
+  "chevron.right.2": "keyboard-double-arrow-right",
+  "chart.xyaxis.line": "show-chart",
+  "creditcard": "credit-card",
+  "banknote": "account-balance-wallet",
 } as IconMapping;
 
 /**

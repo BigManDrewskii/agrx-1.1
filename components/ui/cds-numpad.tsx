@@ -1,14 +1,14 @@
 /**
- * CDSNumpad — Numeric keypad following CDS design patterns
+ * CDSNumpad — Robinhood-inspired numeric keypad
  *
- * Clean numeric input pad with haptic feedback and CDS styling.
- * Perfect for amount entry in trading flows.
+ * Clean, minimal number pad with transparent key backgrounds,
+ * haptic feedback, and smooth press animations.
+ * Keys are large touch targets with no visible borders.
  *
  * Usage:
  *   <CDSNumpad
  *     onKeyPress={(key) => handleInput(key)}
  *     onDelete={() => deleteChar()}
- *     onSubmit={() => submit()}
  *   />
  */
 import React from "react";
@@ -17,9 +17,8 @@ import Animated, { useSharedValue, useAnimatedStyle, withSpring } from "react-na
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import * as Haptics from "expo-haptics";
 import { useColors } from "@/hooks/use-colors";
-import { Title2 } from "@/components/ui/cds-typography";
+import { useThemeContext } from "@/lib/theme-provider";
 import { FontFamily } from "@/constants/typography";
-import { Spacing, Radius } from "@/constants/spacing";
 import { IconSymbol } from "./icon-symbol";
 
 export type NumpadKey =
@@ -27,13 +26,11 @@ export type NumpadKey =
   | "4" | "5" | "6"
   | "7" | "8" | "9"
   | "." | "0"
-  | "delete" | "submit";
+  | "delete";
 
 interface CDSNumpadProps {
   onKeyPress: (key: string) => void;
   onDelete?: () => void;
-  onSubmit?: () => void;
-  submitText?: string;
   disabled?: boolean;
 }
 
@@ -47,11 +44,11 @@ const NUMPAD_LAYOUT: NumpadKey[][] = [
 export function CDSNumpad({
   onKeyPress,
   onDelete,
-  onSubmit,
-  submitText = "Done",
   disabled = false,
 }: CDSNumpadProps) {
   const colors = useColors();
+  const { colorScheme } = useThemeContext();
+  const isDark = colorScheme === "dark";
 
   const handleKeyPress = (key: NumpadKey) => {
     if (disabled) return;
@@ -62,73 +59,81 @@ export function CDSNumpad({
 
     if (key === "delete") {
       onDelete?.();
-    } else if (key === "submit") {
-      onSubmit?.();
     } else {
       onKeyPress(key);
     }
   };
 
-  const NumpadKey = ({ keyValue, index }: { keyValue: NumpadKey; index: number }) => {
+  const NumpadKeyButton = ({ keyValue }: { keyValue: NumpadKey }) => {
     const scale = useSharedValue(1);
+    const bgOpacity = useSharedValue(0);
 
     const animatedStyle = useAnimatedStyle(() => ({
       transform: [{ scale: scale.value }],
+    }));
+
+    const bgStyle = useAnimatedStyle(() => ({
+      opacity: bgOpacity.value,
     }));
 
     const tapGesture = Gesture.Tap()
       .enabled(!disabled)
       .onBegin(() => {
         "worklet";
-        scale.value = withSpring(0.92, { damping: 15, stiffness: 180 });
+        scale.value = withSpring(0.9, { damping: 15, stiffness: 250 });
+        bgOpacity.value = withSpring(1, { damping: 15, stiffness: 250 });
       })
       .onFinalize(() => {
         "worklet";
-        scale.value = withSpring(1, { damping: 15, stiffness: 180 });
+        scale.value = withSpring(1, { damping: 12, stiffness: 200 });
+        bgOpacity.value = withSpring(0, { damping: 12, stiffness: 200 });
       })
       .onEnd(() => {
         "worklet";
         handleKeyPress(keyValue);
       });
 
-    const isActionKey = keyValue === "delete" || keyValue === "submit";
-    const isSubmit = keyValue === "submit";
+    const isDelete = keyValue === "delete";
 
     return (
-      <GestureDetector key={index} gesture={tapGesture}>
+      <GestureDetector gesture={tapGesture}>
         <Animated.View
           style={[
             styles.key,
             animatedStyle,
-            isActionKey && { backgroundColor: "transparent" },
-            isSubmit && { backgroundColor: colors.primary },
-            !isActionKey && !isSubmit && {
-              backgroundColor: disabled
-                ? colors.surfaceSecondary + "33"
-                : colors.surfaceSecondary + "33"
-            },
             disabled && styles.keyDisabled,
           ]}
         >
-          {keyValue === "delete" ? (
+          {/* Press highlight */}
+          <Animated.View
+            style={[
+              styles.keyHighlight,
+              {
+                backgroundColor: isDark
+                  ? "rgba(255,255,255,0.08)"
+                  : "rgba(0,0,0,0.05)",
+              },
+              bgStyle,
+            ]}
+          />
+
+          {isDelete ? (
             <IconSymbol
               name="delete.left"
               size={24}
               color={disabled ? colors.border : colors.muted}
             />
           ) : (
-            <Title2
-              style={{
-                color: isSubmit
-                  ? colors.onPrimary
-                  : disabled
-                  ? colors.border
-                  : colors.foreground,
-                fontFamily: FontFamily.medium,
-              }}
+            <Animated.Text
+              style={[
+                styles.keyText,
+                {
+                  color: disabled ? colors.border : colors.foreground,
+                },
+              ]}
             >
-              {keyValue === "submit" ? submitText : keyValue}
-            </Title2>
+              {keyValue}
+            </Animated.Text>
           )}
         </Animated.View>
       </GestureDetector>
@@ -140,7 +145,7 @@ export function CDSNumpad({
       {NUMPAD_LAYOUT.map((row, rowIndex) => (
         <View key={rowIndex} style={styles.row}>
           {row.map((keyValue, keyIndex) => (
-            <NumpadKey key={`${rowIndex}-${keyIndex}`} keyValue={keyValue} index={keyIndex} />
+            <NumpadKeyButton key={`${rowIndex}-${keyIndex}`} keyValue={keyValue} />
           ))}
         </View>
       ))}
@@ -150,21 +155,32 @@ export function CDSNumpad({
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: Spacing[2],
-    gap: Spacing[2],
+    paddingHorizontal: 24,
+    gap: 4,
   },
   row: {
     flexDirection: "row",
-    gap: Spacing[2],
+    gap: 4,
   },
   key: {
     flex: 1,
-    aspectRatio: 1.5,
+    aspectRatio: 1.6,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: Radius[300],
+    borderRadius: 16,
+    overflow: "hidden",
+    position: "relative",
+  },
+  keyHighlight: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 16,
+  },
+  keyText: {
+    fontSize: 28,
+    fontFamily: FontFamily.medium,
+    lineHeight: 34,
   },
   keyDisabled: {
-    opacity: 0.5,
+    opacity: 0.4,
   },
 });

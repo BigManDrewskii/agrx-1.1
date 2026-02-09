@@ -265,7 +265,7 @@ export default function TradeScreen() {
           <BuySellToggle isBuy={isBuy} onChange={(buy) => { setIsBuy(buy); setTradeError(null); }} />
 
           {/* Asset Info Card */}
-          <View style={[styles.assetCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <View style={[styles.assetCard, { backgroundColor: colors.surfaceSubtle ?? colors.surface, borderColor: colors.borderSubtle ?? colors.border }]}>
             <View style={[styles.assetIconSmall, { backgroundColor: colors.surfaceSecondary }]}>
               <Footnote color="primary" style={{ fontFamily: FontFamily.bold }}>
                 {selectedAsset.ticker.slice(0, 2)}
@@ -290,22 +290,7 @@ export default function TradeScreen() {
             </View>
           </View>
 
-          {/* Price History Chart */}
-          <View style={styles.chartContainer}>
-            <CDSLineChart
-              data={selectedAsset.sparkline}
-              width={320}
-              height={120}
-              positive={selectedAsset.changePercent >= 0}
-              showGradient={true}
-              smooth={true}
-              showDots={false}
-              showGrid={true}
-              gridLines={5}
-            />
-          </View>
-
-          {/* Amount Hero */}
+          {/* Amount Hero -- centered Robinhood-style */}
           <AmountInput
             ref={amountInputRef}
             value={amountText}
@@ -318,22 +303,20 @@ export default function TradeScreen() {
           {/* Available balance */}
           <View style={styles.availableRow}>
             {isBuy ? (
-              <Footnote color="muted">
-                Available:{" "}
+              <View style={styles.balanceInfo}>
+                <Footnote color="muted">Available</Footnote>
                 <MonoSubhead color="foreground" style={{ fontSize: 13 }}>
                   €{demoState.balance.toFixed(2)}
                 </MonoSubhead>
-              </Footnote>
+              </View>
             ) : (
-              <Footnote color="muted">
-                You own:{" "}
+              <View style={styles.balanceInfo}>
+                <Footnote color="muted">You own</Footnote>
                 <MonoSubhead color="foreground" style={{ fontSize: 13 }}>
                   {currentShares.toFixed(currentShares % 1 === 0 ? 0 : 4)} shares
+                  {currentShares > 0 ? ` (€${currentHoldingValue.toFixed(2)})` : ""}
                 </MonoSubhead>
-                {currentShares > 0 && (
-                  <Footnote color="muted"> (€{currentHoldingValue.toFixed(2)})</Footnote>
-                )}
-              </Footnote>
+              </View>
             )}
           </View>
 
@@ -362,6 +345,7 @@ export default function TradeScreen() {
               amount={parsedAmount}
               price={selectedAsset.price}
               balanceAfter={balanceAfter}
+              isBuy={isBuy}
             />
           )}
           {isValidAmount && isSimple && (
@@ -547,9 +531,15 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   availableRow: {
-    marginTop: 8,
+    marginTop: 4,
     marginBottom: 4,
     paddingHorizontal: 18,
+    alignItems: "center",
+  },
+  balanceInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
   },
   validationError: {
     flexDirection: "row",
