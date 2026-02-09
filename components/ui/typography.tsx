@@ -46,6 +46,8 @@ function createTypographyComponent(variant: TypeScaleKey, defaultColor: ThemeCol
     return (
       <Text
         ref={ref}
+        allowFontScaling={true}
+        maxFontSizeMultiplier={1.3}
         style={[
           {
             fontSize: scale.fontSize,
