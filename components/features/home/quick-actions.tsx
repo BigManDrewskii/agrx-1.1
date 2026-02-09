@@ -13,6 +13,7 @@ import { useRouter } from "expo-router";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { useMarketStatus } from "@/hooks/use-market-status";
 import { Caption1, Body } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 import { Radius, Spacing } from "@/constants/spacing";
@@ -35,10 +36,10 @@ export function QuickActions() {
   const router = useRouter();
   const { state } = useDemo();
   const { watchlist } = useWatchlist();
+  const { isMarketOpen } = useMarketStatus();
 
   // Dynamic badges based on user data
   const holdingsCount = Object.keys(state.holdings).length;
-  const isLive = true; // TODO: Get from market status
 
   const QUICK_ACTIONS: QuickAction[] = [
     {
@@ -66,7 +67,7 @@ export function QuickActions() {
       icon: "chart.line.uptrend.xyaxis",
       color: "warning",
       route: "/(tabs)/markets",
-      badge: isLive ? "Live" : undefined,
+      badge: isMarketOpen ? "Live" : undefined,
       accessibilityLabel: "Navigate to Markets screen",
       accessibilityHint: "Browse and search all stocks",
     },
@@ -89,7 +90,7 @@ export function QuickActions() {
     if (id === "portfolio" && badge) {
       return badge;
     }
-    if (id === "markets" && badge === "Live") {
+    if (id === "markets" && badge === "Live" && isMarketOpen) {
       return "Market open";
     }
     return undefined;
@@ -125,7 +126,7 @@ export function QuickActions() {
               style={[
                 styles.iconContainer,
                 {
-                  backgroundColor: `${getColor(action.color)}15`, // 15% opacity
+                  backgroundColor: `${getColor(action.color)}33`, // 20% opacity
                 },
               ]}
             >

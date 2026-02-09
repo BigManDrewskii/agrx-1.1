@@ -237,7 +237,7 @@ export default function NotificationHistoryScreen() {
               backgroundColor: isUnread
                 ? colors.primaryAlpha
                 : colors.surface,
-              borderColor: isUnread ? colors.primary + "20" : colors.border,
+              borderColor: isUnread ? colors.primary + "33" : colors.border,
             },
           ]}
         >
@@ -252,7 +252,7 @@ export default function NotificationHistoryScreen() {
           <View
             style={[
               styles.iconCircle,
-              { backgroundColor: iconColor + "18" },
+              { backgroundColor: iconColor + "33" },
             ]}
           >
             <IconSymbol name={config.icon} size={18} color={iconColor} />

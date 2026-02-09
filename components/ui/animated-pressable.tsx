@@ -143,7 +143,7 @@ export function AnimatedPressable({
       <Animated.View
         testID={testID}
         hitSlop={hitSlop}
-        style={[animatedStyle, disabled && { opacity: 0.4 }, style]}
+        style={[animatedStyle, disabled && { opacity: 0.6 }, style]}
         accessible={accessibilityRole !== "none"}
         accessibilityLabel={accessibilityLabel}
         accessibilityHint={accessibilityHint}

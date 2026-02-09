@@ -79,7 +79,7 @@ export function CDSChip({
           {
             backgroundColor: selected ? colors.primary : colors.surface,
             borderColor: selected ? colors.primary : colors.border,
-            opacity: disabled ? 0.4 : 1,
+            opacity: disabled ? 0.6 : 1,
           },
         ]}
       >

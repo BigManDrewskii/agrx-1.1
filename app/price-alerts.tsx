@@ -145,7 +145,7 @@ export default function PriceAlertsScreen() {
           onPress={() => handleDelete(item)}
           style={[
             styles.deleteButton,
-            { backgroundColor: colors.error + "15" },
+            { backgroundColor: colors.error + "33" },
           ]}
           accessibilityLabel={`Delete ${item.stockName} alert`}
           accessibilityRole="button"
@@ -189,7 +189,7 @@ export default function PriceAlertsScreen() {
           entering={FadeInDown.duration(250).delay(60)}
           style={[
             styles.permissionBanner,
-            { backgroundColor: colors.warning + "15", borderColor: colors.warning + "30" },
+            { backgroundColor: colors.warning + "33", borderColor: colors.warning + "4D" },
           ]}
         >
           <View style={{ flex: 1 }}>

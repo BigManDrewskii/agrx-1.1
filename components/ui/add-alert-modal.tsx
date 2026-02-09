@@ -197,7 +197,7 @@ export function AddAlertModal({
                     styles.typeOption,
                     {
                       backgroundColor: isSelected
-                        ? colors.primary + "15"
+                        ? colors.primary + "33"
                         : colors.surface,
                       borderColor: isSelected ? colors.primary : colors.border,
                       borderWidth: isSelected ? 1.5 : StyleSheet.hairlineWidth,

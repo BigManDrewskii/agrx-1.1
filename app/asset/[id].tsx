@@ -218,7 +218,7 @@ export default function AssetDetailScreen() {
               onPress={handleAddAlert}
               style={[
                 styles.iconButton,
-                { backgroundColor: hasActiveAlerts ? colors.primary + "15" : colors.surface },
+                { backgroundColor: hasActiveAlerts ? colors.primary + "33" : colors.surface },
               ]}
             >
               <IconSymbol

@@ -36,9 +36,9 @@ const themeColors = {
   // ─── Text ───────────────────────────────────────────────────────────
   //  Light: Near-black for maximum readability.
   //  Dark:  CDS gray90 (#EEF0F3) — softer than pure white to reduce glare.
-  //  Muted: CDS gray60 (#89909E) — passes WCAG AA on dark backgrounds.
+  //  Muted: Darkened in light mode for WCAG AA compliance (4.5:1 contrast).
   foreground:     { light: '#0A0B0D', dark: '#EEF0F3' },
-  muted:          { light: '#5B616E', dark: '#89909E' },
+  muted:          { light: '#4A5060', dark: '#89909E' },
   /** High-contrast text on filled primary buttons (always white). */
   onPrimary:      { light: '#FFFFFF', dark: '#FFFFFF' },
 

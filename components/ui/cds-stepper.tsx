@@ -136,7 +136,7 @@ export function CDSStepper({
               height: buttonSize,
               borderRadius: buttonSize / 2,
               backgroundColor: value <= min ? colors.surfaceSecondary : colors.surface,
-              opacity: disabled || value <= min ? 0.4 : 1,
+              opacity: disabled || value <= min ? 0.6 : 1,
             },
           ]}
         >
@@ -174,7 +174,7 @@ export function CDSStepper({
               height: buttonSize,
               borderRadius: buttonSize / 2,
               backgroundColor: value >= max ? colors.surfaceSecondary : colors.surface,
-              opacity: disabled || value >= max ? 0.4 : 1,
+              opacity: disabled || value >= max ? 0.6 : 1,
             },
           ]}
         >

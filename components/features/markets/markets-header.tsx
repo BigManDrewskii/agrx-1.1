@@ -9,10 +9,11 @@
  *     lastUpdated={lastUpdateTimestamp}
  *   />
  */
-import React, { useMemo } from "react";
+import React from "react";
 import { View, StyleSheet } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { useColors } from "@/hooks/use-colors";
+import { useMarketStatus } from "@/hooks/use-market-status";
 import { Caption1 } from "@/components/ui/cds-typography";
 import { Title1 } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
@@ -25,16 +26,7 @@ interface MarketsHeaderProps {
 
 export function MarketsHeader({ isLive, lastUpdated }: MarketsHeaderProps) {
   const colors = useColors();
-
-  // ATHEX market status — derived in useMemo to satisfy React Compiler purity rules
-  const isMarketOpen = useMemo(() => {
-    const now = new Date();
-    const athensHour = new Date(
-      now.toLocaleString("en-US", { timeZone: "Europe/Athens" })
-    ).getHours();
-    const isWeekday = now.getDay() >= 1 && now.getDay() <= 5;
-    return isWeekday && athensHour >= 10 && athensHour < 17;
-  }, []); // Recalculates on every render, which is fine for time-based status
+  const { isMarketOpen } = useMarketStatus();
 
   return (
     <Animated.View entering={FadeIn.duration(200)} style={styles.container}>

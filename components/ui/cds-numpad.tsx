@@ -104,8 +104,8 @@ export function CDSNumpad({
             isSubmit && { backgroundColor: colors.primary },
             !isActionKey && !isSubmit && {
               backgroundColor: disabled
-                ? colors.surfaceSecondary + "15"
-                : colors.surfaceSecondary + "18"
+                ? colors.surfaceSecondary + "33"
+                : colors.surfaceSecondary + "33"
             },
             disabled && styles.keyDisabled,
           ]}
@@ -165,6 +165,6 @@ const styles = StyleSheet.create({
     borderRadius: Radius[300],
   },
   keyDisabled: {
-    opacity: 0.3,
+    opacity: 0.5,
   },
 });

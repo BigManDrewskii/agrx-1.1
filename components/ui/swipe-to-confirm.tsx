@@ -265,7 +265,7 @@ export function SwipeToConfirm({
         <Animated.View
           style={[
             styles.fill,
-            { backgroundColor: activeColor + "18" },
+            { backgroundColor: activeColor + "33" },
             fillStyle,
           ]}
         />

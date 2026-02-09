@@ -99,7 +99,7 @@ export function CDSWrapper({
     <GestureDetector gesture={tapGesture}>
       <Animated.View
         testID={testID}
-        style={[animatedStyle, disabled && { opacity: 0.4 }, style]}
+        style={[animatedStyle, disabled && { opacity: 0.6 }, style]}
       >
         {children}
       </Animated.View>

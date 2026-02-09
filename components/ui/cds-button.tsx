@@ -137,7 +137,7 @@ export function CDSButton({
           styles.button,
           animatedStyle,
           getVariantStyles(),
-          { opacity: disabled || loading ? 0.4 : 1 },
+          { opacity: disabled || loading ? 0.6 : 1 },
           style,
         ]}
         accessible={!!accessibilityLabel}

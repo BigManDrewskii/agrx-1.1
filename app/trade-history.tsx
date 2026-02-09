@@ -296,7 +296,7 @@ export default function TradeHistoryScreen() {
             <View
               style={[
                 styles.sideIndicator,
-                { backgroundColor: sideColor + "18" },
+                { backgroundColor: sideColor + "33" },
               ]}
             >
               <IconSymbol name={sideIcon as any} size={16} color={sideColor} />
