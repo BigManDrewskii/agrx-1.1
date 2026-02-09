@@ -27,12 +27,11 @@ import {
   Body,
   Callout,
   Subhead,
-  Footnote,
   Caption1,
-  Caption2,
   MonoBody,
   MonoSubhead,
 } from "@/components/ui/typography";
+import { Caption2, Footnote } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 import Svg, { Polyline, Defs, LinearGradient, Stop, Path } from "react-native-svg";
 import { useWatchlist } from "@/lib/watchlist-context";

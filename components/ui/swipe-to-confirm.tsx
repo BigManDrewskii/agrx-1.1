@@ -18,7 +18,7 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { FontFamily } from "@/constants/typography";
 import { Spacing, Size } from "@/constants/spacing";
-import { Callout, Caption1 } from "@/components/ui/typography";
+import { Caption1, Callout } from "@/components/ui/cds-typography";
 
 // ─── Constants ──────────────────────────────────────────────────────────
 const THUMB_SIZE = Size.button.lg.height; // 52px

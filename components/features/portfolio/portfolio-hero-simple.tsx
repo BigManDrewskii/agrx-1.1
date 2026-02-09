@@ -15,7 +15,7 @@ import { View, StyleSheet } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useColors } from "@/hooks/use-colors";
 import { AnimatedNumber, AnimatedPnLNumber } from "@/components/ui/animated-number";
-import { Caption1 } from "@/components/ui/typography";
+import { Caption1 } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 
 interface PortfolioHeroSimpleProps {

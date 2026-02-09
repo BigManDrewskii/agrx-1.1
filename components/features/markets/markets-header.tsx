@@ -13,7 +13,8 @@ import React, { useMemo } from "react";
 import { View, StyleSheet } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { useColors } from "@/hooks/use-colors";
-import { Title1, Caption1 } from "@/components/ui/typography";
+import { Caption1 } from "@/components/ui/cds-typography";
+import { Title1 } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 import { LiveBadge } from "@/components/ui/live-badge";
 

@@ -19,7 +19,8 @@ import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { LiveBadge } from "@/components/ui/live-badge";
 import { useColors } from "@/hooks/use-colors";
-import { Title1, Caption1 } from "@/components/ui/typography";
+import { Caption1 } from "@/components/ui/cds-typography";
+import { Title1 } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 
 interface PortfolioHeaderProps {

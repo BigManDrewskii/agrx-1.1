@@ -18,7 +18,8 @@ import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { AnimatedPnLNumber } from "@/components/ui/animated-number";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
-import { Body, Subhead, Caption1, Caption2, Footnote } from "@/components/ui/typography";
+import { Subhead, Caption1 } from "@/components/ui/typography";
+import { Caption2, Footnote, Body } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 import type { SocialPost } from "@/lib/mock-data";
 

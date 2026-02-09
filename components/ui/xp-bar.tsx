@@ -7,7 +7,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useColors } from "@/hooks/use-colors";
 import { useDemo } from "@/lib/demo-context";
-import { Footnote } from "@/components/ui/typography";
+import { Footnote } from "@/components/ui/cds-typography";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { FontFamily } from "@/constants/typography";
 import { SPRING_RESPONSIVE, SPRING_BOUNCY } from "@/lib/animations";

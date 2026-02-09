@@ -27,9 +27,9 @@ import { FontFamily } from "@/constants/typography";
 import {
   Title3,
   Callout,
-  Caption1,
   Subhead,
 } from "@/components/ui/typography";
+import { Caption1 } from "@/components/ui/cds-typography";
 import * as Haptics from "expo-haptics";
 
 const TIME_FRAMES: ShareTimeFrame[] = ["Today", "This Week", "This Month", "All Time"];

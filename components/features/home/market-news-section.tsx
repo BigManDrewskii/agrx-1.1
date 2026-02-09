@@ -17,7 +17,8 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useColors } from "@/hooks/use-colors";
-import { Subhead, Caption1, Footnote } from "@/components/ui/typography";
+import { Caption1 } from "@/components/ui/typography";
+import { Footnote, Subhead } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 import type { NewsArticle } from "@/server/newsService";
 

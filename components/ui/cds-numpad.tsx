@@ -17,7 +17,7 @@ import Animated, { useSharedValue, useAnimatedStyle, withSpring } from "react-na
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import * as Haptics from "expo-haptics";
 import { useColors } from "@/hooks/use-colors";
-import { Title2, Subhead } from "@/components/ui/typography";
+import { Title2 } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 import { IconSymbol } from "./icon-symbol";
 

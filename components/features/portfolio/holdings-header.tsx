@@ -16,7 +16,7 @@ import { useRouter } from "expo-router";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
-import { Caption1 } from "@/components/ui/typography";
+import { Caption1 } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 
 interface HoldingsHeaderProps {

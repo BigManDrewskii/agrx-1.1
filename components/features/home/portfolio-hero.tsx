@@ -19,7 +19,8 @@ import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { useColors } from "@/hooks/use-colors";
 import { Sparkline } from "@/components/ui/sparkline";
 import { AnimatedNumber, AnimatedPnLNumber } from "@/components/ui/animated-number";
-import { Footnote, Caption1 } from "@/components/ui/typography";
+import { Caption1 } from "@/components/ui/typography";
+import { Footnote } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 
 interface PortfolioHeroProps {

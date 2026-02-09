@@ -19,7 +19,7 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { SectionHeader } from "@/components/ui/section-header";
 import { AssetRow } from "@/components/ui/asset-row";
 import { useColors } from "@/hooks/use-colors";
-import { Subhead, Caption1 } from "@/components/ui/typography";
+import { Caption1, Subhead } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 import type { LiveStockQuote } from "@/hooks/use-stocks";
 

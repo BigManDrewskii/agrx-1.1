@@ -4,7 +4,7 @@ import { useColors } from "@/hooks/use-colors";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { Sparkline } from "./sparkline";
 import { AnimatedNumber, AnimatedPnLNumber } from "./animated-number";
-import { Subhead, Caption1, Caption2 } from "@/components/ui/typography";
+import { Caption1, Caption2, Subhead } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 import { Spacing, Radius } from "@/constants/spacing";
 import { TrendingCardWidth } from "@/constants/layout";

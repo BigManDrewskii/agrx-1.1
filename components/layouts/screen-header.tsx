@@ -19,7 +19,7 @@ import { View, StyleSheet, type ViewStyle } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { useColors } from "@/hooks/use-colors";
-import { Title1, Title2, Footnote } from "@/components/ui/typography";
+import { Footnote, Title1, Title2 } from "@/components/ui/cds-typography";
 
 interface ScreenHeaderProps {
   /** Primary title or greeting */

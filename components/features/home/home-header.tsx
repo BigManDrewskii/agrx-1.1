@@ -23,7 +23,7 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { LiveBadge } from "@/components/ui/live-badge";
 import { ViewModeToggle } from "@/components/ui/view-mode-toggle";
 import { useColors } from "@/hooks/use-colors";
-import { Footnote, Title2, Caption1, Caption2 } from "@/components/ui/typography";
+import { Caption1, Caption2, Footnote, Title2 } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 
 interface HomeHeaderProps {

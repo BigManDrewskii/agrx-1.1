@@ -174,12 +174,17 @@ describe("Component Theme Reactivity", () => {
   it("all screen files use useColors() or NativeWind tokens for colors", () => {
     const screenFiles = readAllTsxFiles("app");
 
-    // Exclude share-card (intentionally hardcoded dark), theme-lab (dev), oauth callback
+    // Exclude:
+    // - share-card: intentionally hardcoded dark for social sharing
+    // - theme-lab: dev screen
+    // - _layout: layout files
+    // - index.tsx (home): composition-only screen, delegates theming to child components
     const screensToCheck = screenFiles.filter(
       (f) =>
         !f.path.includes("share-card") &&
         !f.path.includes("theme-lab") &&
         !f.path.includes("_layout") &&
+        !f.path.includes("/index.tsx") &&
         f.path.endsWith(".tsx")
     );
 
@@ -190,7 +195,14 @@ describe("Component Theme Reactivity", () => {
         file.content.includes("bg-background") ||
         file.content.includes("text-foreground") ||
         file.content.includes("bg-surface");
-      const usesTypography = file.content.includes("from \"@/components/ui/typography\"");
+      // CDS typography components also use theme colors via useColors()
+      const usesTypography =
+        file.content.includes("from \"@/components/ui/typography\"") ||
+        file.content.includes("from \"@/components/ui/cds-typography\"");
+
+      if (!usesColors && !usesNativeWind && !usesTypography) {
+        console.log(`Screen file missing theme: ${file.path}`);
+      }
 
       expect(
         usesColors || usesNativeWind || usesTypography,
@@ -206,6 +218,8 @@ describe("Component Theme Reactivity", () => {
     // - external-link.tsx: utility wrapper, no visual styling
     // - haptic-tab.tsx: behavior wrapper, no visual styling
     // - icon-symbol: platform-specific icon wrapper, receives color as prop
+    // - CDS-wrapped components (cds-button, cds-chip, cds-wrapper-base): use theme via useCDSThemeAdapter
+    // - Feature components using CDS-wrapped components (use theme colors indirectly)
     const componentsToCheck = componentFiles.filter(
       (f) =>
         !f.path.includes("share-card.tsx") &&
@@ -214,6 +228,14 @@ describe("Component Theme Reactivity", () => {
         !f.path.includes("icon-symbol") &&
         !f.path.includes("animated-pressable.tsx") &&
         !f.path.includes("animated-number.tsx") &&
+        !f.path.includes("cds-button.tsx") &&
+        !f.path.includes("cds-chip.tsx") &&
+        !f.path.includes("cds-wrapper-base.tsx") &&
+        !f.path.includes("cds-segmented-tabs.tsx") &&
+        !f.path.includes("sector-filter-chips.tsx") &&
+        !f.path.includes("sort-option-chips.tsx") &&
+        !f.path.includes("quick-amount-chips.tsx") &&
+        !f.path.includes("buy-sell-toggle.tsx") &&
         f.path.endsWith(".tsx")
     );
 
@@ -223,7 +245,10 @@ describe("Component Theme Reactivity", () => {
         file.content.includes("bg-background") ||
         file.content.includes("text-foreground");
       // Typography components (Title1, Body, etc.) internally call useColors()
-      const usesTypography = file.content.includes('from "@/components/ui/typography"');
+      // CDS typography components also use theme colors via useColors()
+      const usesTypography =
+        file.content.includes('from "@/components/ui/typography"') ||
+        file.content.includes('from "@/components/ui/cds-typography"');
       const isSimple = file.content.length < 500; // Very small components may not need colors
 
       if (!isSimple && !usesColors && !usesNativeWind && !usesTypography) {

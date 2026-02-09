@@ -21,8 +21,8 @@ import { useStockQuotes, useRefreshCache } from "@/hooks/use-stocks";
 import {
   Caption1,
   Callout,
-  Footnote,
 } from "@/components/ui/typography";
+import { Footnote } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 import { useWatchlist } from "@/lib/watchlist-context";
 

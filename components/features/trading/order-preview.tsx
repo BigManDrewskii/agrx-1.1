@@ -14,7 +14,8 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { useColors } from "@/hooks/use-colors";
-import { Footnote, MonoSubhead } from "@/components/ui/typography";
+import { MonoSubhead } from "@/components/ui/typography";
+import { Footnote } from "@/components/ui/cds-typography";
 
 interface OrderPreviewProps {
   amount: number;

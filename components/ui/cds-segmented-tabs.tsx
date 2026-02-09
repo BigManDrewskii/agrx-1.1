@@ -18,7 +18,7 @@ import Animated, { useSharedValue, useAnimatedStyle, withSpring } from "react-na
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import * as Haptics from "expo-haptics";
 import { useColors } from "@/hooks/use-colors";
-import { Footnote } from "@/components/ui/typography";
+import { Footnote } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 
 type ColorType = "success" | "error" | "primary" | "gold";

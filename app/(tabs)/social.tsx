@@ -9,7 +9,8 @@ import { ScreenContainer } from "@/components/screen-container";
 import { ScreenHeader } from "@/components/layouts";
 import { PostCard, TabSelector, LeaderboardRow, AchievementCard } from "@/components/features/social";
 import { useColors } from "@/hooks/use-colors";
-import { Title3, Footnote } from "@/components/ui/typography";
+import { Footnote } from "@/components/ui/cds-typography";
+import { Title3 } from "@/components/ui/cds-typography";
 import { SOCIAL_FEED, LEADERBOARD, ACHIEVEMENTS } from "@/lib/mock-data";
 
 const TABS = ["Feed", "Leaderboard", "Achievements"];

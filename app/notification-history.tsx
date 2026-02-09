@@ -20,15 +20,15 @@ import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useNotifications, type NotificationHistoryItem, type NotificationHistoryItemType } from "@/lib/notification-context";
 import { IconSymbol } from "@/components/ui/icon-symbol";
+import { Caption1 } from "@/components/ui/typography";
 import {
   LargeTitle,
   Title3,
   Body,
   Subhead,
   Footnote,
-  Caption1,
   Caption2,
-} from "@/components/ui/typography";
+} from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────

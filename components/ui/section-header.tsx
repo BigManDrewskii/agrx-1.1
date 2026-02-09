@@ -1,7 +1,8 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
-import { Title3, Subhead } from "@/components/ui/typography";
+import { Subhead } from "@/components/ui/typography";
+import { Title3 } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 
 interface SectionHeaderProps {

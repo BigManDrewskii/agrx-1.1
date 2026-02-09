@@ -17,7 +17,7 @@ import { STAGGER_DELAY, STAGGER_MAX } from "@/lib/animations";
 import { useColors } from "@/hooks/use-colors";
 import { AnimatedPnLNumber } from "@/components/ui/animated-number";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { Subhead, Caption1 } from "@/components/ui/typography";
+import { Caption1, Subhead } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 import type { LeaderboardEntry } from "@/lib/mock-data";
 

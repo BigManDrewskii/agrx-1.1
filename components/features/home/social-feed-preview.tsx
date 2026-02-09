@@ -15,7 +15,7 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { SectionHeader } from "@/components/ui/section-header";
 import { AnimatedPnLNumber } from "@/components/ui/animated-number";
 import { useColors } from "@/hooks/use-colors";
-import { Subhead, Caption1, Caption2 } from "@/components/ui/typography";
+import { Caption1, Caption2, Subhead } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 import { SOCIAL_FEED } from "@/lib/mock-data";
 

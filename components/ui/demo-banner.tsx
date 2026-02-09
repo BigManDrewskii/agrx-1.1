@@ -2,7 +2,8 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { useColors } from "@/hooks/use-colors";
 import { useDemo } from "@/lib/demo-context";
-import { Caption1, MonoCaption1 } from "@/components/ui/typography";
+import { MonoCaption1 } from "@/components/ui/typography";
+import { Caption1 } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 
 export function DemoBanner() {

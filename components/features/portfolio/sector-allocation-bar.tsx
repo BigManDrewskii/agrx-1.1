@@ -15,7 +15,7 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useColors } from "@/hooks/use-colors";
-import { Caption1 } from "@/components/ui/typography";
+import { Caption1 } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 import type { Sector } from "@/lib/sectors";
 

@@ -3,7 +3,7 @@ import { View, StyleSheet, Platform } from "react-native";
 import { useColors } from "@/hooks/use-colors";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { useViewMode, type ViewMode } from "@/lib/viewmode-context";
-import { Caption1 } from "@/components/ui/typography";
+import { Caption1 } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 import * as Haptics from "expo-haptics";
 

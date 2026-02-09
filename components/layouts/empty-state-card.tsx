@@ -19,7 +19,8 @@ import Animated, { FadeIn } from "react-native-reanimated";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
-import { Headline, Footnote, Subhead } from "@/components/ui/typography";
+import { Subhead } from "@/components/ui/typography";
+import { Footnote, Headline } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 
 interface EmptyStateCardProps {

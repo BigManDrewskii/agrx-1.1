@@ -23,9 +23,9 @@ import {
   Title3,
   Body,
   Subhead,
-  Footnote,
   Caption1,
 } from "@/components/ui/typography";
+import { Footnote } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 
 // ─── Storage Keys ────────────────────────────────────────────────────────────

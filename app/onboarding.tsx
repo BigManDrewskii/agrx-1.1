@@ -15,8 +15,8 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import {
   Title1,
   Callout,
-  Caption1,
 } from "@/components/ui/typography";
+import { Caption1 } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");

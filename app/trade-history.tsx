@@ -31,10 +31,10 @@ import {
   Subhead,
   Footnote,
   Caption1,
-  Caption2,
   MonoSubhead,
   MonoCaption1,
 } from "@/components/ui/typography";
+import { Caption2 } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 import { STAGGER_DELAY, STAGGER_MAX } from "@/lib/animations";
 

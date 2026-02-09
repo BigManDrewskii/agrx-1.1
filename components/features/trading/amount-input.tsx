@@ -17,7 +17,8 @@ import React, { useRef, forwardRef } from "react";
 import { View, TextInput, StyleSheet, Platform, type TextInputProps } from "react-native";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { useColors } from "@/hooks/use-colors";
-import { MonoLargeTitle, Caption1 } from "@/components/ui/typography";
+import { MonoLargeTitle } from "@/components/ui/typography";
+import { Caption1 } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 
 interface AmountInputProps {

@@ -16,7 +16,7 @@ import { View, StyleSheet } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { useColors } from "@/hooks/use-colors";
-import { Subhead } from "@/components/ui/typography";
+import { Subhead } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 
 interface TabSelectorProps {

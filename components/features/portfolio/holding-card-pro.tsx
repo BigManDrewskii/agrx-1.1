@@ -28,7 +28,7 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { AnimatedNumber, AnimatedPnLNumber } from "@/components/ui/animated-number";
 import { Sparkline } from "@/components/ui/sparkline";
-import { Subhead, Caption1 } from "@/components/ui/typography";
+import { Caption1, Subhead } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 
 interface HoldingCardProProps {

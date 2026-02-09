@@ -5,7 +5,7 @@ import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { useColors } from "@/hooks/use-colors";
 import { CDSSparkline } from "./cds-sparkline";
 import { AnimatedNumber, AnimatedPnLNumber } from "./animated-number";
-import { Subhead, Caption1 } from "@/components/ui/typography";
+import { Caption1, Subhead } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 import { Spacing, Radius } from "@/constants/spacing";
 import { IconSymbol } from "./icon-symbol";

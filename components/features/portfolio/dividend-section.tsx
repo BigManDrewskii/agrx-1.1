@@ -10,7 +10,8 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useColors } from "@/hooks/use-colors";
-import { Subhead, Caption2, MonoSubhead } from "@/components/ui/typography";
+import { Caption2, MonoSubhead } from "@/components/ui/typography";
+import { Subhead } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 
 export function DividendSection() {

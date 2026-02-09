@@ -12,7 +12,8 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
-import { Headline, Footnote, Caption1, MonoCaption1 } from "@/components/ui/typography";
+import { Caption1, MonoCaption1 } from "@/components/ui/typography";
+import { Footnote, Headline } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 import { DAILY_CHALLENGE } from "@/lib/mock-data";
 

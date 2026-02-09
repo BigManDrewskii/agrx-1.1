@@ -32,11 +32,11 @@ import type { ShareCardData } from "@/components/ui/share-card";
 import {
   Title1,
   Subhead,
-  Footnote,
   Callout,
   Caption1,
   MonoSubhead,
 } from "@/components/ui/typography";
+import { Footnote } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 
 const QUICK_AMOUNTS = [5, 10, 25, 50, 100, 250];

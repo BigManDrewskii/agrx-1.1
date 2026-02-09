@@ -1,8 +1,8 @@
 /**
- * CDSChip — Coinbase Design System Chip with AGRX haptics
+ * CDSChip — AGRX-wrapped CDS Chip
  *
- * Wraps CDS Chip component with AGRX's superior haptic feedback.
- * Maintains CDS styling while adding consistent press feedback.
+ * Preserves AGRX haptics + motion language while using CDS Chip visuals.
+ * API unchanged for backward compatibility.
  *
  * Usage:
  *   <CDSChip
@@ -10,17 +10,20 @@
  *     selected={isActive}
  *     onPress={() => onSelect("Banks")}
  *   />
+ *
+ *   <CDSChip
+ *     label="Technology"
+ *     count={42}
+ *     selected={true}
+ *   />
  */
 import React from "react";
-import { Platform, StyleSheet } from "react-native";
-import Animated, { useSharedValue, useAnimatedStyle, withSpring, runOnJS } from "react-native-reanimated";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import * as Haptics from "expo-haptics";
-import { useColors } from "@/hooks/use-colors";
-import { Caption1, Caption2 } from "@/components/ui/typography";
-import { FontFamily } from "@/constants/typography";
+import { Chip as CDSChipComp } from "@coinbase/cds-mobile/chips";
+import { CDSWrapper } from "./cds-wrapper-base";
+import { COMPONENT_HAPTICS } from "@/lib/_core/cds-haptics";
+import { useCDSThemeAdapter } from "@/hooks/use-cds-theme-adapter";
 
-interface CDSChipProps {
+export interface CDSChipProps {
   label: string;
   selected?: boolean;
   disabled?: boolean;
@@ -29,6 +32,15 @@ interface CDSChipProps {
   count?: number; // Optional badge count
 }
 
+/**
+ * AGRX Chip component wrapped with haptic feedback and motion.
+ *
+ * Wraps the CDS Chip component with:
+ * - AGRX haptic feedback (light impact for chips)
+ * - AGRX motion language (spring animations)
+ * - Selected state styling (uses AGRX brand colors)
+ * - Badge count support
+ */
 export function CDSChip({
   label,
   selected = false,
@@ -37,82 +49,39 @@ export function CDSChip({
   testID,
   count,
 }: CDSChipProps) {
-  const colors = useColors();
-  const scale = useSharedValue(1);
+  const { agrx } = useCDSThemeAdapter();
 
-  const handlePress = () => {
-    // Haptic feedback
-    if (Platform.OS !== "web") {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-    onPress?.();
-  };
-
-  const tapGesture = Gesture.Tap()
-    .enabled(!disabled)
-    .onBegin(() => {
-      "worklet";
-      scale.value = withSpring(0.95, { damping: 15, stiffness: 150 });
-    })
-    .onFinalize(() => {
-      "worklet";
-      scale.value = withSpring(1, { damping: 15, stiffness: 150 });
-    })
-    .onEnd(() => {
-      "worklet";
-      if (onPress) {
-        runOnJS(handlePress)();
-      }
-    });
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
+  // Map selected state to CDS background/color props
+  // When selected: primary background, onPrimary text
+  // When unselected: bgSecondary background, fg text
+  const background = selected ? "bgPrimary" : "bgSecondary";
+  const color = selected ? "fgInverse" : "fg";
 
   return (
-    <GestureDetector gesture={tapGesture}>
-      <Animated.View
+    <CDSWrapper
+      onPress={onPress}
+      hapticStyle={COMPONENT_HAPTICS.chip}
+      disabled={disabled}
+      testID={testID}
+    >
+      <CDSChipComp
+        disabled={disabled}
+        onPress={onPress}
         testID={testID}
-        style={[
-          styles.chip,
-          animatedStyle,
-          {
-            backgroundColor: selected ? colors.primary : colors.surface,
-            borderColor: selected ? colors.primary : colors.border,
-            opacity: disabled ? 0.4 : 1,
-          },
-        ]}
-      >
-        <Caption1
-          color={selected ? "onPrimary" : "foreground"}
-          style={{
-            fontFamily: selected ? FontFamily.bold : FontFamily.medium,
-          }}
-        >
-          {label}
-        </Caption1>
-        {count !== undefined && (
-          <Caption2
-            color={selected ? "onPrimary" : "muted"}
-            style={{ fontFamily: FontFamily.medium }}
+        background={background}
+        color={color}
+        end={count !== undefined ? (
+          <CDSChipComp
+            compact
+            background={selected ? "bgPrimary" : "bgTertiary"}
+            color={selected ? "fgInverse" : "fgMuted"}
           >
             {count}
-          </Caption2>
-        )}
-      </Animated.View>
-    </GestureDetector>
+          </CDSChipComp>
+        ) : undefined}
+      >
+        {label}
+      </CDSChipComp>
+    </CDSWrapper>
   );
 }
-
-const styles = StyleSheet.create({
-  chip: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-    gap: 6,
-  },
-});
-

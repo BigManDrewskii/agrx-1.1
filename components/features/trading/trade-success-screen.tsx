@@ -18,7 +18,8 @@ import { View, StyleSheet } from "react-native";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
-import { Title1, Callout, Subhead, MonoLargeTitle } from "@/components/ui/typography";
+import { MonoLargeTitle } from "@/components/ui/typography";
+import { Title1, Callout, Subhead } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 
 interface TradeSuccessScreenProps {

@@ -17,7 +17,8 @@ import { STAGGER_DELAY, STAGGER_MAX } from "@/lib/animations";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
-import { Subhead, Caption2 } from "@/components/ui/typography";
+import { Caption2 } from "@/components/ui/typography";
+import { Subhead } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 import type { Achievement } from "@/lib/mock-data";
 
