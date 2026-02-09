@@ -87,6 +87,56 @@ export function ChartSkeleton() {
   );
 }
 
+export function SocialFeedSkeleton({ count = 3 }: { count?: number }) {
+  return (
+    <View style={{ paddingHorizontal: 16 }}>
+      {Array.from({ length: count }).map((_, i) => (
+        <View
+          key={i}
+          style={{
+            padding: 16,
+            marginBottom: 12,
+            borderRadius: 16,
+            borderWidth: 1,
+            borderColor: 'transparent',
+          }}
+        >
+          {/* Header: avatar + username + badge */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+            <Skeleton width={40} height={40} borderRadius={20} />
+            <View style={{ marginLeft: 12, flex: 1 }}>
+              <Skeleton width={120} height={16} borderRadius={4} />
+              <Skeleton width={80} height={12} borderRadius={4} style={{ marginTop: 4 }} />
+            </View>
+            <Skeleton width={60} height={24} borderRadius={8} />
+          </View>
+
+          {/* Content */}
+          <Skeleton width="100%" height={16} borderRadius={4} />
+          <Skeleton width="100%" height={16} borderRadius={4} style={{ marginTop: 6 }} />
+          <Skeleton width={70} height={16} borderRadius={4} style={{ marginTop: 6 }} />
+
+          {/* Footer */}
+          <View style={{ flexDirection: 'row', marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: 'transparent' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 24 }}>
+              <Skeleton width={16} height={16} borderRadius={4} />
+              <Skeleton width={30} height={12} borderRadius={4} style={{ marginLeft: 6 }} />
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 24 }}>
+              <Skeleton width={16} height={16} borderRadius={4} />
+              <Skeleton width={30} height={12} borderRadius={4} style={{ marginLeft: 6 }} />
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Skeleton width={16} height={16} borderRadius={4} />
+              <Skeleton width={30} height={12} borderRadius={4} style={{ marginLeft: 6 }} />
+            </View>
+          </View>
+        </View>
+      ))}
+    </View>
+  );
+}
+
 const skeletonStyles = StyleSheet.create({
   row: {
     flexDirection: "row",

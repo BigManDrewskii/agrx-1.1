@@ -76,12 +76,26 @@ export const Size = {
 
 /**
  * Border radius tokens
+ *
+ * CDS Mobile convention (100-500 scale):
+ * - 100: 4px (subtle rounding)
+ * - 200: 8px (small rounding)
+ * - 300: 12px (medium rounding)
+ * - 400: 16px (large rounding - cards, buttons)
+ * - 500: 24px (extra large - sheets, modals)
  */
 export const Radius = {
+  // AGRX legacy naming (for backward compatibility)
   xs: 4,
   sm: 8,
   md: 12,
   lg: 16,
   xl: 24,
   full: 9999,
+  // CDS Mobile convention (preferred for new code)
+  100: 4,
+  200: 8,
+  300: 12,
+  400: 16,
+  500: 24,
 } as const;

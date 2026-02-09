@@ -33,7 +33,8 @@ import {
 } from "@/components/ui/typography";
 import { Caption2, Footnote } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
-import Svg, { Polyline, Defs, LinearGradient, Stop, Path } from "react-native-svg";
+import { Spacing, Radius } from "@/constants/spacing";
+import { CDSLineChart } from "@/components/ui/cds-line-chart";
 import { useWatchlist } from "@/lib/watchlist-context";
 import { useNotifications } from "@/lib/notification-context";
 import { AddAlertModal } from "@/components/ui/add-alert-modal";
@@ -41,62 +42,6 @@ import * as Haptics from "expo-haptics";
 import { Platform } from "react-native";
 
 const TIME_PERIODS = ["1D", "1W", "1M", "3M", "1Y", "ALL"];
-
-function PriceChart({
-  data,
-  width,
-  height,
-  positive,
-}: {
-  data: number[];
-  width: number;
-  height: number;
-  positive: boolean;
-}) {
-  const colors = useColors();
-  const color = positive ? colors.success : colors.error;
-
-  if (!data || data.length < 2) return null;
-
-  const min = Math.min(...data);
-  const max = Math.max(...data);
-  const range = max - min || 1;
-  const padding = 8;
-  const chartW = width - padding * 2;
-  const chartH = height - padding * 2;
-
-  const points = data.map((value, index) => {
-    const x = padding + (index / (data.length - 1)) * chartW;
-    const y = padding + chartH - ((value - min) / range) * chartH;
-    return { x, y };
-  });
-
-  const polylinePoints = points.map((p) => `${p.x},${p.y}`).join(" ");
-
-  const areaPath = `M${points[0].x},${points[0].y} ${points
-    .map((p) => `L${p.x},${p.y}`)
-    .join(" ")} L${points[points.length - 1].x},${height} L${points[0].x},${height} Z`;
-
-  return (
-    <Svg width={width} height={height}>
-      <Defs>
-        <LinearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-          <Stop offset="0" stopColor={color} stopOpacity="0.15" />
-          <Stop offset="1" stopColor={color} stopOpacity="0" />
-        </LinearGradient>
-      </Defs>
-      <Path d={areaPath} fill="url(#areaGrad)" />
-      <Polyline
-        points={polylinePoints}
-        fill="none"
-        stroke={color}
-        strokeWidth={2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>
-  );
-}
 
 function formatVolume(vol: number): string {
   if (vol >= 1_000_000) return `${(vol / 1_000_000).toFixed(1)}M`;
@@ -130,7 +75,7 @@ function NewsSkeleton() {
   return (
     <View style={{ gap: 10 }}>
       {[1, 2, 3].map((i) => (
-        <View key={i} style={{ borderRadius: 12, padding: 14, gap: 8 }}>
+        <View key={i} style={{ borderRadius: 12, padding: Spacing[4], gap: 8 }}>
           <Skeleton width="100%" height={16} borderRadius={6} />
           <Skeleton width="70%" height={16} borderRadius={6} />
           <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 4 }}>
@@ -330,7 +275,17 @@ export default function AssetDetailScreen() {
           {chartLoading ? (
             <ChartSkeleton />
           ) : (
-            <PriceChart data={chartData} width={360} height={200} positive={isPositive} />
+            <CDSLineChart
+              data={chartData}
+              width={360}
+              height={200}
+              positive={isPositive}
+              showGradient={true}
+              smooth={true}
+              showDots={false}
+              showGrid={true}
+              gridLines={5}
+            />
           )}
         </ReAnimated.View>
 
@@ -626,7 +581,7 @@ const styles = StyleSheet.create({
   backButton: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: Radius[500],
     alignItems: "center",
     justifyContent: "center",
   },
@@ -646,7 +601,7 @@ const styles = StyleSheet.create({
   iconButton: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: Radius[500],
     alignItems: "center",
     justifyContent: "center",
   },
@@ -671,11 +626,11 @@ const styles = StyleSheet.create({
   periodButton: {
     paddingHorizontal: 14,
     paddingVertical: 6,
-    borderRadius: 8,
+    borderRadius: Radius[200],
   },
   statsCard: {
     marginHorizontal: 16,
-    borderRadius: 16,
+    borderRadius: Radius[400],
     borderWidth: 1,
     padding: 16,
     marginBottom: 20,
@@ -704,7 +659,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   sentimentCard: {
-    borderRadius: 16,
+    borderRadius: Radius[400],
     borderWidth: 1,
     padding: 16,
   },
@@ -751,7 +706,7 @@ const styles = StyleSheet.create({
   newsCard: {
     borderRadius: 12,
     borderWidth: 1,
-    padding: 14,
+    padding: Spacing[4],
     marginBottom: 10,
   },
   newsContent: {
@@ -782,7 +737,7 @@ const styles = StyleSheet.create({
   ctaButton: {
     flex: 1,
     height: 52,
-    borderRadius: 14,
+    borderRadius: Radius[400],
     alignItems: "center",
     justifyContent: "center",
   },

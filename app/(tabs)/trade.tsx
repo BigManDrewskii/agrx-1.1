@@ -38,6 +38,8 @@ import {
 } from "@/components/ui/typography";
 import { Footnote } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
+import { Radius } from "@/constants/spacing";
+import { CDSLineChart } from "@/components/ui/cds-line-chart";
 
 const QUICK_AMOUNTS = [5, 10, 25, 50, 100, 250];
 
@@ -274,6 +276,21 @@ export default function TradeScreen() {
             </View>
           </View>
 
+          {/* Price History Chart */}
+          <View style={styles.chartContainer}>
+            <CDSLineChart
+              data={selectedAsset.sparkline}
+              width={320}
+              height={120}
+              positive={selectedAsset.changePercent >= 0}
+              showGradient={true}
+              smooth={true}
+              showDots={false}
+              showGrid={true}
+              gridLines={5}
+            />
+          </View>
+
           {/* Amount Hero */}
           <AmountInput
             ref={amountInputRef}
@@ -477,7 +494,7 @@ const styles = StyleSheet.create({
   closeButton: {
     width: 32,
     height: 32,
-    borderRadius: 16,
+    borderRadius: Radius[400],
     alignItems: "center",
     justifyContent: "center",
   },
@@ -493,14 +510,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingHorizontal: 14,
     paddingVertical: 12,
-    borderRadius: 14,
+    borderRadius: Radius[400],
     borderWidth: 1,
     gap: 12,
   },
   assetIconSmall: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: Radius[500],
     alignItems: "center",
     justifyContent: "center",
   },
@@ -509,6 +526,11 @@ const styles = StyleSheet.create({
   },
   assetPriceBlock: {
     alignItems: "flex-end",
+  },
+  chartContainer: {
+    alignItems: "center",
+    marginTop: 16,
+    marginBottom: 8,
   },
   availableRow: {
     marginTop: 8,
@@ -523,7 +545,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 8,
+    borderRadius: Radius[200],
   },
   simplePreviewRow: {
     flexDirection: "row" as const,
@@ -541,6 +563,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    borderRadius: 10,
+    borderRadius: Radius[200],
   },
 });

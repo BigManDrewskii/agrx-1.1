@@ -5,6 +5,7 @@ import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { useViewMode, type ViewMode } from "@/lib/viewmode-context";
 import { Caption1 } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
+import { Spacing, Radius } from "@/constants/spacing";
 import * as Haptics from "expo-haptics";
 
 const MODES: { key: ViewMode; label: string }[] = [
@@ -77,25 +78,25 @@ export function ViewModeToggle({ compact = false }: ViewModeToggleProps) {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    borderRadius: 10,
-    padding: 3,
+    borderRadius: Radius[300],
+    padding: Spacing[1],
   },
   containerCompact: {
-    borderRadius: 8,
-    padding: 2,
+    borderRadius: Radius[200],
+    padding: Spacing[1],
   },
   segment: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderRadius: 8,
+    paddingVertical: Spacing[2],
+    paddingHorizontal: Spacing[4],
+    borderRadius: Radius[200],
   },
   segmentCompact: {
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderRadius: 6,
+    paddingVertical: Spacing[1],
+    paddingHorizontal: Spacing[3],
+    borderRadius: Radius[200],
   },
   segmentActive: {
     shadowColor: "#000",

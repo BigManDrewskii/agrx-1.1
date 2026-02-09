@@ -29,7 +29,9 @@ import {
   Footnote,
   Caption2,
 } from "@/components/ui/cds-typography";
+import { CDSEmptyState } from "@/components/ui/cds-empty-state";
 import { FontFamily } from "@/constants/typography";
+import { Spacing, Radius } from "@/constants/spacing";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -384,47 +386,13 @@ export default function NotificationHistoryScreen() {
 
       {/* ── Empty State ── */}
       {history.length === 0 ? (
-        <ReAnimated.View entering={FadeIn.duration(300).delay(120)} style={styles.emptyState}>
-          <View
-            style={[
-              styles.emptyIcon,
-              { backgroundColor: colors.surfaceSecondary },
-            ]}
-          >
-            <IconSymbol name="bell.fill" size={40} color={colors.muted} />
-          </View>
-          <Title3 style={{ textAlign: "center", marginTop: 16 }}>
-            No Notifications Yet
-          </Title3>
-          <Body
-            color="muted"
-            style={{
-              textAlign: "center",
-              marginTop: 8,
-              paddingHorizontal: 40,
-              lineHeight: 22,
-            }}
-          >
-            When your price alerts trigger or you receive updates, they'll appear here.
-          </Body>
-          <AnimatedPressable
-            variant="button"
-            onPress={() => router.push("/price-alerts" as any)}
-            style={[
-              styles.emptyActionBtn,
-              { backgroundColor: colors.primary },
-            ]}
-          >
-            <Caption1
-              style={{
-                color: colors.onPrimary,
-                fontFamily: FontFamily.semibold,
-              }}
-            >
-              Set Up Price Alerts
-            </Caption1>
-          </AnimatedPressable>
-        </ReAnimated.View>
+        <CDSEmptyState
+          icon="bell.fill"
+          title="No Notifications Yet"
+          message="When your price alerts trigger or you receive updates, they'll appear here."
+          actionLabel="Set Up Price Alerts"
+          onAction={() => router.push("/price-alerts" as any)}
+        />
       ) : (
         <FlatList
           data={flatData}
@@ -470,7 +438,7 @@ const styles = StyleSheet.create({
   headerActionBtn: {
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 16,
+    borderRadius: Radius[400],
   },
   sectionHeader: {
     paddingHorizontal: 4,
@@ -480,8 +448,8 @@ const styles = StyleSheet.create({
   notifRow: {
     flexDirection: "row",
     alignItems: "flex-start",
-    padding: 14,
-    borderRadius: 14,
+    padding: Spacing[4],
+    borderRadius: Radius[400],
     borderWidth: StyleSheet.hairlineWidth,
     gap: 12,
     position: "relative",
@@ -492,12 +460,12 @@ const styles = StyleSheet.create({
     left: 8,
     width: 8,
     height: 8,
-    borderRadius: 4,
+    borderRadius: Radius[100],
   },
   iconCircle: {
     width: 38,
     height: 38,
-    borderRadius: 19,
+    borderRadius: Radius.full,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 2,
@@ -519,7 +487,7 @@ const styles = StyleSheet.create({
   deleteBtn: {
     width: 28,
     height: 28,
-    borderRadius: 14,
+    borderRadius: Radius[400],
     alignItems: "center",
     justifyContent: "center",
     marginTop: 2,
@@ -533,7 +501,7 @@ const styles = StyleSheet.create({
   emptyIcon: {
     width: 80,
     height: 80,
-    borderRadius: 40,
+    borderRadius: Radius.full,
     alignItems: "center",
     justifyContent: "center",
   },

@@ -38,6 +38,7 @@ import {
 } from "@/components/features/portfolio";
 import * as Haptics from "expo-haptics";
 import { Platform } from "react-native";
+import { Radius } from "@/constants/spacing";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SPARKLINE_WIDTH = Math.min(SCREEN_WIDTH - 64, 340);
@@ -362,13 +363,13 @@ const styles = StyleSheet.create({
   },
   simpleCardList: {
     marginHorizontal: 20,
-    borderRadius: 16,
+    borderRadius: Radius[400],
     borderWidth: 1,
     overflow: "hidden",
   },
   proCardList: {
     marginHorizontal: 20,
-    borderRadius: 16,
+    borderRadius: Radius[400],
     borderWidth: 1,
     overflow: "hidden",
   },

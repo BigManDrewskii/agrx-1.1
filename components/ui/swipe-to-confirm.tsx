@@ -21,9 +21,9 @@ import { Spacing, Size } from "@/constants/spacing";
 import { Caption1, Callout } from "@/components/ui/cds-typography";
 
 // ─── Constants ──────────────────────────────────────────────────────────
-const THUMB_SIZE = Size.button.lg.height; // 52px
-const TRACK_HEIGHT = Size.button.lg.height + 4; // 56px
-const TRACK_PADDING = Spacing[1]; // 4px / 2 = 2px
+const THUMB_SIZE = 48; // 48px (12 * 4) - Fixed to 4px grid ✅
+const TRACK_HEIGHT = 52; // 52px (13 * 4) - Fixed to 4px grid ✅
+const TRACK_PADDING = Spacing[2]; // 8px - Fixed to 4px grid ✅
 const COMPLETION_THRESHOLD = 0.85; // 85% of track to trigger
 const HAPTIC_MILESTONES = [0.25, 0.5, 0.75]; // light haptic at these points
 

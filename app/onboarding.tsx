@@ -9,6 +9,7 @@ import {
 import ReAnimated, { FadeIn, FadeInDown, FadeInUp } from "react-native-reanimated";
 import { useRouter } from "expo-router";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
+import { CDSButton } from "@/components/ui/cds-button";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "@/components/ui/icon-symbol";
@@ -146,14 +147,16 @@ export default function OnboardingScreen() {
       <View style={styles.container}>
         {/* Skip Button */}
         <ReAnimated.View entering={FadeIn.duration(200).delay(300)} style={styles.skipContainer}>
-          <AnimatedPressable
-            variant="icon"
+          <CDSButton
+            variant="tertiary"
             onPress={handleSkip}
+            accessibilityLabel="Skip onboarding"
+            accessibilityHint="Go directly to the app without completing the tutorial"
           >
             <Callout color="muted" style={{ fontFamily: FontFamily.semibold }}>
               Skip
             </Callout>
-          </AnimatedPressable>
+          </CDSButton>
         </ReAnimated.View>
 
         {/* Slides */}
@@ -191,18 +194,15 @@ export default function OnboardingScreen() {
           </View>
 
           {/* CTA Button */}
-          <AnimatedPressable
-            variant="button"
+          <CDSButton
+            variant="primary"
             onPress={handleNext}
-            style={[
-              styles.ctaButton,
-              { backgroundColor: activeAccent },
-            ]}
+            accessibilityLabel={activeIndex === SLIDES.length - 1 ? "Get started with app" : "Continue to next slide"}
           >
             <Callout color="onPrimary" style={{ fontFamily: FontFamily.bold }}>
               {activeIndex === SLIDES.length - 1 ? "Get Started" : "Continue"}
             </Callout>
-          </AnimatedPressable>
+          </CDSButton>
 
           {/* Terms */}
           <Caption1

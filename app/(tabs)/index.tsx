@@ -34,9 +34,11 @@ import {
   PORTFOLIO_SPARKLINE,
   USER_STREAK,
 } from "@/lib/mock-data";
+import { useColors } from "@/hooks/use-colors";
 
 export default function HomeScreen() {
   const router = useRouter();
+  const colors = useColors();
   const [refreshing, setRefreshing] = useState(false);
   const { stocks, isLoading, isLive, lastUpdated, refetch } = useStockQuotes();
   const refreshCache = useRefreshCache();
@@ -108,8 +110,8 @@ export default function HomeScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor="rgb(0, 122, 255)"
-            colors={["rgb(0, 122, 255)"]}
+            tintColor={colors.primary}
+            colors={[colors.primary]}
           />
         }
       >

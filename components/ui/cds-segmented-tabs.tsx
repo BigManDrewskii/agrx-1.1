@@ -20,6 +20,7 @@ import * as Haptics from "expo-haptics";
 import { useColors } from "@/hooks/use-colors";
 import { Footnote } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
+import { Spacing, Radius } from "@/constants/spacing";
 
 type ColorType = "success" | "error" | "primary" | "gold";
 
@@ -84,11 +85,11 @@ export function CDSSegmentedTabs({
         style={[
           {
             position: "absolute",
-            left: 3,
-            top: 3,
-            bottom: 3,
+            left: Spacing[1],
+            top: Spacing[1],
+            bottom: Spacing[1],
             width: "47%",
-            borderRadius: 10,
+            borderRadius: Radius[200],
             backgroundColor: activeColor,
           },
           slidingStyle,
@@ -133,18 +134,18 @@ export function CDSSegmentedTabs({
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    borderRadius: 12,
-    padding: 3,
+    borderRadius: Radius[300],
+    padding: Spacing[1],
     position: "relative",
     overflow: "hidden",
   },
   slider: {
     position: "absolute",
-    left: 3,
-    top: 3,
-    bottom: 3,
+    left: Spacing[1],
+    top: Spacing[1],
+    bottom: Spacing[1],
     width: "47%",
-    borderRadius: 10,
+    borderRadius: Radius[200],
     zIndex: 0,
   },
   tab: {
@@ -152,7 +153,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   tabContent: {
-    paddingVertical: 9,
+    paddingVertical: Spacing[2],
     alignItems: "center",
   },
   tabDisabled: {

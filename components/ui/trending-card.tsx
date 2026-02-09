@@ -2,7 +2,7 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { useColors } from "@/hooks/use-colors";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
-import { Sparkline } from "./sparkline";
+import { CDSSparkline } from "./cds-sparkline";
 import { AnimatedNumber, AnimatedPnLNumber } from "./animated-number";
 import { Caption1, Caption2, Subhead } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
@@ -50,11 +50,13 @@ export function TrendingCard({ asset, onPress }: TrendingCardProps) {
       </View>
 
       <View style={styles.sparklineContainer}>
-        <Sparkline
+        <CDSSparkline
           data={asset.sparkline}
           width={100}
           height={32}
           positive={asset.change >= 0}
+          showGradient={true}
+          smooth={true}
         />
       </View>
 

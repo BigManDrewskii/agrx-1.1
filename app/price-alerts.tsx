@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/typography";
 import { Footnote } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
+import { Spacing, Radius } from "@/constants/spacing";
 import type { PriceAlert } from "@/server/priceAlertService";
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -208,7 +209,7 @@ export default function PriceAlertsScreen() {
               { backgroundColor: colors.primary },
             ]}
           >
-            <Caption1 style={{ color: "#FFFFFF", fontFamily: FontFamily.semibold }}>
+            <Caption1 style={{ color: colors.onPrimary, fontFamily: FontFamily.semibold }}>
               Enable
             </Caption1>
           </AnimatedPressable>
@@ -275,7 +276,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginBottom: 16,
     padding: 16,
-    borderRadius: 14,
+    borderRadius: Radius[400],
     borderWidth: 1,
     flexDirection: "row",
     alignItems: "center",
@@ -284,7 +285,7 @@ const styles = StyleSheet.create({
   enableButton: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 20,
+    borderRadius: Radius[500],
   },
   emptyState: {
     flex: 1,
@@ -304,8 +305,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: 14,
-    borderRadius: 14,
+    padding: Spacing[4],
+    borderRadius: Radius[400],
     borderWidth: StyleSheet.hairlineWidth,
   },
   alertLeft: {
@@ -325,6 +326,6 @@ const styles = StyleSheet.create({
   deleteButton: {
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 8,
+    borderRadius: Radius[200],
   },
 });

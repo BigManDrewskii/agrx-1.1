@@ -113,11 +113,11 @@ export function CDSStepper({
   const getSizeStyles = () => {
     switch (size) {
       case "sm":
-        return { buttonSize: 36, iconSize: 18, fontSize: 16, padding: 8 };
+        return { buttonSize: 36, iconSize: 18, fontSize: 16, padding: Spacing[2] };
       case "lg":
-        return { buttonSize: 52, iconSize: 24, fontSize: 18, padding: 12 };
+        return { buttonSize: 52, iconSize: 24, fontSize: 18, padding: Spacing[3] };
       default: // md
-        return { buttonSize: 44, iconSize: 20, fontSize: 17, padding: 10 };
+        return { buttonSize: 44, iconSize: 20, fontSize: 17, padding: Spacing[3] };
     }
   };
 

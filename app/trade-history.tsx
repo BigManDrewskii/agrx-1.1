@@ -35,7 +35,9 @@ import {
   MonoCaption1,
 } from "@/components/ui/typography";
 import { Caption2 } from "@/components/ui/cds-typography";
+import { CDSEmptyState } from "@/components/ui/cds-empty-state";
 import { FontFamily } from "@/constants/typography";
+import { Spacing, Radius } from "@/constants/spacing";
 import { STAGGER_DELAY, STAGGER_MAX } from "@/lib/animations";
 
 // ─── Date Grouping ─────────────────────────────────────────────────────────
@@ -506,47 +508,13 @@ export default function TradeHistoryScreen() {
 
       {/* ── Empty State ── */}
       {state.trades.length === 0 ? (
-        <Animated.View entering={FadeIn.duration(300)} style={styles.emptyState}>
-          <View
-            style={[
-              styles.emptyIcon,
-              { backgroundColor: colors.surfaceSecondary },
-            ]}
-          >
-            <IconSymbol name="clock" size={40} color={colors.muted} />
-          </View>
-          <Title3 style={{ textAlign: "center", marginTop: 16 }}>
-            No Trades Yet
-          </Title3>
-          <Body
-            color="muted"
-            style={{
-              textAlign: "center",
-              marginTop: 8,
-              paddingHorizontal: 40,
-              lineHeight: 22,
-            }}
-          >
-            Your executed trades will appear here with date grouping and profit/loss tracking.
-          </Body>
-          <AnimatedPressable
-            variant="button"
-            onPress={() => router.push("/(tabs)/trade" as any)}
-            style={[
-              styles.emptyActionBtn,
-              { backgroundColor: colors.primary },
-            ]}
-          >
-            <Caption1
-              style={{
-                color: colors.onPrimary,
-                fontFamily: FontFamily.semibold,
-              }}
-            >
-              Start Trading
-            </Caption1>
-          </AnimatedPressable>
-        </Animated.View>
+        <CDSEmptyState
+          icon="clock"
+          title="No Trades Yet"
+          message="Your executed trades will appear here with date grouping and profit/loss tracking."
+          actionLabel="Start Trading"
+          onAction={() => router.push("/(tabs)/trade" as any)}
+        />
       ) : (
         <FlatList
           data={flatData}
@@ -580,14 +548,14 @@ const styles = StyleSheet.create({
   backButton: {
     width: 36,
     height: 36,
-    borderRadius: 18,
+    borderRadius: Radius.full,
     alignItems: "center",
     justifyContent: "center",
   },
   summaryCard: {
     marginHorizontal: 16,
     marginBottom: 14,
-    borderRadius: 14,
+    borderRadius: Radius[400],
     borderWidth: StyleSheet.hairlineWidth,
     padding: 16,
   },
@@ -612,15 +580,15 @@ const styles = StyleSheet.create({
   tradeRow: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 14,
-    borderRadius: 14,
+    padding: Spacing[4],
+    borderRadius: Radius[400],
     borderWidth: StyleSheet.hairlineWidth,
     gap: 12,
   },
   sideIndicator: {
     width: 36,
     height: 36,
-    borderRadius: 18,
+    borderRadius: Radius.full,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -661,7 +629,7 @@ const styles = StyleSheet.create({
   emptyIcon: {
     width: 80,
     height: 80,
-    borderRadius: 40,
+    borderRadius: Radius.full,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -669,7 +637,7 @@ const styles = StyleSheet.create({
     marginTop: 24,
     paddingHorizontal: 24,
     paddingVertical: 12,
-    borderRadius: 24,
+    borderRadius: Radius[500],
   },
   listContent: {
     paddingHorizontal: 16,
@@ -685,7 +653,7 @@ const styles = StyleSheet.create({
   filterChip: {
     paddingHorizontal: 14,
     paddingVertical: 7,
-    borderRadius: 20,
+    borderRadius: Radius[500],
     borderWidth: 1,
   },
   filterDivider: {

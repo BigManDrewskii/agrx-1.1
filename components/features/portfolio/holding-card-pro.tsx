@@ -27,7 +27,7 @@ import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { AnimatedNumber, AnimatedPnLNumber } from "@/components/ui/animated-number";
-import { Sparkline } from "@/components/ui/sparkline";
+import { CDSSparkline } from "@/components/ui/cds-sparkline";
 import { Caption1, Subhead } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 
@@ -114,11 +114,13 @@ export function HoldingCardPro({
             {shares.toFixed(shares % 1 === 0 ? 0 : 2)} shares · avg €{avgCost.toFixed(2)}
           </Caption1>
           <View style={styles.holdingBottomRight}>
-            <Sparkline
+            <CDSSparkline
               data={liveSparkline}
               width={48}
               height={18}
               positive={livePnl >= 0}
+              showGradient={true}
+              smooth={true}
             />
             <AnimatedPressable
               variant="icon"

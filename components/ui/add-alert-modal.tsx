@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { useColors } from "@/hooks/use-colors";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
+import { CDSButton } from "@/components/ui/cds-button";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useNotifications } from "@/lib/notification-context";
 import {
@@ -25,6 +26,7 @@ import {
 } from "@/components/ui/typography";
 import { Footnote } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
+import { Radius } from "@/constants/spacing";
 import type { AlertType } from "@/server/priceAlertService";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -147,10 +149,11 @@ export function AddAlertModal({
       >
         <AnimatedPressable
           variant="card"
-          style={styles.backdrop}
+          style={[styles.backdrop, { backgroundColor: `${colors.background}80` }]}
           onPress={onClose}
           haptic={false}
           accessibilityLabel="Close modal"
+          accessibilityHint="Closes the alert modal without saving"
           accessibilityRole="button"
         />
         <View
@@ -288,28 +291,23 @@ export function AddAlertModal({
           </View>
 
           {/* Save Button */}
-          <AnimatedPressable
-            variant="button"
+          <CDSButton
+            variant="primary"
             onPress={handleSave}
             disabled={!isValid() || loading}
-            style={[
-              styles.saveButton,
-              {
-                backgroundColor:
-                  isValid() && !loading ? colors.primary : colors.muted + "30",
-              },
-            ]}
+            loading={loading}
+            accessibilityLabel="Set price alert"
+            accessibilityHint="Creates a new price alert for the selected stock"
           >
             <Body
               style={{
-                color: isValid() && !loading ? "#FFFFFF" : colors.muted,
                 fontFamily: FontFamily.semibold,
                 textAlign: "center",
               }}
             >
               {loading ? "Saving..." : "Set Alert"}
             </Body>
-          </AnimatedPressable>
+          </CDSButton>
 
           {/* Bottom padding for safe area */}
           <View style={{ height: 20 }} />
@@ -328,11 +326,10 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.5)",
   },
   sheet: {
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    borderTopLeftRadius: Radius[500],
+    borderTopRightRadius: Radius[500],
     borderWidth: StyleSheet.hairlineWidth,
     borderBottomWidth: 0,
     paddingHorizontal: 20,

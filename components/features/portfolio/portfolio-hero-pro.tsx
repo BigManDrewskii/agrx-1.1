@@ -18,7 +18,7 @@ import { View, StyleSheet } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useColors } from "@/hooks/use-colors";
 import { AnimatedNumber, AnimatedPnLNumber } from "@/components/ui/animated-number";
-import { Sparkline } from "@/components/ui/sparkline";
+import { CDSSparkline } from "@/components/ui/cds-sparkline";
 import { Caption1 } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 
@@ -70,12 +70,13 @@ export function PortfolioHeroPro({
       </View>
       {hasHoldings && (
         <View style={styles.sparklineContainer}>
-          <Sparkline
+          <CDSSparkline
             data={sparkline}
             width={sparklineWidth}
             height={64}
             positive={isPositive}
-            strokeWidth={2}
+            showGradient={true}
+            smooth={true}
           />
         </View>
       )}

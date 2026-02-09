@@ -17,6 +17,8 @@ import {
 } from "react-native";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "@/components/ui/icon-symbol";
+import { AnimatedPressable } from "@/components/ui/animated-pressable";
+import { CDSButton } from "@/components/ui/cds-button";
 import {
   ShareCard,
   type ShareCardData,
@@ -24,6 +26,7 @@ import {
 } from "@/components/ui/share-card";
 import { captureAndShare } from "@/lib/share-service";
 import { FontFamily } from "@/constants/typography";
+import { Radius } from "@/constants/spacing";
 import {
   Title3,
   Callout,
@@ -87,22 +90,19 @@ export function ShareCardModal({
       transparent
       onRequestClose={onClose}
     >
-      <View style={[styles.overlay, { backgroundColor: "rgba(0,0,0,0.85)" }]}>
+      <View style={[styles.overlay, { backgroundColor: `${colors.background}D9` }]}>
         {/* Close button */}
         <View style={styles.header}>
-          <Pressable
+          <AnimatedPressable
+            variant="icon"
             onPress={onClose}
-            style={({ pressed }) => [
-              styles.closeButton,
-              { backgroundColor: colors.surface },
-              pressed && { opacity: 0.6 },
-            ]}
+            style={[styles.closeButton, { backgroundColor: colors.surface }]}
             accessibilityLabel="Close modal"
-            accessibilityRole="button"
+            accessibilityHint="Closes the share card modal and returns to the previous screen"
           >
             <IconSymbol name="xmark" size={20} color={colors.foreground} />
-          </Pressable>
-          <Title3 style={{ color: "#FFFFFF" }}>Share Your Gains</Title3>
+          </AnimatedPressable>
+          <Title3 style={{ color: colors.foreground }}>Share Your Gains</Title3>
           <View style={{ width: 40 }} />
         </View>
 
@@ -123,8 +123,8 @@ export function ShareCardModal({
                   styles.timeFrameButton,
                   {
                     backgroundColor: isActive
-                      ? "rgba(87,139,250,0.20)"
-                      : "rgba(255,255,255,0.06)",
+                      ? `${colors.primary}33`
+                      : `${colors.surface}0F`,
                   },
                   pressed && { opacity: 0.6 },
                 ]}
@@ -135,7 +135,7 @@ export function ShareCardModal({
                 <Caption1
                   style={{
                     fontFamily: isActive ? FontFamily.bold : FontFamily.medium,
-                    color: isActive ? "#578BFA" : "#89909E",
+                    color: isActive ? colors.primary : colors.muted,
                     fontSize: 11,
                   }}
                 >
@@ -145,7 +145,7 @@ export function ShareCardModal({
                   <IconSymbol
                     name="checkmark"
                     size={10}
-                    color="#578BFA"
+                    color={colors.primary}
                     style={{ position: "absolute", top: 4, right: 4 }}
                   />
                 )}
@@ -156,40 +156,30 @@ export function ShareCardModal({
 
         {/* Share Button */}
         <View style={styles.bottomActions}>
-          <Pressable
+          <CDSButton
+            variant="primary"
             onPress={handleShare}
             disabled={isSharing}
-            style={({ pressed }) => [
-              styles.shareButton,
-              { backgroundColor: colors.primary },
-              pressed && { transform: [{ scale: 0.97 }], opacity: 0.9 },
-              isSharing && { opacity: 0.6 },
-            ]}
+            loading={isSharing}
             accessibilityLabel="Share card"
-            accessibilityRole="button"
-            accessibilityState={{ disabled: isSharing }}
+            accessibilityHint="Shares the P&L card to social media or saves it to photos"
+            style={styles.shareButton}
           >
-            {isSharing ? (
-              <ActivityIndicator color="#FFFFFF" size="small" />
-            ) : (
-              <>
-                <IconSymbol name="square.and.arrow.up" size={20} color="#FFFFFF" />
-                <Callout
-                  style={{
-                    fontFamily: FontFamily.bold,
-                    color: "#FFFFFF",
-                    marginLeft: 8,
-                  }}
-                >
-                  Share
-                </Callout>
-              </>
-            )}
-          </Pressable>
+            <IconSymbol name="square.and.arrow.up" size={20} color={colors.onPrimary} />
+            <Callout
+              style={{
+                fontFamily: FontFamily.bold,
+                color: colors.onPrimary,
+                marginLeft: 8,
+              }}
+            >
+              Share
+            </Callout>
+          </CDSButton>
 
           <Subhead
             style={{
-              color: "#5B616E",
+              color: colors.muted,
               textAlign: "center",
               marginTop: 12,
               fontFamily: FontFamily.medium,
@@ -224,7 +214,7 @@ const styles = StyleSheet.create({
   closeButton: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: Radius[500],
     alignItems: "center",
     justifyContent: "center",
   },
@@ -246,17 +236,13 @@ const styles = StyleSheet.create({
   timeFrameButton: {
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 10,
+    borderRadius: Radius[300],
   },
   bottomActions: {
     width: "100%",
     paddingHorizontal: 16,
   },
   shareButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
     height: 56,
-    borderRadius: 16,
   },
 });

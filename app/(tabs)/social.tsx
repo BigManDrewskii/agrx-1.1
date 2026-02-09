@@ -3,11 +3,12 @@
  *
  * Refactored to use extracted feature components for better maintainability.
  */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ScrollView, View, FlatList, StyleSheet } from "react-native";
 import { ScreenContainer } from "@/components/screen-container";
 import { ScreenHeader } from "@/components/layouts";
 import { PostCard, TabSelector, LeaderboardRow, AchievementCard } from "@/components/features/social";
+import { SocialFeedSkeleton } from "@/components/ui/skeleton";
 import { useColors } from "@/hooks/use-colors";
 import { Footnote } from "@/components/ui/cds-typography";
 import { Title3 } from "@/components/ui/cds-typography";
@@ -18,6 +19,15 @@ const TABS = ["Feed", "Leaderboard", "Achievements"];
 export default function SocialScreen() {
   const colors = useColors();
   const [activeTab, setActiveTab] = useState("Feed");
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Simulate loading on tab change (prepared for real API integration)
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    // Uncomment when integrating real API:
+    // setIsLoading(true);
+    // setTimeout(() => setIsLoading(false), 500);
+  };
 
   return (
     <ScreenContainer>
@@ -28,18 +38,24 @@ export default function SocialScreen() {
       <TabSelector
         tabs={TABS}
         activeTab={activeTab}
-        onChange={setActiveTab}
+        onChange={handleTabChange}
       />
 
       {/* Content */}
       {activeTab === "Feed" && (
-        <FlatList
-          data={SOCIAL_FEED}
-          keyExtractor={(item) => item.id}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.feedContent}
-          renderItem={({ item, index }) => <PostCard post={item} index={index} />}
-        />
+        <>
+          {isLoading ? (
+            <SocialFeedSkeleton count={3} />
+          ) : (
+            <FlatList
+              data={SOCIAL_FEED}
+              keyExtractor={(item) => item.id}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.feedContent}
+              renderItem={({ item, index }) => <PostCard post={item} index={index} />}
+            />
+          )}
+        </>
       )}
 
       {activeTab === "Leaderboard" && (

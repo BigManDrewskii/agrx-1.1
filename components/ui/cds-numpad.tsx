@@ -19,6 +19,7 @@ import * as Haptics from "expo-haptics";
 import { useColors } from "@/hooks/use-colors";
 import { Title2 } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
+import { Spacing, Radius } from "@/constants/spacing";
 import { IconSymbol } from "./icon-symbol";
 
 export type NumpadKey =
@@ -99,8 +100,13 @@ export function CDSNumpad({
           style={[
             styles.key,
             animatedStyle,
-            isActionKey && styles.actionKey,
-            isSubmit && styles.submitKey,
+            isActionKey && { backgroundColor: "transparent" },
+            isSubmit && { backgroundColor: colors.primary },
+            !isActionKey && !isSubmit && {
+              backgroundColor: disabled
+                ? colors.surfaceSecondary + "15"
+                : colors.surfaceSecondary + "18"
+            },
             disabled && styles.keyDisabled,
           ]}
         >
@@ -144,26 +150,19 @@ export function CDSNumpad({
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 8,
-    gap: 8,
+    paddingHorizontal: Spacing[2],
+    gap: Spacing[2],
   },
   row: {
     flexDirection: "row",
-    gap: 8,
+    gap: Spacing[2],
   },
   key: {
     flex: 1,
     aspectRatio: 1.5,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 12,
-    backgroundColor: "#ffffff10",
-  },
-  actionKey: {
-    backgroundColor: "transparent",
-  },
-  submitKey: {
-    backgroundColor: "#0052FF",
+    borderRadius: Radius[300],
   },
   keyDisabled: {
     opacity: 0.3,
