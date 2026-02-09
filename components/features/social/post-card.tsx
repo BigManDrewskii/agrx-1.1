@@ -13,6 +13,7 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { Spacing } from "@/constants/spacing";
 import { STAGGER_DELAY, STAGGER_MAX } from "@/lib/animations";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { AnimatedPnLNumber } from "@/components/ui/animated-number";
@@ -133,12 +134,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 48, // ✅ 48px minimum touch target (was 40)
+    height: 48, // ✅ 48px minimum touch target (was 40)
+    borderRadius: 24,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 10,
+    marginRight: Spacing[2], // ✅ 8px (was 10, not divisible by 4)
   },
   postMeta: {
     flex: 1,

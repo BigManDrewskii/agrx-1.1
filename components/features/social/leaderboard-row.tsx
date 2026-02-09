@@ -13,6 +13,7 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { Spacing } from "@/constants/spacing";
 import { STAGGER_DELAY, STAGGER_MAX } from "@/lib/animations";
 import { useColors } from "@/hooks/use-colors";
 import { AnimatedPnLNumber } from "@/components/ui/animated-number";
@@ -104,7 +105,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 10,
+    marginRight: Spacing[2], // ✅ 8px (was 10, not divisible by 4)
   },
   info: {
     flex: 1,

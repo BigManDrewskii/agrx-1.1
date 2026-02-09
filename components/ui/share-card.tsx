@@ -202,16 +202,16 @@ export function ShareCard({ data, ref }: { data: ShareCardData; ref?: React.Ref<
     };
 
     // Theme-aware colors
-    const bgColor = theme === 'dark' ? colors.background : colors.surface;
-    const bgGradientColor = theme === 'dark' ? '#0A0B0D' : colors.surface;
+    const bgColor = colors.background;
+    const bgGradientColor = colors.surface;
     const pnlGlow = addAlpha(pnlColor, theme === 'dark' ? 0.25 : 0.15);
-    const surfaceColor = theme === 'dark' ? '#1A1C23' : colors.surface;
+    const surfaceColor = colors.surface;
     const surfaceLightColor = addAlpha(colors.muted, theme === 'dark' ? 0.15 : 0.08);
     const primaryColor = colors.primary;
 
-    const textPrimary = theme === 'dark' ? '#EEF0F3' : colors.foreground;
-    const textSecondary = theme === 'dark' ? '#89909E' : colors.muted;
-    const textTertiary = theme === 'dark' ? '#5B616E' : colors.muted;
+    const textPrimary = colors.foreground;
+    const textSecondary = colors.muted;
+    const textTertiary = colors.muted;
 
     const arrow = isPositive ? "▲" : "▼";
     const sign = isPositive ? "+" : "";
@@ -315,7 +315,7 @@ export function ShareCard({ data, ref }: { data: ShareCardData; ref?: React.Ref<
           <View style={styles.footer}>
             <View style={styles.brandRow}>
               <View style={[styles.logoContainer, { backgroundColor: primaryColor }]}>
-                <Text style={styles.logoText}>AGRX</Text>
+                <Text style={[styles.logoText, { color: colors.onPrimary }]}>AGRX</Text>
               </View>
               <View style={styles.brandInfo}>
                 <Text style={[styles.brandName, { color: textPrimary }]}>AGRX</Text>
@@ -425,9 +425,9 @@ const styles = StyleSheet.create({
     marginBottom: Spacing[4], // 16px
   },
   tickerIconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 48, // ✅ 48px minimum touch target (was 44)
+    height: 48, // ✅ 48px minimum touch target (was 44)
+    borderRadius: 24,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
@@ -519,7 +519,6 @@ const styles = StyleSheet.create({
   logoText: {
     fontFamily: FontFamily.bold,
     fontSize: 10,
-    color: "#FFFFFF",
     letterSpacing: 0.5,
   },
   brandInfo: {},

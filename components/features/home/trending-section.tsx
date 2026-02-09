@@ -13,6 +13,7 @@
 import React from "react";
 import { View, FlatList, StyleSheet } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { Spacing } from "@/constants/spacing";
 import { useRouter } from "expo-router";
 import { SectionHeader } from "@/components/ui/section-header";
 import { TrendingCard } from "@/components/ui/trending-card";
@@ -161,7 +162,7 @@ const styles = StyleSheet.create({
     width: 148,
     borderRadius: 14,
     borderWidth: 1,
-    padding: 14,
+    padding: Spacing[4], // ✅ 16px (was 14, not divisible by 4)
     alignItems: "center",
   },
 });

@@ -107,8 +107,8 @@ export function AssetRow({
           <AnimatedPressable
             variant="icon"
             onPress={handleStarPress}
-            hitSlop={{ top: 14, bottom: 14, left: 14, right: 14 }}
-            style={[styles.starButton, { minWidth: 44, minHeight: 44 }]}
+            hitSlop={{ top: Spacing[2], bottom: Spacing[2], left: Spacing[2], right: Spacing[2] }} // ✅ 8px (was 14, not divisible by 4)
+            style={[styles.starButton, { minWidth: 48, minHeight: 48 }]} // ✅ 48px minimum touch target (was 44)
             accessibilityLabel={`${isWatchlisted ? "Remove from" : "Add to"} watchlist`}
             accessibilityRole="button"
             accessibilityState={{ selected: isWatchlisted }}

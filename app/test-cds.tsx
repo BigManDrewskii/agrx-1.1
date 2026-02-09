@@ -207,17 +207,17 @@ export default function TestCDSScreen() {
             AGRX Brand Colors (Preserved)
           </RNText>
           <View style={[styles.colorBox, { backgroundColor: colors.success }]}>
-            <RNText style={[styles.colorText, { color: colors.onPrimary || "#FFFFFF" }]}>
+            <RNText style={[styles.colorText, { color: colors.onPrimary }]}>
               Success: {colors.success}
             </RNText>
           </View>
           <View style={[styles.colorBox, { backgroundColor: colors.error }]}>
-            <RNText style={[styles.colorText, { color: colors.onPrimary || "#FFFFFF" }]}>
+            <RNText style={[styles.colorText, { color: colors.onPrimary }]}>
               Error: {colors.error}
             </RNText>
           </View>
           <View style={[styles.colorBox, { backgroundColor: colors.gold }]}>
-            <RNText style={[styles.colorText, { color: colors.onPrimary || "#FFFFFF" }]}>
+            <RNText style={[styles.colorText, { color: colors.onPrimary }]}>
               Gold: {colors.gold}
             </RNText>
           </View>
@@ -229,17 +229,17 @@ export default function TestCDSScreen() {
             CDS Semantic Colors
           </RNText>
           <View style={[styles.colorBox, { backgroundColor: colors.primary }]}>
-            <RNText style={[styles.colorText, { color: colors.onPrimary || "#FFFFFF" }]}>
+            <RNText style={[styles.colorText, { color: colors.onPrimary }]}>
               Primary: {colors.primary}
             </RNText>
           </View>
           <View style={[styles.colorBox, { backgroundColor: colors.muted }]}>
-            <RNText style={[styles.colorText, { color: colors.onPrimary || "#FFFFFF" }]}>
+            <RNText style={[styles.colorText, { color: colors.onPrimary }]}>
               Muted: {colors.muted}
             </RNText>
           </View>
           <View style={[styles.colorBox, { backgroundColor: colors.border }]}>
-            <RNText style={[styles.colorText, { color: colors.onPrimary || "#FFFFFF" }]}>
+            <RNText style={[styles.colorText, { color: colors.onPrimary }]}>
               Border: {colors.border}
             </RNText>
           </View>
