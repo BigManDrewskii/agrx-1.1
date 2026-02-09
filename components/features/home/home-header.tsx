@@ -1,7 +1,7 @@
 /**
  * HomeHeader — Home screen header
  *
- * Shows greeting, mode toggle, streak badge (Pro), live badge (Pro), notifications bell with badge, and settings button.
+ * Shows greeting, streak badge (Pro), live badge (Pro), notifications bell with badge, and settings button.
  *
  * Usage:
  *   <HomeHeader
@@ -21,7 +21,6 @@ import { useRouter } from "expo-router";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { LiveBadge } from "@/components/ui/live-badge";
-import { ViewModeToggle } from "@/components/ui/view-mode-toggle";
 import { useColors } from "@/hooks/use-colors";
 import { Caption1, Caption2, Footnote, Title2 } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
@@ -118,10 +117,6 @@ export function HomeHeader({
           </AnimatedPressable>
         </View>
       </View>
-      {/* Mode toggle — sits below greeting row */}
-      <View style={styles.modeToggleRow}>
-        <ViewModeToggle compact />
-      </View>
     </Animated.View>
   );
 }
@@ -167,9 +162,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 3,
-  },
-  modeToggleRow: {
-    marginTop: 16, // Increased from 12 for more prominence
-    alignItems: "center", // Center the toggle
   },
 });
