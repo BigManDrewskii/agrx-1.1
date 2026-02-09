@@ -150,6 +150,11 @@ export default function PortfolioScreen() {
     try {
       await refreshCache.mutateAsync();
       await refetch();
+
+      // Haptic feedback on successful refresh
+      if (Platform.OS !== "web") {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
     } catch {
       // Silently handle
     } finally {

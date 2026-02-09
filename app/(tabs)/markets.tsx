@@ -9,8 +9,10 @@ import {
   FlatList,
   StyleSheet,
   RefreshControl,
+  Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
+import * as Haptics from "expo-haptics";
 import { ScreenContainer } from "@/components/screen-container";
 import { AssetRow } from "@/components/ui/asset-row";
 import { StockListSkeleton } from "@/components/ui/skeleton";
@@ -96,6 +98,11 @@ export default function MarketsScreen() {
     try {
       await refreshCache.mutateAsync();
       await refetch();
+
+      // Haptic feedback on successful refresh
+      if (Platform.OS !== "web") {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
     } catch {
       // Silently handle
     } finally {
