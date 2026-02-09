@@ -1,5 +1,6 @@
 export { HomeHeader } from "./home-header";
 export { PortfolioHero } from "./portfolio-hero";
+export { QuickStats } from "./quick-stats";
 export { QuickActions } from "./quick-actions";
 export { DailyChallengeCard } from "./daily-challenge-card";
 export { WatchlistSection } from "./watchlist-section";

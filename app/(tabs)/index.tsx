@@ -23,6 +23,7 @@ import { useMarketNews } from "@/hooks/use-news";
 import {
   HomeHeader,
   PortfolioHero,
+  QuickStats,
   QuickActions,
   DailyChallengeCard,
   WatchlistSection,
@@ -134,6 +135,9 @@ export default function HomeScreen() {
           isPro={isPro}
           portfolioSparkline={PORTFOLIO_SPARKLINE}
         />
+
+        {/* Quick Stats — Simple mode only */}
+        {isSimple && <QuickStats todayPnL={portfolioPnl} />}
 
         {/* Quick Actions — Simple mode */}
         {isSimple && <QuickActions />}

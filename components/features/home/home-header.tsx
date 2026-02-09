@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 3,
   },
   modeToggleRow: {
-    marginTop: 12,
-    alignSelf: "flex-start",
+    marginTop: 16, // Increased from 12 for more prominence
+    alignItems: "center", // Center the toggle
   },
 });
