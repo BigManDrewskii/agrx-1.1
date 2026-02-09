@@ -3,12 +3,7 @@
  *
  * Shows achievement icon, title, description, and progress bar (if not unlocked).
  * Unlocked achievements show a badge instead of progress.
- *
- * Usage:
- *   <AchievementCard
- *     achievement={achievementData}
- *     index={0}
- *   />
+ * Uses design tokens for all spacing and colors.
  */
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
@@ -17,9 +12,12 @@ import { STAGGER_DELAY, STAGGER_MAX } from "@/lib/animations";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { useThemeContext } from "@/lib/theme-provider";
 import { Caption2 } from "@/components/ui/typography";
 import { Subhead } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
+import { Spacing, Radius } from "@/constants/spacing";
+import { getShadow } from "@/constants/shadows";
 import type { Achievement } from "@/lib/mock-data";
 
 interface AchievementCardProps {
@@ -29,6 +27,8 @@ interface AchievementCardProps {
 
 export function AchievementCard({ achievement, index }: AchievementCardProps) {
   const colors = useColors();
+  const { colorScheme } = useThemeContext();
+  const isDark = colorScheme === "dark";
   const progressPercent = (achievement.progress / achievement.total) * 100;
 
   return (
@@ -38,9 +38,12 @@ export function AchievementCard({ achievement, index }: AchievementCardProps) {
         styles.card,
         {
           backgroundColor: colors.surface,
-          borderColor: achievement.unlocked ? colors.warningAlpha : colors.border,
+          borderColor: achievement.unlocked
+            ? colors.warningAlpha
+            : isDark ? colors.borderSubtle : colors.border,
           opacity: achievement.unlocked ? 1 : 0.7,
         },
+        getShadow("sm", isDark),
       ]}
     >
       <Text style={styles.icon}>{achievement.icon}</Text>
@@ -52,7 +55,7 @@ export function AchievementCard({ achievement, index }: AchievementCardProps) {
       </Subhead>
       <Caption2
         color="muted"
-        style={{ textAlign: "center", lineHeight: 15, marginBottom: 8 }}
+        style={{ textAlign: "center", lineHeight: 15, marginBottom: Spacing[2] }}
         numberOfLines={2}
       >
         {achievement.description}
@@ -89,14 +92,14 @@ export function AchievementCard({ achievement, index }: AchievementCardProps) {
 const styles = StyleSheet.create({
   card: {
     width: "47%",
-    borderRadius: 16,
+    borderRadius: Radius[400],
     borderWidth: 1,
-    padding: 16,
+    padding: Spacing[4],
     alignItems: "center",
   },
   icon: {
     fontSize: 32,
-    marginBottom: 8,
+    marginBottom: Spacing[2],
   },
   progress: {
     width: "100%",
@@ -118,8 +121,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    paddingHorizontal: 8,
+    paddingHorizontal: Spacing[2],
     paddingVertical: 3,
-    borderRadius: 6,
+    borderRadius: Radius[200],
   },
 });

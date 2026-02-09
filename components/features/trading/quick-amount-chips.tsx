@@ -1,26 +1,18 @@
 /**
- * QuickAmountChips — Robinhood-inspired quick amount selector
+ * QuickAmountChips — Horizontal row of preset amount pills
  *
- * Horizontally scrollable row of preset amount pills.
- * Selected state shows accent color fill, disabled chips are dimmed.
- *
- * Usage:
- *   <QuickAmountChips
- *     amounts={[5, 10, 25, 50, 100, 250]}
- *     selectedAmount={10}
- *     maxAmount={100}
- *     isBuy={true}
- *     onSelect={(amount) => setAmountText(amount.toString())}
- *   />
+ * Scrollable row with preset amounts and a MAX button.
+ * Selected state uses accent color. Disabled chips are dimmed.
+ * Uses design tokens for all colors and spacing.
  */
 import React from "react";
-import { View, ScrollView, StyleSheet, Platform } from "react-native";
+import { ScrollView, StyleSheet, Platform } from "react-native";
 import * as Haptics from "expo-haptics";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
-import { useColors } from "@/hooks/use-colors";
-import { useThemeContext } from "@/lib/theme-provider";
+import { useColors, colorAlpha } from "@/hooks/use-colors";
 import { Footnote } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
+import { Spacing, Radius } from "@/constants/spacing";
 
 interface QuickAmountChipsProps {
   amounts: number[];
@@ -38,9 +30,6 @@ export function QuickAmountChips({
   onSelect,
 }: QuickAmountChipsProps) {
   const colors = useColors();
-  const { colorScheme } = useThemeContext();
-  const isDark = colorScheme === "dark";
-
   const accentColor = isBuy ? colors.success : colors.error;
 
   const handlePress = (amount: number) => {
@@ -70,15 +59,11 @@ export function QuickAmountChips({
               styles.chip,
               {
                 backgroundColor: isSelected
-                  ? accentColor
-                  : isDark
-                  ? "rgba(255,255,255,0.06)"
-                  : "rgba(0,0,0,0.04)",
+                  ? colorAlpha(accentColor, 0.10)
+                  : colors.foregroundAlpha4,
                 borderColor: isSelected
-                  ? accentColor
-                  : isDark
-                  ? "rgba(255,255,255,0.08)"
-                  : "rgba(0,0,0,0.06)",
+                  ? colorAlpha(accentColor, 0.20)
+                  : colors.foregroundAlpha8,
                 opacity: isDisabled ? 0.35 : 1,
               },
             ]}
@@ -86,7 +71,7 @@ export function QuickAmountChips({
             <Footnote
               style={{
                 fontFamily: FontFamily.semibold,
-                color: isSelected ? "#FFFFFF" : colors.foreground,
+                color: isSelected ? accentColor : colors.foreground,
                 fontSize: 13,
               }}
             >
@@ -95,23 +80,51 @@ export function QuickAmountChips({
           </AnimatedPressable>
         );
       })}
+
+      {/* MAX chip */}
+      <AnimatedPressable
+        variant="chip"
+        onPress={() => handlePress(maxAmount)}
+        style={[
+          styles.chip,
+          {
+            backgroundColor: selectedAmount === maxAmount
+              ? colorAlpha(accentColor, 0.10)
+              : colors.foregroundAlpha4,
+            borderColor: selectedAmount === maxAmount
+              ? colorAlpha(accentColor, 0.20)
+              : colors.foregroundAlpha8,
+          },
+        ]}
+      >
+        <Footnote
+          style={{
+            fontFamily: FontFamily.bold,
+            fontSize: 11,
+            letterSpacing: 0.8,
+            color: selectedAmount === maxAmount ? accentColor : colors.muted,
+          }}
+        >
+          MAX
+        </Footnote>
+      </AnimatedPressable>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 12,
-    marginBottom: 16,
+    marginTop: Spacing[1],
+    marginBottom: Spacing[3],
   },
   scrollContent: {
-    paddingHorizontal: 16,
-    gap: 8,
+    paddingHorizontal: Spacing[4],
+    gap: Spacing[2],
   },
   chip: {
-    paddingHorizontal: 18,
-    paddingVertical: 8,
-    borderRadius: 20,
+    paddingHorizontal: Spacing[4],
+    paddingVertical: 7,
+    borderRadius: Radius.xl,
     borderWidth: 1,
   },
 });

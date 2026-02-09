@@ -17,7 +17,7 @@ import ReAnimated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import { useRouter } from "expo-router";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { ScreenContainer } from "@/components/screen-container";
-import { useColors } from "@/hooks/use-colors";
+import { useColors, colorAlpha } from "@/hooks/use-colors";
 import { useNotifications, type NotificationHistoryItem, type NotificationHistoryItemType } from "@/lib/notification-context";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Caption1 } from "@/components/ui/typography";
@@ -237,7 +237,7 @@ export default function NotificationHistoryScreen() {
               backgroundColor: isUnread
                 ? colors.primaryAlpha
                 : colors.surface,
-              borderColor: isUnread ? colors.primary + "33" : colors.border,
+              borderColor: isUnread ? colorAlpha(colors.primary, 0.20) : colors.border,
             },
           ]}
         >

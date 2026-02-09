@@ -1,20 +1,11 @@
 /**
- * AmountInput — Robinhood-inspired centered hero amount display
+ * AmountInput — Centered hero amount display
  *
- * Large centered amount with € prefix, subtle cursor blink,
- * and a MAX pill. Clean, minimal, and premium.
- *
- * Usage:
- *   <AmountInput
- *     value={amountText}
- *     onChange={setAmountText}
- *     validationError={error}
- *     isBuy={true}
- *     onMax={() => setAmountText(maxAmount)}
- *   />
+ * Large centered amount with € prefix. Clean, minimal.
+ * Uses Dimensions for responsive sizing. Smooth font scaling.
  */
-import React, { useRef, forwardRef, useEffect } from "react";
-import { View, TextInput, StyleSheet, Platform } from "react-native";
+import React, { forwardRef, useEffect } from "react";
+import { View, TextInput, StyleSheet, Dimensions, Platform } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -27,6 +18,8 @@ import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { useColors } from "@/hooks/use-colors";
 import { FontFamily } from "@/constants/typography";
 import { Caption1 } from "@/components/ui/cds-typography";
+
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 interface AmountInputProps {
   value: string;
@@ -47,8 +40,8 @@ export const AmountInput = forwardRef<TextInput, AmountInputProps>(
       if (!value) {
         cursorOpacity.value = withRepeat(
           withSequence(
-            withTiming(1, { duration: 500 }),
-            withTiming(0, { duration: 500 })
+            withTiming(1, { duration: 530 }),
+            withTiming(0, { duration: 530 })
           ),
           -1,
           true
@@ -74,11 +67,19 @@ export const AmountInput = forwardRef<TextInput, AmountInputProps>(
         : colors.foreground
       : colors.muted;
 
-    // Dynamic font size based on value length
-    const fontSize = value.length > 7 ? 36 : value.length > 5 ? 42 : 48;
+    // Smooth font size based on character count — responsive to screen width
+    const baseFontSize = Math.min(SCREEN_WIDTH * 0.12, 52);
+    const getFontSize = () => {
+      const len = value.length;
+      if (len > 8) return baseFontSize * 0.62;
+      if (len > 6) return baseFontSize * 0.72;
+      if (len > 4) return baseFontSize * 0.85;
+      return baseFontSize;
+    };
+    const fontSize = getFontSize();
 
     return (
-      <Animated.View entering={FadeIn.duration(300)} style={styles.container}>
+      <Animated.View entering={FadeIn.duration(250)} style={styles.container}>
         {/* Hidden TextInput for keyboard */}
         <TextInput
           ref={ref}
@@ -104,7 +105,7 @@ export const AmountInput = forwardRef<TextInput, AmountInputProps>(
                 styles.currencySign,
                 {
                   color: displayColor,
-                  fontSize: fontSize * 0.65,
+                  fontSize: fontSize * 0.6,
                 },
               ]}
             >
@@ -127,7 +128,7 @@ export const AmountInput = forwardRef<TextInput, AmountInputProps>(
                   styles.cursor,
                   {
                     backgroundColor: accentColor,
-                    height: fontSize * 0.7,
+                    height: fontSize * 0.65,
                   },
                   cursorStyle,
                 ]}
@@ -136,31 +137,29 @@ export const AmountInput = forwardRef<TextInput, AmountInputProps>(
           </View>
         </AnimatedPressable>
 
-        {/* MAX pill */}
-        <View style={styles.maxRow}>
-          <AnimatedPressable
-            variant="chip"
-            onPress={onMax}
-            style={[
-              styles.maxButton,
-              {
-                backgroundColor: `${accentColor}15`,
-                borderColor: `${accentColor}30`,
-              },
-            ]}
+        {/* Use Max pill */}
+        <AnimatedPressable
+          variant="chip"
+          onPress={onMax}
+          style={[
+            styles.maxButton,
+            {
+              backgroundColor: `${accentColor}12`,
+              borderColor: `${accentColor}25`,
+            },
+          ]}
+        >
+          <Caption1
+            style={{
+              fontFamily: FontFamily.bold,
+              fontSize: 10,
+              letterSpacing: 1.2,
+              color: accentColor,
+            }}
           >
-            <Caption1
-              style={{
-                fontFamily: FontFamily.bold,
-                fontSize: 11,
-                letterSpacing: 1,
-                color: accentColor,
-              }}
-            >
-              MAX
-            </Caption1>
-          </AnimatedPressable>
-        </View>
+            USE MAX
+          </Caption1>
+        </AnimatedPressable>
       </Animated.View>
     );
   }
@@ -169,7 +168,7 @@ export const AmountInput = forwardRef<TextInput, AmountInputProps>(
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    paddingVertical: 8,
+    paddingVertical: 12,
   },
   hiddenInput: {
     position: "absolute",
@@ -178,9 +177,9 @@ const styles = StyleSheet.create({
     width: 0,
   },
   displayArea: {
-    paddingHorizontal: 32,
-    paddingVertical: 16,
-    minHeight: 80,
+    paddingHorizontal: 24,
+    paddingVertical: 20,
+    minHeight: 72,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -191,26 +190,21 @@ const styles = StyleSheet.create({
   },
   currencySign: {
     fontFamily: FontFamily.monoBold,
-    marginRight: 4,
-    lineHeight: undefined,
+    marginRight: 3,
   },
   amountText: {
     fontFamily: FontFamily.monoBold,
-    lineHeight: undefined,
   },
   cursor: {
-    width: 2.5,
-    borderRadius: 1.5,
+    width: 2,
+    borderRadius: 1,
     marginLeft: 2,
   },
-  maxRow: {
-    marginTop: 8,
-    alignItems: "center",
-  },
   maxButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    borderRadius: 20,
+    marginTop: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 5,
+    borderRadius: 16,
     borderWidth: 1,
   },
 });

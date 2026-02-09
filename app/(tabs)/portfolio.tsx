@@ -2,6 +2,7 @@
  * Portfolio Screen — Demo portfolio with Simple/Pro variants
  *
  * Refactored to use extracted feature components for better maintainability.
+ * Uses design tokens for all spacing and colors.
  */
 import React, { useState, useCallback, useMemo } from "react";
 import {
@@ -9,11 +10,12 @@ import {
   View,
   StyleSheet,
   RefreshControl,
-  Dimensions,
+  useWindowDimensions,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
+import { useThemeContext } from "@/lib/theme-provider";
 import { LiveBadge } from "@/components/ui/live-badge";
 import { StockListSkeleton } from "@/components/ui/skeleton";
 import { useStockQuotes, useRefreshCache } from "@/hooks/use-stocks";
@@ -38,10 +40,7 @@ import {
 } from "@/components/features/portfolio";
 import * as Haptics from "expo-haptics";
 import { Platform } from "react-native";
-import { Radius } from "@/constants/spacing";
-
-const SCREEN_WIDTH = Dimensions.get("window").width;
-const SPARKLINE_WIDTH = Math.min(SCREEN_WIDTH - 64, 340);
+import { Spacing, Radius } from "@/constants/spacing";
 
 interface EnrichedHolding {
   holding: {
@@ -68,12 +67,18 @@ interface SectorAllocationItem {
 
 export default function PortfolioScreen() {
   const colors = useColors();
+  const { colorScheme } = useThemeContext();
+  const isDark = colorScheme === "dark";
   const router = useRouter();
   const { isSimple, isPro } = useViewMode();
   const [refreshing, setRefreshing] = useState(false);
   const { stocks, isLoading, isLive, lastUpdated, refetch } = useStockQuotes();
   const refreshCache = useRefreshCache();
   const { state, holdingsArray, getPortfolioValue, getPortfolioCost, getPortfolioPnL } = useDemo();
+
+  // Responsive sparkline width
+  const { width: screenWidth } = useWindowDimensions();
+  const sparklineWidth = Math.min(screenWidth - Spacing[4] * 2 - Spacing[8], 340);
 
   // Share modal state
   const [showShareModal, setShowShareModal] = useState(false);
@@ -140,7 +145,7 @@ export default function PortfolioScreen() {
         sector: sector as Sector,
         value,
         percent: (value / totalValue) * 100,
-        icon: "", // Icon is displayed by sector name, not needed here
+        icon: "",
       }))
       .sort((a, b) => b.percent - a.percent);
   }, [enrichedHoldings]);
@@ -151,7 +156,6 @@ export default function PortfolioScreen() {
       await refreshCache.mutateAsync();
       await refetch();
 
-      // Haptic feedback on successful refresh
       if (Platform.OS !== "web") {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
@@ -243,7 +247,7 @@ export default function PortfolioScreen() {
             pnlPercent={portfolioPnlPercent}
             hasHoldings={hasHoldings}
             sparkline={PORTFOLIO_SPARKLINE}
-            sparklineWidth={SPARKLINE_WIDTH}
+            sparklineWidth={sparklineWidth}
           />
         )}
 
@@ -279,7 +283,7 @@ export default function PortfolioScreen() {
             <>
               {/* Simple Mode: Cards */}
               {isSimple && (
-                <View style={[styles.simpleCardList, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <View style={[styles.cardList, { backgroundColor: colors.surface, borderColor: isDark ? colors.borderSubtle : colors.border }]}>
                   {enrichedHoldings.map((enriched, index) => (
                     <HoldingCardSimple
                       key={enriched.holding.stockId}
@@ -302,7 +306,7 @@ export default function PortfolioScreen() {
 
               {/* Pro Mode: Detailed Rows */}
               {isPro && (
-                <View style={[styles.proCardList, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <View style={[styles.cardList, { backgroundColor: colors.surface, borderColor: isDark ? colors.borderSubtle : colors.border }]}>
                   {enrichedHoldings.map((enriched, index) => (
                     <HoldingCardPro
                       key={enriched.holding.stockId}
@@ -361,19 +365,13 @@ export default function PortfolioScreen() {
 
 const styles = StyleSheet.create({
   scrollContent: {
-    paddingBottom: 20,
+    paddingBottom: Spacing[5],
   },
   holdingsContainer: {
     paddingTop: 0,
   },
-  simpleCardList: {
-    marginHorizontal: 20,
-    borderRadius: Radius[400],
-    borderWidth: 1,
-    overflow: "hidden",
-  },
-  proCardList: {
-    marginHorizontal: 20,
+  cardList: {
+    marginHorizontal: Spacing[4],
     borderRadius: Radius[400],
     borderWidth: 1,
     overflow: "hidden",

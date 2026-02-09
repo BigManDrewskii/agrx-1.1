@@ -2,6 +2,7 @@
  * Markets Screen — Browse and search ATHEX stocks
  *
  * Refactored to use extracted feature components for better maintainability.
+ * Uses design tokens for all spacing and colors.
  */
 import React, { useState, useMemo, useCallback } from "react";
 import {
@@ -21,11 +22,11 @@ import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useStockQuotes, useRefreshCache } from "@/hooks/use-stocks";
 import {
-  Caption1,
   Callout,
 } from "@/components/ui/typography";
 import { Footnote } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
+import { Spacing } from "@/constants/spacing";
 import { useWatchlist } from "@/lib/watchlist-context";
 
 type FilterMode = "All" | "Watchlist" | string;
@@ -77,7 +78,6 @@ export default function MarketsScreen() {
         filtered.sort((a, b) => a.name.localeCompare(b.name));
         break;
       default:
-        // Default: blue-chip first, then by market cap hint
         break;
     }
 
@@ -99,7 +99,6 @@ export default function MarketsScreen() {
       await refreshCache.mutateAsync();
       await refetch();
 
-      // Haptic feedback on successful refresh
       if (Platform.OS !== "web") {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
@@ -209,7 +208,7 @@ const styles = StyleSheet.create({
   },
   emptyContainer: {
     alignItems: "center",
-    paddingTop: 40,
-    gap: 8,
+    paddingTop: Spacing[12],
+    gap: Spacing[2],
   },
 });

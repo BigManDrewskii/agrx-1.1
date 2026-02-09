@@ -20,7 +20,7 @@ import { useRouter } from "expo-router";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { CDSButton } from "@/components/ui/cds-button";
 import { ScreenContainer } from "@/components/screen-container";
-import { useColors } from "@/hooks/use-colors";
+import { useColors, colorAlpha } from "@/hooks/use-colors";
 import { useNotifications } from "@/lib/notification-context";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import {
@@ -146,7 +146,7 @@ export default function PriceAlertsScreen() {
           onPress={() => handleDelete(item)}
           style={[
             styles.deleteButton,
-            { backgroundColor: colors.error + "33" },
+            { backgroundColor: colorAlpha(colors.error, 0.20) },
           ]}
           accessibilityLabel={`Delete ${item.stockName} alert`}
           accessibilityRole="button"
@@ -190,7 +190,7 @@ export default function PriceAlertsScreen() {
           entering={FadeInDown.duration(250).delay(60)}
           style={[
             styles.permissionBanner,
-            { backgroundColor: colors.warning + "33", borderColor: colors.warning + "4D" },
+            { backgroundColor: colorAlpha(colors.warning, 0.20), borderColor: colorAlpha(colors.warning, 0.30) },
           ]}
         >
           <View style={{ flex: 1 }}>

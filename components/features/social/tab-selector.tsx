@@ -3,13 +3,7 @@
  *
  * Horizontal tab selector with active state indication.
  * Used in Social screen for Feed/Leaderboard/Achievements.
- *
- * Usage:
- *   <TabSelector
- *     tabs={["Feed", "Leaderboard", "Achievements"]}
- *     activeTab="Feed"
- *     onChange={(tab) => setActiveTab(tab)}
- *   />
+ * Uses design tokens for all spacing.
  */
 import React from "react";
 import { View, StyleSheet } from "react-native";
@@ -18,6 +12,7 @@ import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { useColors } from "@/hooks/use-colors";
 import { Subhead } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
+import { Spacing } from "@/constants/spacing";
 
 interface TabSelectorProps {
   tabs: string[];
@@ -66,14 +61,14 @@ export function TabSelector({ tabs, activeTab, onChange, animationDelay = 60 }: 
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    paddingHorizontal: 16,
-    borderBottomWidth: 0.5,
-    marginTop: 8,
+    paddingHorizontal: Spacing[4],
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    marginTop: Spacing[2],
   },
   tab: {
     flex: 1,
     alignItems: "center",
-    paddingVertical: 12,
+    paddingVertical: Spacing[3],
     borderBottomWidth: 2,
     borderBottomColor: "transparent",
   },

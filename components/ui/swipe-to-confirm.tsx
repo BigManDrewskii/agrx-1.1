@@ -17,6 +17,7 @@ import { useColors } from "@/hooks/use-colors";
 import { useThemeContext } from "@/lib/theme-provider";
 import { Subhead } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
+import { Spacing, Radius } from "@/constants/spacing";
 
 const THUMB_SIZE = 48;
 const TRACK_HEIGHT = 56;
@@ -142,12 +143,8 @@ export function SwipeToConfirm({
           style={[
             styles.track,
             {
-              backgroundColor: isDark
-                ? "rgba(255,255,255,0.04)"
-                : "rgba(0,0,0,0.03)",
-              borderColor: isDark
-                ? "rgba(255,255,255,0.06)"
-                : "rgba(0,0,0,0.06)",
+              backgroundColor: colors.foregroundAlpha4,
+              borderColor: colors.foregroundAlpha8,
             },
           ]}
           accessible={true}
@@ -182,7 +179,9 @@ export function SwipeToConfirm({
           styles.track,
           {
             backgroundColor: activeColorAlpha,
-            borderColor: `${activeColor}${isDark ? "30" : "20"}`,
+            borderColor: isDark
+              ? `${activeColor}30`
+              : `${activeColor}20`,
           },
         ]}
         onLayout={onTrackLayout}
@@ -190,7 +189,7 @@ export function SwipeToConfirm({
         <Animated.View
           style={[
             styles.fill,
-            { backgroundColor: `${activeColor}${isDark ? "30" : "18"}` },
+            { backgroundColor: isDark ? `${activeColor}30` : `${activeColor}18` },
             fillStyle,
           ]}
         />
@@ -234,8 +233,8 @@ export function SwipeToConfirm({
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 16,
-    paddingVertical: 20,
+    paddingHorizontal: Spacing[4],
+    paddingVertical: Spacing[5],
   },
   track: {
     height: TRACK_HEIGHT,

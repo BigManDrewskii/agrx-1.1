@@ -39,10 +39,16 @@ type RuntimePalette = SchemePaletteItem & {
   surfaceSubtle: string;
   surfaceElevated: string;
   borderSubtle: string;
+  // Enhanced alpha tokens for icon backgrounds & tints
+  foregroundAlpha8: string;
+  foregroundAlpha12: string;
+  foregroundAlpha16: string;
+  foregroundAlpha4: string;
 };
 
 function buildRuntimePalette(scheme: ColorScheme): RuntimePalette {
   const base = SchemeColors[scheme];
+  const isDark = scheme === "dark";
   return {
     ...base,
     text: base.foreground,
@@ -52,9 +58,14 @@ function buildRuntimePalette(scheme: ColorScheme): RuntimePalette {
     tabIconDefault: base.muted,
     tabIconSelected: base.primary,
     border: base.border,
-    surfaceSubtle: scheme === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-    surfaceElevated: scheme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
-    borderSubtle: scheme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+    surfaceSubtle: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+    surfaceElevated: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+    borderSubtle: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+    // Standardized alpha overlays — use these instead of `${color}14` hex hacks
+    foregroundAlpha4: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)',
+    foregroundAlpha8: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
+    foregroundAlpha12: isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)',
+    foregroundAlpha16: isDark ? 'rgba(255,255,255,0.16)' : 'rgba(0,0,0,0.12)',
   };
 }
 

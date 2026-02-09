@@ -3,9 +3,10 @@
  *
  * Robinhood-inspired centered layout with prominent balance,
  * PnL pill, and sparkline with time period selectors (Pro).
+ * Responsive: sparkline width adapts to screen size.
  */
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Dimensions } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { useColors } from "@/hooks/use-colors";
@@ -15,6 +16,9 @@ import { Caption1 } from "@/components/ui/typography";
 import { Footnote } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
 import { Spacing, Radius } from "@/constants/spacing";
+
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+const SPARKLINE_WIDTH = Math.min(SCREEN_WIDTH - 48, 360);
 
 interface PortfolioHeroProps {
   totalAccountValue: number;
@@ -88,7 +92,7 @@ export function PortfolioHero({
           <View style={styles.sparklineContainer}>
             <CDSSparkline
               data={portfolioSparkline}
-              width={320}
+              width={SPARKLINE_WIDTH}
               height={48}
               positive={isPositive}
               showGradient={true}
@@ -162,6 +166,7 @@ const styles = StyleSheet.create({
   sparklineContainer: {
     marginTop: 16,
     alignItems: "center",
+    width: "100%",
   },
   timePeriodRow: {
     flexDirection: "row",

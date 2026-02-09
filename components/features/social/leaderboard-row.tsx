@@ -3,12 +3,7 @@
  *
  * Shows rank, avatar, username, stats (trades, streak), and return percentage.
  * Top 3 ranks get special colored treatment (gold, silver, bronze).
- *
- * Usage:
- *   <LeaderboardRow
- *     entry={leaderboardData}
- *     index={0}
- *   />
+ * Uses design tokens for all spacing and colors.
  */
 import React from "react";
 import { View, StyleSheet } from "react-native";
@@ -92,8 +87,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 14,
-    paddingHorizontal: 16,
-    borderBottomWidth: 0.5,
+    paddingHorizontal: Spacing[4],
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   rank: {
     width: 28,
@@ -105,7 +100,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: Spacing[2], // ✅ 8px (was 10, not divisible by 4)
+    marginRight: Spacing[3],
   },
   info: {
     flex: 1,

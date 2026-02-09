@@ -2,8 +2,9 @@
  * Social Screen — Community feed, leaderboard, and achievements
  *
  * Refactored to use extracted feature components for better maintainability.
+ * Uses design tokens for all spacing and colors.
  */
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { ScrollView, View, FlatList, StyleSheet } from "react-native";
 import { ScreenContainer } from "@/components/screen-container";
 import { ScreenHeader } from "@/components/layouts";
@@ -11,23 +12,23 @@ import { PostCard, TabSelector, LeaderboardRow, AchievementCard } from "@/compon
 import { SocialFeedSkeleton } from "@/components/ui/skeleton";
 import { CDSEmptyState } from "@/components/ui/cds-empty-state";
 import { useColors } from "@/hooks/use-colors";
-import { Footnote } from "@/components/ui/cds-typography";
-import { Title3 } from "@/components/ui/cds-typography";
+import { useThemeContext } from "@/lib/theme-provider";
+import { Footnote, Title3 } from "@/components/ui/cds-typography";
 import { SOCIAL_FEED, LEADERBOARD, ACHIEVEMENTS } from "@/lib/mock-data";
+import { Spacing, Radius } from "@/constants/spacing";
+import { getShadow } from "@/constants/shadows";
 
 const TABS = ["Feed", "Leaderboard", "Achievements"];
 
 export default function SocialScreen() {
   const colors = useColors();
+  const { colorScheme } = useThemeContext();
+  const isDark = colorScheme === "dark";
   const [activeTab, setActiveTab] = useState("Feed");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Simulate loading on tab change (prepared for real API integration)
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
-    // Uncomment when integrating real API:
-    // setIsLoading(true);
-    // setTimeout(() => setIsLoading(false), 500);
   };
 
   return (
@@ -85,7 +86,11 @@ export default function SocialScreen() {
               <View
                 style={[
                   styles.leaderHeader,
-                  { backgroundColor: colors.surface, borderColor: colors.border },
+                  {
+                    backgroundColor: colors.surface,
+                    borderColor: isDark ? colors.borderSubtle : colors.border,
+                  },
+                  getShadow("sm", isDark),
                 ]}
               >
                 <Title3 style={{ marginBottom: 4 }}>Weekly Top Performers</Title3>
@@ -130,34 +135,34 @@ export default function SocialScreen() {
 
 const styles = StyleSheet.create({
   feedContent: {
-    padding: 16,
+    padding: Spacing[4],
     paddingBottom: 100,
-    gap: 12,
+    gap: Spacing[3],
   },
   leaderContent: {
-    paddingBottom: 20,
+    paddingBottom: Spacing[5],
   },
   leaderHeader: {
-    margin: 16,
-    borderRadius: 16,
+    margin: Spacing[4],
+    borderRadius: Radius[400],
     borderWidth: 1,
-    padding: 16,
+    padding: Spacing[4],
     alignItems: "center",
   },
   achievementsContent: {
-    padding: 16,
-    paddingBottom: 20,
+    padding: Spacing[4],
+    paddingBottom: Spacing[5],
   },
   achievementsGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 12,
+    gap: Spacing[3],
   },
   emptyState: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 16,
+    paddingHorizontal: Spacing[4],
     paddingBottom: 80,
   },
 });

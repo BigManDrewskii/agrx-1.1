@@ -3,6 +3,7 @@
  *
  * Clean card-based design with tinted icon backgrounds,
  * staggered entrance animation, and contextual badges.
+ * Uses proper rgba alpha tokens instead of hex suffix hacks.
  */
 import React from "react";
 import { View, StyleSheet } from "react-native";
@@ -10,7 +11,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { useRouter } from "expo-router";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { useColors } from "@/hooks/use-colors";
+import { useColors, colorAlpha } from "@/hooks/use-colors";
 import { useThemeContext } from "@/lib/theme-provider";
 import { useMarketStatus } from "@/hooks/use-market-status";
 import { Caption1, Body } from "@/components/ui/cds-typography";
@@ -103,7 +104,7 @@ export function QuickActions() {
             <View
               style={[
                 styles.iconContainer,
-                { backgroundColor: `${action.color}14` },
+                { backgroundColor: colorAlpha(action.color, isDark ? 0.16 : 0.10) },
               ]}
             >
               <IconSymbol

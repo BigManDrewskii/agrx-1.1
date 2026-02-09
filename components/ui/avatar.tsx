@@ -3,20 +3,32 @@
  *
  * Displays user avatars with priority:
  * 1. Uploaded avatar image (avatarUrl)
- * 2. FaceHash generated from email (if useFaceHash)
- * 3. Default CDS Avatar fallback
+ * 2. FaceHash generated from email via facehash.dev API (if useFaceHash)
+ * 3. Default CDS Avatar fallback (initials)
+ *
+ * FaceHash integration uses the hosted API endpoint:
+ *   https://www.facehash.dev/api/avatar?name={seed}&size={size}
+ * Returns a deterministic PNG — same input = same face, always.
  *
  * Usage:
- *   <Avatar
- *     user={user}
- *     size="medium"
- *     shape="circle"
- *   />
+ *   <Avatar user={user} size="m" />
  */
 import React, { useMemo } from "react";
-import { View } from "react-native";
 import { Avatar as CDSAvatar } from "@coinbase/cds-mobile/media";
 import { useColors } from "@/hooks/use-colors";
+
+/** Base URL for the FaceHash hosted avatar API */
+const FACEHASH_API = "https://www.facehash.dev/api/avatar";
+
+/** Map CDS size tokens to pixel values for the FaceHash API */
+const SIZE_MAP: Record<string, number> = {
+  s: 64,
+  m: 96,
+  l: 128,
+  xl: 192,
+  xxl: 256,
+  xxxl: 320,
+};
 
 interface AvatarProps {
   /** User object containing avatar preferences */
@@ -36,6 +48,20 @@ interface AvatarProps {
   style?: any;
 }
 
+/**
+ * Build a FaceHash API URL for a given seed string and pixel size.
+ * The API returns a cached PNG that is deterministic — same seed = same face.
+ */
+function buildFaceHashUrl(seed: string, pixelSize: number): string {
+  const params = new URLSearchParams({
+    name: seed,
+    size: String(pixelSize),
+    variant: "gradient",
+    showInitial: "true",
+  });
+  return `${FACEHASH_API}?${params.toString()}`;
+}
+
 export function Avatar({
   user,
   size = "m",
@@ -53,17 +79,18 @@ export function Avatar({
       return user.avatarUrl;
     }
 
-    // Priority 2: FaceHash (if enabled and email exists)
-    if (user.useFaceHash && user.email) {
-      // FaceHash generates deterministic avatars from strings
-      // Using name as fallback if email is null
-      const seed = user.email || user.name || user.email;
-      return `https://facehash.dev/${encodeURIComponent(seed)}`;
+    // Priority 2: FaceHash API (if enabled and we have a seed)
+    if (user.useFaceHash) {
+      const seed = user.email || user.name;
+      if (seed) {
+        const px = SIZE_MAP[size] ?? 96;
+        return buildFaceHashUrl(seed, px);
+      }
     }
 
-    // Priority 3: Default CDS fallback (undefined uses default image)
+    // Priority 3: Default CDS fallback (undefined uses initials)
     return undefined;
-  }, [user]);
+  }, [user, size]);
 
   const fallbackName = user?.name || user?.email || undefined;
 

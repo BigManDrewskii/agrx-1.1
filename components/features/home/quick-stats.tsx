@@ -5,11 +5,13 @@
  * - Holdings count
  * - Today's P&L
  * - Current streak
+ *
+ * Uses proper rgba alpha tokens for icon backgrounds.
  */
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
-import { useColors } from "@/hooks/use-colors";
+import { useColors, colorAlpha } from "@/hooks/use-colors";
 import { useThemeContext } from "@/lib/theme-provider";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Caption1, Body } from "@/components/ui/cds-typography";
@@ -31,6 +33,8 @@ interface QuickStatProps {
 
 function QuickStat({ label, value, trend, icon }: QuickStatProps) {
   const colors = useColors();
+  const { colorScheme } = useThemeContext();
+  const isDark = colorScheme === "dark";
 
   const getTrendColor = () => {
     if (trend === "up") return colors.success;
@@ -38,16 +42,16 @@ function QuickStat({ label, value, trend, icon }: QuickStatProps) {
     return colors.warning;
   };
 
+  const iconBgColor = trend
+    ? colorAlpha(getTrendColor(), isDark ? 0.16 : 0.10)
+    : colors.foregroundAlpha8;
+
   return (
     <View style={styles.statItem}>
       <View
         style={[
           styles.iconBg,
-          {
-            backgroundColor: trend
-              ? `${getTrendColor()}14`
-              : `${colors.muted}14`,
-          },
+          { backgroundColor: iconBgColor },
         ]}
       >
         <IconSymbol

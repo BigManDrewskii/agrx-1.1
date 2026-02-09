@@ -3,25 +3,22 @@
  *
  * Shows a user's post with avatar, username, content, P&L badge (if applicable),
  * and engagement actions (likes, comments, share).
- *
- * Usage:
- *   <PostCard
- *     post={postData}
- *     index={0}
- *   />
+ * Uses design tokens for all spacing and colors.
  */
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
-import { Spacing } from "@/constants/spacing";
+import { Spacing, Radius } from "@/constants/spacing";
 import { STAGGER_DELAY, STAGGER_MAX } from "@/lib/animations";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { AnimatedPnLNumber } from "@/components/ui/animated-number";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { useThemeContext } from "@/lib/theme-provider";
 import { Subhead, Caption1 } from "@/components/ui/typography";
 import { Caption2, Footnote, Body } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
+import { getShadow } from "@/constants/shadows";
 import type { SocialPost } from "@/lib/mock-data";
 
 interface PostCardProps {
@@ -31,13 +28,19 @@ interface PostCardProps {
 
 export function PostCard({ post, index }: PostCardProps) {
   const colors = useColors();
+  const { colorScheme } = useThemeContext();
+  const isDark = colorScheme === "dark";
 
   return (
     <Animated.View
       entering={FadeInDown.duration(250).delay(Math.min(index, STAGGER_MAX) * STAGGER_DELAY)}
       style={[
         styles.postCard,
-        { backgroundColor: colors.surface, borderColor: colors.border },
+        {
+          backgroundColor: colors.surface,
+          borderColor: isDark ? colors.borderSubtle : colors.border,
+        },
+        getShadow("sm", isDark),
       ]}
     >
       {/* Header: avatar + username + timestamp + P&L badge */}
@@ -74,7 +77,7 @@ export function PostCard({ post, index }: PostCardProps) {
       </View>
 
       {/* Post content */}
-      <Body style={{ lineHeight: 21, marginBottom: 10 }}>{post.content}</Body>
+      <Body style={{ lineHeight: 21, marginBottom: Spacing[3] }}>{post.content}</Body>
 
       {/* Asset tag (if present) */}
       {post.assetTag && (
@@ -124,43 +127,43 @@ export function PostCard({ post, index }: PostCardProps) {
 
 const styles = StyleSheet.create({
   postCard: {
-    borderRadius: 16,
+    borderRadius: Radius[400],
     borderWidth: 1,
-    padding: 16,
+    padding: Spacing[4],
   },
   postHeader: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: Spacing[3],
   },
   avatar: {
-    width: 48, // ✅ 48px minimum touch target (was 40)
-    height: 48, // ✅ 48px minimum touch target (was 40)
-    borderRadius: 24,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: Spacing[2], // ✅ 8px (was 10, not divisible by 4)
+    marginRight: Spacing[3],
   },
   postMeta: {
     flex: 1,
   },
   pnlBadge: {
-    paddingHorizontal: 8,
+    paddingHorizontal: Spacing[2],
     paddingVertical: 4,
-    borderRadius: 8,
+    borderRadius: Radius[200],
   },
   assetTag: {
     alignSelf: "flex-start",
-    paddingHorizontal: 10,
+    paddingHorizontal: Spacing[3],
     paddingVertical: 4,
-    borderRadius: 8,
-    marginBottom: 12,
+    borderRadius: Radius[200],
+    marginBottom: Spacing[3],
   },
   postFooter: {
     flexDirection: "row",
-    gap: 20,
-    paddingTop: 10,
-    borderTopWidth: 0.5,
+    gap: Spacing[5],
+    paddingTop: Spacing[3],
+    borderTopWidth: StyleSheet.hairlineWidth,
   },
   postAction: {
     flexDirection: "row",

@@ -7,12 +7,7 @@
  * - Greeting with username
  * - Title with badges (LiveBadge, streak, notifications)
  *
- * Usage:
- *   <ScreenHeader
- *     title="Portfolio"
- *     subtitle="5 holdings"
- *     actions={<LiveBadge />}
- *   />
+ * Uses design tokens for all spacing.
  */
 import React, { ReactNode } from "react";
 import { View, StyleSheet, type ViewStyle } from "react-native";
@@ -20,6 +15,7 @@ import Animated, { FadeIn } from "react-native-reanimated";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { useColors } from "@/hooks/use-colors";
 import { Footnote, Title1, Title2 } from "@/components/ui/cds-typography";
+import { Spacing } from "@/constants/spacing";
 
 interface ScreenHeaderProps {
   /** Primary title or greeting */
@@ -44,7 +40,7 @@ export function ScreenHeader({
   actions,
   leftContent,
   style,
-  padding = 16,
+  padding = Spacing[4],
   isGreeting = false,
 }: ScreenHeaderProps) {
   const colors = useColors();
@@ -87,8 +83,8 @@ export function ScreenHeader({
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 8,
-    paddingBottom: 12,
+    paddingTop: Spacing[2],
+    paddingBottom: Spacing[3],
   },
   row: {
     flexDirection: "row",
@@ -96,7 +92,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   leftContent: {
-    marginRight: 14,
+    marginRight: Spacing[3],
   },
   titleSection: {
     flex: 1,
@@ -105,6 +101,6 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: Spacing[2],
   },
 });

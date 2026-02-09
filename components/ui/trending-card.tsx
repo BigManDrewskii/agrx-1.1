@@ -1,6 +1,6 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import { useColors } from "@/hooks/use-colors";
+import { useColors, colorAlpha } from "@/hooks/use-colors";
 import { useThemeContext } from "@/lib/theme-provider";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { CDSSparkline } from "./cds-sparkline";
@@ -43,8 +43,8 @@ export function TrendingCard({ asset, onPress }: TrendingCardProps) {
           style={[
             styles.iconCircle,
             {
-              backgroundColor: `${tintColor}14`,
-              borderColor: `${tintColor}20`,
+              backgroundColor: colorAlpha(tintColor, isDark ? 0.14 : 0.08),
+              borderColor: colorAlpha(tintColor, isDark ? 0.22 : 0.14),
               borderWidth: 1,
             },
           ]}

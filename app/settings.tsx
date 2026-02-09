@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/typography";
 import { Footnote } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
+import { Spacing, Radius } from "@/constants/spacing";
 import { AvatarSettingsSection } from "@/components/ui/avatar-settings-section";
 import { showError, logError } from "@/lib/error-handler";
 
@@ -135,7 +136,7 @@ export default function SettingsScreen() {
             onPress={() => router.back()}
             style={[
               styles.backButton,
-              { backgroundColor: colors.surfaceSecondary },
+              { backgroundColor: colors.surface },
             ]}
           >
             <IconSymbol name="chevron.right" size={20} color={colors.foreground} style={{ transform: [{ scaleX: -1 }] }} />
@@ -148,7 +149,7 @@ export default function SettingsScreen() {
             ═══════════════════════════════════════════════════════════════════ */}
         <ReAnimated.View entering={FadeInDown.duration(250).delay(60)}>
         <SectionLabel text="View Mode" />
-        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: isDark ? colors.borderSubtle : colors.border }]}>
           <View style={[styles.row, { flexDirection: "column", alignItems: "flex-start", gap: 10 }]}>
             <View>
               <Subhead style={{ fontFamily: FontFamily.medium }}>Interface Complexity</Subhead>
@@ -168,7 +169,7 @@ export default function SettingsScreen() {
             ═══════════════════════════════════════════════════════════════════ */}
         <ReAnimated.View entering={FadeInDown.duration(250).delay(120)}>
         <SectionLabel text="Appearance" />
-        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: isDark ? colors.borderSubtle : colors.border }]}>
           {themeOptions.map((opt, i) => {
             const isSelected = preference === opt.value;
             return (
@@ -189,7 +190,7 @@ export default function SettingsScreen() {
               >
                 <View style={styles.rowLeft}>
                   <Body>{opt.icon}</Body>
-                  <Subhead style={{ fontFamily: FontFamily.medium, marginLeft: 12 }}>
+                  <Subhead style={{ fontFamily: FontFamily.medium, marginLeft: Spacing[3] }}>
                     {opt.label}
                   </Subhead>
                 </View>
@@ -219,7 +220,7 @@ export default function SettingsScreen() {
             ═══════════════════════════════════════════════════════════════════ */}
         <ReAnimated.View entering={FadeInDown.duration(250).delay(180)}>
         <SectionLabel text="Notifications" />
-        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: isDark ? colors.borderSubtle : colors.border }]}>
           <NotifRow
             label="Price Alerts"
             description="Get notified when stocks hit your target price"
@@ -298,7 +299,7 @@ export default function SettingsScreen() {
             ═══════════════════════════════════════════════════════════════════ */}
         <ReAnimated.View entering={FadeInDown.duration(250).delay(240)}>
         <SectionLabel text="Account" />
-        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: isDark ? colors.borderSubtle : colors.border }]}>
           <AvatarSettingsSection isLast={false} />
           <SettingsRow
             label="Demo Mode"
@@ -325,7 +326,7 @@ export default function SettingsScreen() {
             ═══════════════════════════════════════════════════════════════════ */}
         <ReAnimated.View entering={FadeInDown.duration(250).delay(300)}>
         <SectionLabel text="About" />
-        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: isDark ? colors.borderSubtle : colors.border }]}>
           <SettingsRow
             label="Version"
             value="1.0.0 (MVP)"
@@ -366,7 +367,7 @@ export default function SettingsScreen() {
             AGRX — Agora Greek Exchange
           </Caption1>
           <Caption1 color="muted" style={{ textAlign: "center", marginTop: 2 }}>
-            Making investing social for Greece 🇬🇷
+            Making investing social for Greece
           </Caption1>
         </ReAnimated.View>
       </ScrollView>
@@ -418,7 +419,7 @@ function NotifRow({
         },
       ]}
     >
-      <View style={[styles.rowLeft, { flex: 1, marginRight: 12 }]}>
+      <View style={[styles.rowLeft, { flex: 1, marginRight: Spacing[3] }]}>
         <View>
           <Subhead style={{ fontFamily: FontFamily.medium }}>{label}</Subhead>
           <Caption1 color="muted" style={{ marginTop: 2 }}>
@@ -510,26 +511,26 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 24,
-    gap: 14,
+    paddingHorizontal: Spacing[4],
+    paddingTop: Spacing[2],
+    paddingBottom: Spacing[6],
+    gap: Spacing[3],
   },
   backButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 40,
+    height: 40,
+    borderRadius: Radius[500],
     alignItems: "center",
     justifyContent: "center",
   },
   sectionLabel: {
-    paddingHorizontal: 20,
-    paddingTop: 24,
-    paddingBottom: 8,
+    paddingHorizontal: Spacing[5],
+    paddingTop: Spacing[6],
+    paddingBottom: Spacing[2],
   },
   card: {
-    marginHorizontal: 16,
-    borderRadius: 14,
+    marginHorizontal: Spacing[4],
+    borderRadius: Radius[400],
     borderWidth: StyleSheet.hairlineWidth,
     overflow: "hidden",
   },
@@ -538,7 +539,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingVertical: 14,
-    paddingHorizontal: 16,
+    paddingHorizontal: Spacing[4],
     minHeight: 50,
   },
   rowLeft: {
@@ -562,7 +563,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   footer: {
-    paddingVertical: 32,
-    paddingHorizontal: 16,
+    paddingVertical: Spacing[8],
+    paddingHorizontal: Spacing[4],
   },
 });

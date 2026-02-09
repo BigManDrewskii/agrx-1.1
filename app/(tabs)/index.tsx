@@ -2,6 +2,7 @@
  * Home Screen — Main dashboard with Simple/Pro variants
  *
  * Refactored to use extracted feature components for better maintainability.
+ * Uses design tokens for all spacing and colors.
  */
 import React, { useState, useCallback, useMemo } from "react";
 import {
@@ -19,7 +20,6 @@ import { useNotifications } from "@/lib/notification-context";
 import { useDemo, type LivePriceMap } from "@/lib/demo-context";
 import { useViewMode } from "@/lib/viewmode-context";
 import { useWatchlist } from "@/lib/watchlist-context";
-import { useMarketNews } from "@/hooks/use-news";
 import {
   HomeHeader,
   PortfolioHero,
@@ -28,7 +28,6 @@ import {
   DailyChallengeCard,
   WatchlistSection,
   TrendingSection,
-  MarketNewsSection,
   SocialFeedPreview,
 } from "@/components/features/home";
 import {
@@ -36,6 +35,7 @@ import {
   USER_STREAK,
 } from "@/lib/mock-data";
 import { useColors } from "@/hooks/use-colors";
+import { Spacing } from "@/constants/spacing";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -43,9 +43,6 @@ export default function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const { stocks, isLoading, isLive, lastUpdated, refetch } = useStockQuotes();
   const refreshCache = useRefreshCache();
-  const marketNewsQuery = useMarketNews();
-  const marketNews = marketNewsQuery.data?.success ? marketNewsQuery.data.data : [];
-  const newsLoading = marketNewsQuery.isLoading;
 
   const { unreadCount } = useNotifications();
   const { getPortfolioValue, getPortfolioPnL, state: demoState } = useDemo();
@@ -93,7 +90,7 @@ export default function HomeScreen() {
     }
   }, [refreshCache, refetch]);
 
-  // ── Greeting based on time of day ──
+  // Greeting based on time of day
   const greeting = useMemo(() => {
     const h = new Date().getHours();
     if (h < 12) return "Good morning";
@@ -162,13 +159,6 @@ export default function HomeScreen() {
           isLoading={isLoading}
         />
 
-        {/* Market News */}
-        <MarketNewsSection
-          marketNews={marketNews}
-          isLoading={newsLoading}
-          isSimple={isSimple}
-        />
-
         {/* Social Feed Preview — Pro only */}
         {isPro && <SocialFeedPreview />}
 
@@ -181,6 +171,6 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   scrollContent: {
-    paddingBottom: 20,
+    paddingBottom: Spacing[5],
   },
 });

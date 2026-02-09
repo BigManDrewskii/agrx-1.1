@@ -1,24 +1,28 @@
-import React, { useState, useCallback } from "react";
+/**
+ * Asset Detail Screen — Stock detail with chart, stats, and trade CTAs
+ *
+ * News section disabled. Uses design tokens for all spacing and colors.
+ */
+import React, { useState, useCallback, useMemo } from "react";
 import {
   ScrollView,
   View,
   Text,
   StyleSheet,
-  Linking,
+  useWindowDimensions,
 } from "react-native";
 import ReAnimated, { FadeIn, FadeInDown } from "react-native-reanimated";
-import { STAGGER_DELAY, STAGGER_MAX } from "@/lib/animations";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { CDSButton } from "@/components/ui/cds-button";
 import { ScreenContainer } from "@/components/screen-container";
-import { useColors } from "@/hooks/use-colors";
+import { useColors, colorAlpha } from "@/hooks/use-colors";
+import { useThemeContext } from "@/lib/theme-provider";
 import { AnimatedNumber, AnimatedPnLNumber } from "@/components/ui/animated-number";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { LiveBadge } from "@/components/ui/live-badge";
 import { ChartSkeleton, Skeleton } from "@/components/ui/skeleton";
 import { useStockQuote, useStockChart } from "@/hooks/use-stocks";
-import { useStockNews } from "@/hooks/use-news";
 import { GREEK_STOCKS } from "@/lib/mock-data";
 import { ShareCardModal } from "@/components/ui/share-card-modal";
 import type { ShareCardData, ShareSentiment } from "@/components/ui/share-card";
@@ -50,51 +54,14 @@ function formatVolume(vol: number): string {
   return vol.toString();
 }
 
-// ─── Sentiment Dot Indicator ────────────────────────────────────────────────
-
-function SentimentDot({ sentiment }: { sentiment: "bullish" | "bearish" | "neutral" }) {
-  const colors = useColors();
-  const dotColor =
-    sentiment === "bullish" ? colors.success : sentiment === "bearish" ? colors.error : colors.muted;
-  return (
-    <View
-      style={{
-        width: 6,
-        height: 6,
-        borderRadius: 3,
-        backgroundColor: dotColor,
-        marginRight: 6,
-        marginTop: 2,
-      }}
-    />
-  );
-}
-
-// ─── News Skeleton ──────────────────────────────────────────────────────────
-
-function NewsSkeleton() {
-  return (
-    <View style={{ gap: 10 }}>
-      {[1, 2, 3].map((i) => (
-        <View key={i} style={{ borderRadius: 12, padding: Spacing[4], gap: 8 }}>
-          <Skeleton width="100%" height={16} borderRadius={6} />
-          <Skeleton width="70%" height={16} borderRadius={6} />
-          <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 4 }}>
-            <Skeleton width={80} height={12} borderRadius={4} />
-            <Skeleton width={50} height={12} borderRadius={4} />
-          </View>
-        </View>
-      ))}
-    </View>
-  );
-}
-
 // ─── Main Screen ────────────────────────────────────────────────────────────
 
 export default function AssetDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const colors = useColors();
+  const { colorScheme } = useThemeContext();
+  const isDark = colorScheme === "dark";
   const [activePeriod, setActivePeriod] = useState("1D");
   const [showShareModal, setShowShareModal] = useState(false);
   const [showAlertModal, setShowAlertModal] = useState(false);
@@ -106,11 +73,6 @@ export default function AssetDetailScreen() {
   const { isWatchlisted, toggle: toggleWatchlist } = useWatchlist();
   const starred = isWatchlisted(id ?? "");
   const { chartData, isLoading: chartLoading } = useStockChart(id ?? "", activePeriod);
-
-  // Live news + sentiment
-  const newsQuery = useStockNews(id);
-  const newsData = newsQuery.data?.success ? newsQuery.data.data : null;
-  const newsLoading = newsQuery.isLoading;
 
   // Fallback to mock data if stock not found
   const mockAsset = GREEK_STOCKS.find((s) => s.id === id);
@@ -129,17 +91,6 @@ export default function AssetDetailScreen() {
 
   const isPositive = change >= 0;
 
-  // Sentiment from live news or fallback
-  const sentimentData = newsData?.sentiment;
-  const buyPercent = sentimentData?.bullishPercent ?? 68;
-  const sellPercent = sentimentData?.bearishPercent ?? 32;
-  const neutralPercent = sentimentData?.neutralPercent ?? 0;
-  const sentimentLabel = sentimentData?.label ?? "Neutral";
-  const sentimentScore = sentimentData?.score ?? 0;
-
-  const articles = newsData?.articles ?? [];
-  const hasLiveNews = articles.length > 0;
-
   // Build share card data
   const shareCardData: ShareCardData = {
     ticker,
@@ -149,10 +100,6 @@ export default function AssetDetailScreen() {
     pnlPercent: changePercent,
     sparkline: chartData.length > 0 ? chartData : (mockAsset?.sparkline ?? []),
     timeFrame: "Today",
-    sentiment: (sentimentLabel === "Bullish" || sentimentLabel === "Bearish" || sentimentLabel === "Neutral"
-      ? sentimentLabel
-      : "Neutral") as ShareSentiment,
-    sentimentScore,
   };
 
   const handleShare = useCallback(() => {
@@ -219,7 +166,11 @@ export default function AssetDetailScreen() {
               onPress={handleAddAlert}
               style={[
                 styles.iconButton,
-                { backgroundColor: hasActiveAlerts ? colors.primary + "33" : colors.surface },
+                {
+                  backgroundColor: hasActiveAlerts
+                    ? colorAlpha(colors.primary, 0.12)
+                    : colors.surface,
+                },
               ]}
             >
               <IconSymbol
@@ -257,8 +208,8 @@ export default function AssetDetailScreen() {
                 style={{
                   fontSize: 36,
                   letterSpacing: -1,
-                  marginBottom: 4,
-                  fontFamily: FontFamily.monoMedium,
+                  marginBottom: Spacing[1],
+                  fontFamily: FontFamily.monoBold,
                   color: colors.foreground,
                 }}
               />
@@ -282,7 +233,6 @@ export default function AssetDetailScreen() {
           ) : (
             <CDSLineChart
               data={chartData.length > 0 ? chartData : (mockAsset?.sparkline ?? [])}
-              // width omitted - fills container (responsive)
               height={200}
               positive={isPositive}
               showGradient={true}
@@ -305,7 +255,7 @@ export default function AssetDetailScreen() {
                 onPress={() => setActivePeriod(period)}
                 style={[
                   styles.periodButton,
-                  isActive && { backgroundColor: colors.primaryAlpha },
+                  isActive && { backgroundColor: colorAlpha(colors.primary, 0.12) },
                 ]}
               >
                 <Caption1
@@ -323,213 +273,64 @@ export default function AssetDetailScreen() {
         </ReAnimated.View>
 
         {/* Key Stats */}
-        <ReAnimated.View entering={FadeInDown.duration(250).delay(240)} style={[styles.statsCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <ReAnimated.View
+          entering={FadeInDown.duration(250).delay(240)}
+          style={[
+            styles.statsCard,
+            {
+              backgroundColor: colors.surface,
+              borderColor: isDark ? colors.borderSubtle : colors.border,
+            },
+          ]}
+        >
           <View style={styles.statsGrid}>
             {[
               { label: "Market Cap", value: marketCap },
-              { label: "Day Range", value: `€${dayLow.toFixed(2)} - €${dayHigh.toFixed(2)}` },
+              { label: "Day Range", value: `€${dayLow.toFixed(2)} – €${dayHigh.toFixed(2)}` },
               { label: "Volume", value: volume > 0 ? formatVolume(volume) : "N/A" },
-              { label: "52W Range", value: `€${fiftyTwoWeekLow.toFixed(2)} - €${fiftyTwoWeekHigh.toFixed(2)}` },
+              { label: "52W Range", value: `€${fiftyTwoWeekLow.toFixed(2)} – €${fiftyTwoWeekHigh.toFixed(2)}` },
             ].map((stat) => (
               <View key={stat.label} style={styles.statItem}>
                 <Caption1 color="muted" style={{ fontFamily: FontFamily.medium, marginBottom: 2 }}>
                   {stat.label}
                 </Caption1>
-                <Subhead style={{ fontFamily: FontFamily.semibold }}>{stat.value}</Subhead>
+                <Subhead style={{ fontFamily: FontFamily.semibold, fontSize: 14 }}>{stat.value}</Subhead>
               </View>
             ))}
           </View>
         </ReAnimated.View>
 
-        {/* AI Sentiment — Powered by Live News */}
-        <ReAnimated.View entering={FadeInDown.duration(250).delay(300)} style={styles.sentimentSection}>
-          <View style={styles.sectionTitleRow}>
-            <Title3>Sentiment Analysis</Title3>
-            {hasLiveNews && (
-              <View style={[styles.aiBadge, { backgroundColor: colors.primaryAlpha }]}>
-                <Caption2 color="primary" style={{ fontFamily: FontFamily.bold, letterSpacing: 0.5 }}>
-                  AI · LIVE
-                </Caption2>
-              </View>
-            )}
+        {/* About Section */}
+        <ReAnimated.View entering={FadeInDown.duration(250).delay(300)} style={styles.aboutSection}>
+          <Title3 style={{ marginBottom: Spacing[3] }}>About {ticker}</Title3>
+          <View
+            style={[
+              styles.aboutCard,
+              {
+                backgroundColor: colors.surface,
+                borderColor: isDark ? colors.borderSubtle : colors.border,
+              },
+            ]}
+          >
+            <Body style={{ lineHeight: 22, color: colors.muted }}>
+              {name} is listed on the Athens Stock Exchange (ATHEX). View real-time pricing, historical charts, and key statistics above. Use the Buy/Sell buttons below to execute demo trades.
+            </Body>
           </View>
-
-          <View style={[styles.sentimentCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            {/* Sentiment Score Header */}
-            <View style={styles.sentimentHeader}>
-              <View style={styles.sentimentLabelRow}>
-                <View
-                  style={[
-                    styles.sentimentIndicator,
-                    {
-                      backgroundColor:
-                        sentimentLabel === "Bullish"
-                          ? colors.success
-                          : sentimentLabel === "Bearish"
-                          ? colors.error
-                          : colors.warning,
-                    },
-                  ]}
-                />
-                <Headline
-                  style={{
-                    fontFamily: FontFamily.bold,
-                    color:
-                      sentimentLabel === "Bullish"
-                        ? colors.success
-                        : sentimentLabel === "Bearish"
-                        ? colors.error
-                        : colors.warning,
-                  }}
-                >
-                  {sentimentLabel}
-                </Headline>
-              </View>
-              <MonoSubhead style={{ color: colors.muted }}>
-                {sentimentScore > 0 ? "+" : ""}
-                {sentimentScore.toFixed(2)}
-              </MonoSubhead>
-            </View>
-
-            {/* Three-way sentiment bar */}
-            <View style={styles.sentimentBar}>
-              {buyPercent > 0 && (
-                <View
-                  style={[
-                    styles.sentimentFillBuy,
-                    { backgroundColor: colors.success, width: `${buyPercent}%` },
-                  ]}
-                />
-              )}
-              {neutralPercent > 0 && (
-                <View
-                  style={{
-                    height: "100%",
-                    backgroundColor: colors.warning,
-                    width: `${neutralPercent}%`,
-                  }}
-                />
-              )}
-              {sellPercent > 0 && (
-                <View
-                  style={[
-                    styles.sentimentFillSell,
-                    { backgroundColor: colors.error, width: `${sellPercent}%` },
-                  ]}
-                />
-              )}
-            </View>
-
-            <View style={styles.sentimentLabels}>
-              <Footnote color="success" style={{ fontFamily: FontFamily.semibold }}>
-                {buyPercent}% Bullish
-              </Footnote>
-              <Footnote style={{ fontFamily: FontFamily.semibold, color: colors.warning }}>
-                {neutralPercent}% Neutral
-              </Footnote>
-              <Footnote color="error" style={{ fontFamily: FontFamily.semibold }}>
-                {sellPercent}% Bearish
-              </Footnote>
-            </View>
-
-            {hasLiveNews && (
-              <Caption2
-                color="muted"
-                style={{ fontFamily: FontFamily.medium, marginTop: 8, textAlign: "center" }}
-              >
-                Based on {articles.length} recent news articles
-              </Caption2>
-            )}
-          </View>
-        </ReAnimated.View>
-
-        {/* Live News Feed */}
-        <ReAnimated.View entering={FadeInDown.duration(250).delay(360)} style={styles.newsSection}>
-          <View style={styles.sectionTitleRow}>
-            <Title3>Latest News</Title3>
-            {hasLiveNews && (
-              <Caption1 color="muted" style={{ fontFamily: FontFamily.medium }}>
-                {articles.length} articles
-              </Caption1>
-            )}
-          </View>
-
-          {newsLoading ? (
-            <NewsSkeleton />
-          ) : hasLiveNews ? (
-            articles.map((article, index) => (
-              <AnimatedPressable
-                key={`${article.url}-${index}`}
-                variant="card"
-                onPress={() => {
-                  if (article.url) {
-                    Linking.openURL(article.url).catch(() => {});
-                  }
-                }}
-                style={[
-                  styles.newsCard,
-                  { backgroundColor: colors.surface, borderColor: colors.border },
-                ]}
-              >
-                <View style={styles.newsContent}>
-                  {article.sentiment && <SentimentDot sentiment={article.sentiment} />}
-                  <View style={{ flex: 1 }}>
-                    <Subhead
-                      style={{ fontFamily: FontFamily.semibold, lineHeight: 20, marginBottom: 8 }}
-                      numberOfLines={2}
-                    >
-                      {article.title}
-                    </Subhead>
-                    <View style={styles.newsMeta}>
-                      <View style={styles.newsSourceRow}>
-                        <Caption1 color="primary" style={{ fontFamily: FontFamily.semibold }}>
-                          {article.source}
-                        </Caption1>
-                        {article.sentiment && (
-                          <Caption2
-                            style={{
-                              fontFamily: FontFamily.bold,
-                              color:
-                                article.sentiment === "bullish"
-                                  ? colors.success
-                                  : article.sentiment === "bearish"
-                                  ? colors.error
-                                  : colors.muted,
-                              textTransform: "uppercase",
-                              letterSpacing: 0.5,
-                            }}
-                          >
-                            {article.sentiment}
-                          </Caption2>
-                        )}
-                      </View>
-                      <Caption1 color="muted" style={{ fontFamily: FontFamily.medium }}>
-                        {article.relativeTime}
-                      </Caption1>
-                    </View>
-                  </View>
-                </View>
-              </AnimatedPressable>
-            ))
-          ) : (
-            <View
-              style={[
-                styles.newsCard,
-                { backgroundColor: colors.surface, borderColor: colors.border, alignItems: "center", paddingVertical: 24 },
-              ]}
-            >
-              <Footnote color="muted" style={{ fontFamily: FontFamily.medium }}>
-                No recent news found for {ticker}
-              </Footnote>
-            </View>
-          )}
         </ReAnimated.View>
 
         <View style={{ height: 120 }} />
       </ScrollView>
 
       {/* Bottom CTA */}
-      <View style={[styles.ctaContainer, { backgroundColor: colors.background + 'E8', borderTopColor: colors.borderSubtle }]}>
+      <View
+        style={[
+          styles.ctaContainer,
+          {
+            backgroundColor: colorAlpha(colors.background, 0.92),
+            borderTopColor: colors.borderSubtle,
+          },
+        ]}
+      >
         <CDSButton
           variant="success"
           onPress={() => router.push(`/(tabs)/trade?stockId=${id}&mode=buy`)}
@@ -569,55 +370,57 @@ export default function AssetDetailScreen() {
 
 const styles = StyleSheet.create({
   scrollContent: {
-    paddingBottom: 20,
+    paddingBottom: Spacing[5],
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 12,
+    paddingHorizontal: Spacing[4],
+    paddingTop: Spacing[2],
+    paddingBottom: Spacing[3],
   },
   backButton: {
     width: 40,
     height: 40,
-    borderRadius: Radius[500],
+    borderRadius: Radius.full,
     alignItems: "center",
     justifyContent: "center",
   },
   headerCenter: {
     alignItems: "center",
+    flex: 1,
+    paddingHorizontal: Spacing[2],
   },
   headerTitleRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: Spacing[2],
   },
   headerActions: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: Spacing[2],
   },
   iconButton: {
     width: 40,
     height: 40,
-    borderRadius: Radius[500],
+    borderRadius: Radius.full,
     alignItems: "center",
     justifyContent: "center",
   },
   priceContainer: {
     alignItems: "center",
-    paddingBottom: 16,
+    paddingBottom: Spacing[4],
   },
   changeRow: {
     flexDirection: "row",
     alignItems: "center",
   },
   chartContainer: {
-    width: "100%",                    // Fill available space (responsive)
+    width: "100%",
     alignItems: "center",
-    paddingHorizontal: Spacing[4],    // 16px
+    paddingHorizontal: Spacing[4],
   },
   chartEmpty: {
     width: "100%",
@@ -630,7 +433,7 @@ const styles = StyleSheet.create({
   periodRow: {
     flexDirection: "row",
     justifyContent: "center",
-    paddingVertical: 12,
+    paddingVertical: Spacing[3],
     gap: 6,
   },
   periodButton: {
@@ -639,11 +442,11 @@ const styles = StyleSheet.create({
     borderRadius: Radius[200],
   },
   statsCard: {
-    marginHorizontal: 16,
+    marginHorizontal: Spacing[4],
     borderRadius: Radius[400],
     borderWidth: 1,
-    padding: 16,
-    marginBottom: 20,
+    padding: Spacing[4],
+    marginBottom: Spacing[5],
   },
   statsGrid: {
     flexDirection: "row",
@@ -651,86 +454,16 @@ const styles = StyleSheet.create({
   },
   statItem: {
     width: "50%",
-    paddingVertical: 8,
+    paddingVertical: Spacing[2],
   },
-  sectionTitleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 12,
+  aboutSection: {
+    paddingHorizontal: Spacing[4],
+    marginBottom: Spacing[5],
   },
-  aiBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
-  },
-  sentimentSection: {
-    paddingHorizontal: 16,
-    marginBottom: 20,
-  },
-  sentimentCard: {
+  aboutCard: {
     borderRadius: Radius[400],
     borderWidth: 1,
-    padding: 16,
-  },
-  sentimentHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 12,
-  },
-  sentimentLabelRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  sentimentIndicator: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
-  sentimentBar: {
-    flexDirection: "row",
-    height: 8,
-    borderRadius: 4,
-    overflow: "hidden",
-    marginBottom: 8,
-  },
-  sentimentFillBuy: {
-    height: "100%",
-    borderTopLeftRadius: 4,
-    borderBottomLeftRadius: 4,
-  },
-  sentimentFillSell: {
-    height: "100%",
-    borderTopRightRadius: 4,
-    borderBottomRightRadius: 4,
-  },
-  sentimentLabels: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  newsSection: {
-    paddingHorizontal: 16,
-  },
-  newsCard: {
-    borderRadius: 12,
-    borderWidth: 1,
     padding: Spacing[4],
-    marginBottom: 10,
-  },
-  newsContent: {
-    flexDirection: "row",
-  },
-  newsMeta: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  newsSourceRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
   },
   ctaContainer: {
     position: "absolute",
@@ -738,11 +471,11 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     flexDirection: "row",
-    gap: 12,
-    paddingHorizontal: 16,
-    paddingTop: 12,
+    gap: Spacing[3],
+    paddingHorizontal: Spacing[4],
+    paddingTop: Spacing[3],
     paddingBottom: 36,
-    borderTopWidth: 0.5,
+    borderTopWidth: StyleSheet.hairlineWidth,
   },
   ctaButton: {
     flex: 1,

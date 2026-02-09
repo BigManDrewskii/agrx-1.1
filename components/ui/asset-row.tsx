@@ -2,7 +2,8 @@ import React from "react";
 import { View, StyleSheet, Platform } from "react-native";
 import * as Haptics from "expo-haptics";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
-import { useColors } from "@/hooks/use-colors";
+import { useColors, colorAlpha } from "@/hooks/use-colors";
+import { useThemeContext } from "@/lib/theme-provider";
 import { CDSSparkline } from "./cds-sparkline";
 import { AnimatedNumber, AnimatedPnLNumber } from "./animated-number";
 import { Caption1, Subhead } from "@/components/ui/cds-typography";
@@ -29,6 +30,8 @@ export function AssetRow({
   onToggleWatchlist,
 }: AssetRowProps) {
   const colors = useColors();
+  const { colorScheme } = useThemeContext();
+  const isDark = colorScheme === "dark";
 
   const handleStarPress = () => {
     if (Platform.OS !== "web") {
@@ -53,8 +56,8 @@ export function AssetRow({
           style={[
             styles.iconCircle,
             {
-              backgroundColor: `${tintColor}14`,
-              borderColor: `${tintColor}20`,
+              backgroundColor: colorAlpha(tintColor, isDark ? 0.14 : 0.08),
+              borderColor: colorAlpha(tintColor, isDark ? 0.22 : 0.14),
               borderWidth: 1,
             },
           ]}
@@ -152,7 +155,7 @@ export function AssetRow({
               <IconSymbol
                 name="star.fill"
                 size={18}
-                color={isWatchlisted ? colors.gold : `${colors.muted}40`}
+                color={isWatchlisted ? colors.gold : colorAlpha(colors.muted, 0.30)}
               />
             </View>
           </AnimatedPressable>

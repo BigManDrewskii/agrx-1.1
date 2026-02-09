@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { View, StyleSheet, Animated } from "react-native";
-import { useColors } from "@/hooks/use-colors";
+import { useColors, colorAlpha } from "@/hooks/use-colors";
 import { LinearGradient } from "expo-linear-gradient";
 
 interface SkeletonProps {
@@ -102,9 +102,9 @@ export function Skeleton({
         >
           <LinearGradient
             colors={[
-              colors.surfaceSecondary + "00", // transparent
-              colors.surfaceSecondary + "66", // 40% opacity
-              colors.surfaceSecondary + "00", // transparent
+              colorAlpha(colors.surfaceSecondary, 0), // transparent
+              colorAlpha(colors.surfaceSecondary, 0.40), // 40% opacity
+              colorAlpha(colors.surfaceSecondary, 0), // transparent
             ]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}

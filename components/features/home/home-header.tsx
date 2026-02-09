@@ -3,6 +3,7 @@
  *
  * Clean, Robinhood-inspired header with avatar, greeting,
  * contextual badges, and action buttons.
+ * Uses design tokens for all spacing and colors.
  */
 import React from "react";
 import { View, StyleSheet } from "react-native";
@@ -89,7 +90,7 @@ export function HomeHeader({
             onPress={() => router.push("/notification-history")}
             style={[
               styles.iconButton,
-              { backgroundColor: colors.surfaceSecondary },
+              { backgroundColor: colors.surface },
             ]}
             accessibilityLabel={`Notifications${unreadCount > 0 ? ` (${unreadCount > 9 ? "9+" : unreadCount} unread)` : ""}`}
             accessibilityHint="View notification history"
@@ -120,7 +121,7 @@ export function HomeHeader({
             onPress={() => router.push("/settings")}
             style={[
               styles.iconButton,
-              { backgroundColor: colors.surfaceSecondary },
+              { backgroundColor: colors.surface },
             ]}
             accessibilityLabel="Settings"
             accessibilityHint="Open app settings"
@@ -149,6 +150,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: Spacing[3],
+    flex: 1,
   },
   avatar: {
     width: 40,
@@ -159,17 +161,18 @@ const styles = StyleSheet.create({
   },
   greetingText: {
     gap: 1,
+    flex: 1,
   },
   headerActions: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: Spacing[2],
   },
   streakBadge: {
     flexDirection: "row",
     alignItems: "center",
     gap: 3,
-    paddingHorizontal: 8,
+    paddingHorizontal: Spacing[2],
     paddingVertical: 4,
     borderRadius: Radius.full,
   },

@@ -3,6 +3,7 @@
  *
  * Wraps CDS Chip component with AGRX's superior haptic feedback.
  * Maintains CDS styling while adding consistent press feedback.
+ * Uses design tokens for all colors.
  *
  * Usage:
  *   <CDSChip
@@ -16,10 +17,11 @@ import { Platform, StyleSheet } from "react-native";
 import Animated, { useSharedValue, useAnimatedStyle, withSpring, runOnJS } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import * as Haptics from "expo-haptics";
-import { useColors } from "@/hooks/use-colors";
+import { useColors, colorAlpha } from "@/hooks/use-colors";
 import { useThemeContext } from "@/lib/theme-provider";
 import { Caption1, Caption2 } from "@/components/ui/typography";
 import { FontFamily } from "@/constants/typography";
+import { Radius } from "@/constants/spacing";
 
 interface CDSChipProps {
   label: string;
@@ -73,8 +75,7 @@ export function CDSChip({
 
   const selectedBg = isDark ? colors.primaryAlpha : colors.primary;
   const selectedTextColor = isDark ? colors.primary : colors.onPrimary;
-  const unselectedBg = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)";
-  const unselectedBorder = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
+  const selectedBorder = isDark ? colorAlpha(colors.primary, 0.30) : colors.primary;
 
   return (
     <GestureDetector gesture={tapGesture}>
@@ -84,8 +85,8 @@ export function CDSChip({
           styles.chip,
           animatedStyle,
           {
-            backgroundColor: selected ? selectedBg : unselectedBg,
-            borderColor: selected ? (isDark ? colors.primary + "40" : colors.primary) : unselectedBorder,
+            backgroundColor: selected ? selectedBg : colors.foregroundAlpha4,
+            borderColor: selected ? selectedBorder : colors.foregroundAlpha8,
             opacity: disabled ? 0.5 : 1,
           },
         ]}
@@ -121,7 +122,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 14,
     paddingVertical: 7,
-    borderRadius: 10,
+    borderRadius: Radius[200],
     borderWidth: 1,
     gap: 5,
   },

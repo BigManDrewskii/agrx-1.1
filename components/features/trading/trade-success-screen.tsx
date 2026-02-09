@@ -1,33 +1,25 @@
 /**
- * TradeSuccessScreen — Premium trade confirmation screen
+ * TradeSuccessScreen — Trade confirmation screen
  *
- * Shows animated success icon, trade details with clear hierarchy,
- * share CTA, and done button. Robinhood-inspired celebration feel.
- *
- * Usage:
- *   <TradeSuccessScreen
- *     isBuy={true}
- *     shares={10.5}
- *     amount={100}
- *     ticker="OPAP"
- *     onShare={() => setShowShareModal(true)}
- *     onDone={() => dismiss()}
- *   />
+ * Shows animated success icon, trade details, share CTA, and done button.
+ * Clean, centered layout with proper responsive sizing.
  */
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Dimensions } from "react-native";
 import Animated, {
-  FadeIn,
   FadeInDown,
   ZoomIn,
 } from "react-native-reanimated";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { useColors } from "@/hooks/use-colors";
+import { useColors, colorAlpha } from "@/hooks/use-colors";
 import { useThemeContext } from "@/lib/theme-provider";
 import { MonoLargeTitle } from "@/components/ui/typography";
 import { Title1, Callout, Subhead, Caption1 } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
+
+const { height: SCREEN_HEIGHT } = Dimensions.get("window");
+const IS_SMALL = SCREEN_HEIGHT < 700;
 
 interface TradeSuccessScreenProps {
   isBuy: boolean;
@@ -49,35 +41,25 @@ export function TradeSuccessScreen({
   const colors = useColors();
   const { colorScheme } = useThemeContext();
   const isDark = colorScheme === "dark";
-
   const accentColor = isBuy ? colors.success : colors.error;
 
   return (
     <View style={styles.container}>
-      {/* Success Icon with ring */}
+      {/* Success Icon */}
       <Animated.View
         entering={ZoomIn.duration(400).springify().damping(12)}
         style={styles.iconWrapper}
       >
         <View
-          style={[
-            styles.iconRingOuter,
-            { backgroundColor: `${accentColor}10` },
-          ]}
+          style={[styles.iconRingOuter, { backgroundColor: `${accentColor}0C` }]}
         >
           <View
-            style={[
-              styles.iconRingInner,
-              { backgroundColor: `${accentColor}20` },
-            ]}
+            style={[styles.iconRingInner, { backgroundColor: `${accentColor}1A` }]}
           >
             <View
-              style={[
-                styles.iconCircle,
-                { backgroundColor: accentColor },
-              ]}
+              style={[styles.iconCircle, { backgroundColor: accentColor }]}
             >
-              <IconSymbol name="checkmark" size={36} color="#FFFFFF" />
+              <IconSymbol name="checkmark" size={IS_SMALL ? 28 : 32} color="#FFFFFF" />
             </View>
           </View>
         </View>
@@ -85,7 +67,7 @@ export function TradeSuccessScreen({
 
       {/* Title */}
       <Animated.View
-        entering={FadeInDown.duration(400).delay(150).springify().damping(15)}
+        entering={FadeInDown.duration(350).delay(150).springify().damping(15)}
       >
         <Title1 style={styles.title}>
           {isBuy ? "Purchase Complete" : "Sale Complete"}
@@ -94,26 +76,28 @@ export function TradeSuccessScreen({
 
       {/* Amount */}
       <Animated.View
-        entering={FadeInDown.duration(400).delay(250).springify().damping(15)}
+        entering={FadeInDown.duration(350).delay(250).springify().damping(15)}
       >
         <MonoLargeTitle style={[styles.amount, { color: colors.foreground }]}>
           €{amount.toFixed(2)}
         </MonoLargeTitle>
       </Animated.View>
 
-      {/* Details */}
+      {/* Detail card */}
       <Animated.View
-        entering={FadeInDown.duration(400).delay(350).springify().damping(15)}
+        entering={FadeInDown.duration(350).delay(350).springify().damping(15)}
         style={[
           styles.detailCard,
           {
-            backgroundColor: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.02)",
-            borderColor: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)",
+            backgroundColor: colors.foregroundAlpha4,
+            borderColor: colors.foregroundAlpha8,
           },
         ]}
       >
         <View style={styles.detailRow}>
-          <Caption1 color="muted" style={{ fontSize: 12 }}>
+          <Caption1
+            style={{ fontSize: 12, color: colors.muted }}
+          >
             {isBuy ? "Bought" : "Sold"}
           </Caption1>
           <Subhead style={{ fontFamily: FontFamily.semibold, color: colors.foreground }}>
@@ -123,11 +107,11 @@ export function TradeSuccessScreen({
       </Animated.View>
 
       {/* Spacer */}
-      <View style={{ flex: 1, minHeight: 32 }} />
+      <View style={{ flex: 1, minHeight: IS_SMALL ? 16 : 32 }} />
 
-      {/* Share Button — Primary CTA */}
+      {/* CTAs */}
       <Animated.View
-        entering={FadeInDown.duration(400).delay(450).springify().damping(15)}
+        entering={FadeInDown.duration(350).delay(450).springify().damping(15)}
         style={styles.ctaContainer}
       >
         <AnimatedPressable
@@ -139,25 +123,24 @@ export function TradeSuccessScreen({
               backgroundColor: colors.primary,
               shadowColor: colors.primary,
               shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.25,
-              shadowRadius: 12,
-              elevation: 6,
+              shadowOpacity: 0.2,
+              shadowRadius: 10,
+              elevation: 4,
             },
           ]}
         >
-          <IconSymbol name="square.and.arrow.up" size={18} color={colors.onPrimary} />
-          <Callout color="onPrimary" style={{ fontFamily: FontFamily.semibold }}>
+          <IconSymbol name="square.and.arrow.up" size={16} color={colors.onPrimary} />
+          <Callout style={{ fontFamily: FontFamily.semibold, color: colors.onPrimary }}>
             Share with friends
           </Callout>
         </AnimatedPressable>
 
-        {/* Done Button — Secondary */}
         <AnimatedPressable
           variant="icon"
           onPress={onDone}
           style={styles.doneButton}
         >
-          <Subhead color="muted" style={{ fontFamily: FontFamily.medium }}>
+          <Subhead style={{ fontFamily: FontFamily.medium, color: colors.muted }}>
             Done
           </Subhead>
         </AnimatedPressable>
@@ -165,6 +148,10 @@ export function TradeSuccessScreen({
     </View>
   );
 }
+
+const ICON_OUTER = IS_SMALL ? 96 : 110;
+const ICON_INNER = IS_SMALL ? 76 : 88;
+const ICON_CIRCLE = IS_SMALL ? 56 : 66;
 
 const styles = StyleSheet.create({
   container: {
@@ -175,49 +162,49 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
   },
   iconWrapper: {
-    marginBottom: 28,
+    marginBottom: IS_SMALL ? 20 : 28,
   },
   iconRingOuter: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: ICON_OUTER,
+    height: ICON_OUTER,
+    borderRadius: ICON_OUTER / 2,
     alignItems: "center",
     justifyContent: "center",
   },
   iconRingInner: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
+    width: ICON_INNER,
+    height: ICON_INNER,
+    borderRadius: ICON_INNER / 2,
     alignItems: "center",
     justifyContent: "center",
   },
   iconCircle: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
+    width: ICON_CIRCLE,
+    height: ICON_CIRCLE,
+    borderRadius: ICON_CIRCLE / 2,
     alignItems: "center",
     justifyContent: "center",
   },
   title: {
-    marginBottom: 8,
+    marginBottom: 6,
     textAlign: "center",
   },
   amount: {
-    fontSize: 40,
-    marginBottom: 24,
+    fontSize: IS_SMALL ? 32 : 38,
+    marginBottom: IS_SMALL ? 16 : 24,
     textAlign: "center",
   },
   detailCard: {
     paddingHorizontal: 20,
-    paddingVertical: 14,
+    paddingVertical: 12,
     borderRadius: 14,
     borderWidth: 1,
     width: "100%",
-    maxWidth: 300,
+    maxWidth: 280,
   },
   detailRow: {
     alignItems: "center",
-    gap: 4,
+    gap: 3,
   },
   ctaContainer: {
     width: "100%",
@@ -228,14 +215,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
-    paddingHorizontal: 28,
-    paddingVertical: 16,
-    borderRadius: 28,
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    borderRadius: 14,
     width: "100%",
-    marginBottom: 12,
+    marginBottom: 10,
   },
   doneButton: {
     paddingHorizontal: 24,
-    paddingVertical: 12,
+    paddingVertical: 10,
   },
 });

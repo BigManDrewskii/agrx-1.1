@@ -22,7 +22,7 @@ import React, { Component, ErrorInfo, ReactNode } from "react";
 import { View, StyleSheet, ScrollView, Alert } from "react-native";
 import { CDSButton } from "@/components/ui/cds-button";
 import { LargeTitle, Title3, Subhead, Caption1 } from "@/components/ui/typography";
-import { useColors } from "@/hooks/use-colors";
+import { useColors, colorAlpha } from "@/hooks/use-colors";
 import { Spacing, Radius } from "@/constants/spacing";
 
 interface ErrorBoundaryProps {
@@ -71,7 +71,7 @@ function ErrorBoundaryInner({
         showsVerticalScrollIndicator={false}
       >
         {/* Error Icon */}
-        <View style={[styles.iconContainer, { backgroundColor: colors.error + "1A" }]}>
+        <View style={[styles.iconContainer, { backgroundColor: colorAlpha(colors.error, 0.10) }]}>
           <Subhead style={{ fontSize: 48, color: colors.error }}>⚠️</Subhead>
         </View>
 

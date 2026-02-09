@@ -13,7 +13,7 @@ import {
   Platform,
   KeyboardAvoidingView,
 } from "react-native";
-import { useColors } from "@/hooks/use-colors";
+import { useColors, colorAlpha } from "@/hooks/use-colors";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { CDSButton } from "@/components/ui/cds-button";
 import { IconSymbol } from "@/components/ui/icon-symbol";
@@ -170,7 +170,7 @@ export function AddAlertModal({
           {/* Handle */}
           <View style={styles.handleContainer}>
             <View
-              style={[styles.handle, { backgroundColor: colors.muted + "40" }]}
+              style={[styles.handle, { backgroundColor: colorAlpha(colors.muted, 0.25) }]}
             />
           </View>
 
@@ -197,7 +197,7 @@ export function AddAlertModal({
                     styles.typeOption,
                     {
                       backgroundColor: isSelected
-                        ? colors.primary + "33"
+                        ? colorAlpha(colors.primary, 0.20)
                         : colors.surface,
                       borderColor: isSelected ? colors.primary : colors.border,
                       borderWidth: isSelected ? 1.5 : StyleSheet.hairlineWidth,

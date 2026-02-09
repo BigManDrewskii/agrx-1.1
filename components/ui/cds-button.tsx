@@ -3,7 +3,7 @@
  *
  * Wraps button styling with AGRX's superior haptic feedback and animations.
  * Combines CDS visual design with AGRX motion language.
- * Supports both text-only and icon+text layouts.
+ * Uses design tokens for all colors.
  *
  * Usage:
  *   <CDSButton variant="primary" onPress={handleSubmit}>
@@ -18,6 +18,7 @@ import * as Haptics from "expo-haptics";
 import { useColors } from "@/hooks/use-colors";
 import { useThemeContext } from "@/lib/theme-provider";
 import { FontFamily } from "@/constants/typography";
+import { Radius } from "@/constants/spacing";
 
 type ButtonVariant = "primary" | "secondary" | "tertiary" | "destructive" | "success";
 
@@ -89,14 +90,14 @@ export function CDSButton({
         };
       case "secondary":
         return {
-          backgroundColor: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)",
-          borderColor: isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.10)",
+          backgroundColor: colors.foregroundAlpha8,
+          borderColor: colors.foregroundAlpha12,
           borderWidth: 1,
         };
       case "tertiary":
         return {
-          backgroundColor: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)",
-          borderColor: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)",
+          backgroundColor: colors.foregroundAlpha4,
+          borderColor: colors.foregroundAlpha8,
           borderWidth: 1,
         };
       case "destructive":
@@ -210,7 +211,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 24,
     paddingVertical: 14,
-    borderRadius: 14,
+    borderRadius: Radius[400],
     minHeight: 50,
   },
   text: {
