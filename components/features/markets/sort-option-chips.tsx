@@ -2,6 +2,7 @@
  * SortOptionChips — Horizontal sort mode selector chips
  *
  * Sort options for stock list: Default, Top Gainers, Top Losers, Volume, A → Z
+ * Now using CDS-styled chips with AGRX haptic feedback.
  *
  * Usage:
  *   <SortOptionChips
@@ -11,11 +12,11 @@
  *   />
  */
 import React from "react";
-import { ScrollView, View, StyleSheet } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
-import { AnimatedPressable } from "@/components/ui/animated-pressable";
+import { CDSChip } from "@/components/ui/cds-chip";
 import { useColors } from "@/hooks/use-colors";
-import { Caption1, Caption2 } from "@/components/ui/typography";
+import { Caption1 } from "@/components/ui/typography";
 import { FontFamily } from "@/constants/typography";
 
 type SortMode = "default" | "gainers" | "losers" | "volume" | "alpha";
@@ -54,36 +55,14 @@ export function SortOptionChips({
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.chipList}
       >
-        {SORT_OPTIONS.map((opt) => {
-          const isActive = sortMode === opt.key;
-          return (
-            <AnimatedPressable
-              key={opt.key}
-              variant="chip"
-              onPress={() => onSortChange(opt.key)}
-              style={[
-                styles.chip,
-                {
-                  backgroundColor: isActive
-                    ? colors.primaryAlpha
-                    : "transparent",
-                  borderColor: isActive ? colors.primary : colors.border,
-                },
-              ]}
-            >
-              <Caption2
-                color={isActive ? "primary" : "muted"}
-                style={{
-                  fontFamily: isActive
-                    ? FontFamily.bold
-                    : FontFamily.medium,
-                }}
-              >
-                {opt.label}
-              </Caption2>
-            </AnimatedPressable>
-          );
-        })}
+        {SORT_OPTIONS.map((opt) => (
+          <CDSChip
+            key={opt.key}
+            label={opt.label}
+            selected={sortMode === opt.key}
+            onPress={() => onSortChange(opt.key)}
+          />
+        ))}
       </ScrollView>
     </Animated.View>
   );
@@ -98,13 +77,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   chipList: {
-    gap: 6,
+    gap: 8,
     paddingRight: 16,
-  },
-  chip: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 14,
-    borderWidth: 1,
   },
 });

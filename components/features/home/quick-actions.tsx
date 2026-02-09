@@ -1,19 +1,18 @@
 /**
  * QuickActions — Simple mode quick action buttons
  *
- * Shows Trade, Portfolio, and Markets action buttons.
+ * Shows Trade, Portfolio, and Markets action buttons using CDSButton with icons.
  *
  * Usage:
  *   <QuickActions />
  */
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Text } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useRouter } from "expo-router";
-import { AnimatedPressable } from "@/components/ui/animated-pressable";
+import { CDSButton } from "@/components/ui/cds-button";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
-import { Subhead } from "@/components/ui/typography";
 import { FontFamily } from "@/constants/typography";
 
 export function QuickActions() {
@@ -22,47 +21,45 @@ export function QuickActions() {
 
   return (
     <Animated.View entering={FadeInDown.duration(250).delay(120)} style={styles.quickActions}>
-      <AnimatedPressable
-        variant="button"
-        onPress={() => router.push("/(tabs)/trade")}
-        style={[
-          styles.quickActionButton,
-          { backgroundColor: colors.primary },
-        ]}
-        accessibilityLabel="Navigate to Trade screen"
-        accessibilityHint="Buy and sell stocks"
-      >
-        <IconSymbol name="plus.circle.fill" size={20} color={colors.onPrimary} />
-        <Subhead style={{ fontFamily: FontFamily.semibold, color: colors.onPrimary }}>
-          Trade
-        </Subhead>
-      </AnimatedPressable>
-      <AnimatedPressable
-        variant="button"
-        onPress={() => router.push("/(tabs)/portfolio")}
-        style={[
-          styles.quickActionButton,
-          { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
-        ]}
-        accessibilityLabel="Navigate to Portfolio screen"
-        accessibilityHint="View your holdings and performance"
-      >
-        <IconSymbol name="briefcase.fill" size={20} color={colors.foreground} />
-        <Subhead style={{ fontFamily: FontFamily.semibold }}>Portfolio</Subhead>
-      </AnimatedPressable>
-      <AnimatedPressable
-        variant="button"
-        onPress={() => router.push("/(tabs)/markets")}
-        style={[
-          styles.quickActionButton,
-          { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
-        ]}
-        accessibilityLabel="Navigate to Markets screen"
-        accessibilityHint="Browse and search all stocks"
-      >
-        <IconSymbol name="chart.line.uptrend.xyaxis" size={20} color={colors.foreground} />
-        <Subhead style={{ fontFamily: FontFamily.semibold }}>Markets</Subhead>
-      </AnimatedPressable>
+      <View style={styles.quickActionButton}>
+        <CDSButton
+          variant="primary"
+          onPress={() => router.push("/(tabs)/trade")}
+          accessibilityLabel="Navigate to Trade screen"
+          accessibilityHint="Buy and sell stocks"
+        >
+          <View style={styles.buttonContent}>
+            <IconSymbol name="plus.circle.fill" size={18} color={colors.onPrimary} />
+            <Text style={[styles.buttonText, { color: colors.onPrimary }]}>Trade</Text>
+          </View>
+        </CDSButton>
+      </View>
+      <View style={styles.quickActionButton}>
+        <CDSButton
+          variant="tertiary"
+          onPress={() => router.push("/(tabs)/portfolio")}
+          accessibilityLabel="Navigate to Portfolio screen"
+          accessibilityHint="View your holdings and performance"
+        >
+          <View style={styles.buttonContent}>
+            <IconSymbol name="briefcase.fill" size={18} color={colors.primary} />
+            <Text style={[styles.buttonText, { color: colors.primary }]}>Portfolio</Text>
+          </View>
+        </CDSButton>
+      </View>
+      <View style={styles.quickActionButton}>
+        <CDSButton
+          variant="tertiary"
+          onPress={() => router.push("/(tabs)/markets")}
+          accessibilityLabel="Navigate to Markets screen"
+          accessibilityHint="Browse and search all stocks"
+        >
+          <View style={styles.buttonContent}>
+            <IconSymbol name="chart.line.uptrend.xyaxis" size={18} color={colors.primary} />
+            <Text style={[styles.buttonText, { color: colors.primary }]}>Markets</Text>
+          </View>
+        </CDSButton>
+      </View>
     </Animated.View>
   );
 }
@@ -76,11 +73,14 @@ const styles = StyleSheet.create({
   },
   quickActionButton: {
     flex: 1,
+  },
+  buttonContent: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
     gap: 6,
-    paddingVertical: 12,
-    borderRadius: 14,
+  },
+  buttonText: {
+    fontFamily: FontFamily.semibold,
+    fontSize: 16,
   },
 });

@@ -3,7 +3,7 @@ import { View, StyleSheet, Platform } from "react-native";
 import * as Haptics from "expo-haptics";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
 import { useColors } from "@/hooks/use-colors";
-import { Sparkline } from "./sparkline";
+import { CDSSparkline } from "./cds-sparkline";
 import { AnimatedNumber, AnimatedPnLNumber } from "./animated-number";
 import { Subhead, Caption1 } from "@/components/ui/typography";
 import { FontFamily } from "@/constants/typography";
@@ -75,11 +75,13 @@ export function AssetRow({
       {/* Center: Sparkline */}
       {showSparkline && (
         <View style={styles.center}>
-          <Sparkline
+          <CDSSparkline
             data={asset.sparkline}
             width={56}
             height={24}
             positive={asset.change >= 0}
+            showGradient={true}
+            smooth={true}
           />
         </View>
       )}
