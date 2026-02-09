@@ -53,7 +53,7 @@ export function PortfolioHero({
         style={{
           fontSize: 34,
           lineHeight: 42,
-          fontFamily: "JetBrainsMono_700Bold",
+          fontFamily: FontFamily.monoBold,
           color: colors.foreground,
           textShadowColor: isPositive ? colors.successAlpha : colors.errorAlpha,
           textShadowOffset: { width: 0, height: 0 },

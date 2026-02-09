@@ -19,11 +19,11 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { FontFamily } from "@/constants/typography";
 import { Spacing, Size } from "@/constants/spacing";
-import { Caption1, Callout } from "@/components/ui/cds-typography";
+import { Caption1, Callout, Subhead } from "@/components/ui/cds-typography";
 
 // ─── Constants ──────────────────────────────────────────────────────────
-const THUMB_SIZE = 60; // 60px (15 * 4) - Fixed to 4px grid ✅
-const TRACK_HEIGHT = 52; // 52px (13 * 4) - Fixed to 4px grid ✅
+const THUMB_SIZE = 56; // 56px (14 * 4) - Fixed to 4px grid ✅
+const TRACK_HEIGHT = 56; // 56px (14 * 4) - Fixed to 4px grid ✅
 const TRACK_PADDING = Spacing[2]; // 8px - Fixed to 4px grid ✅
 const COMPLETION_THRESHOLD = 0.95; // 95% of track to trigger
 const HAPTIC_MILESTONES = [0.25, 0.5, 0.75]; // light haptic at these points
@@ -78,7 +78,7 @@ export function SwipeToConfirm({
   const isCompleted = useSharedValue(false);
   const lastMilestone = useSharedValue(0);
   const thumbScale = useSharedValue(1);
-  const thumbIconTranslate = useSharedValue(0); // Icon moves within thumb during drag
+  const thumbIconScale = useSharedValue(1); // Icon scales within thumb during drag
   const shimmerTranslate = useSharedValue(0); // Shimmer position follows thumb
   const processingOpacity = useSharedValue(0); // "Processing..." text fade
 
@@ -91,7 +91,7 @@ export function SwipeToConfirm({
     isCompleted.value = false;
     lastMilestone.value = 0;
     thumbScale.value = 1;
-    thumbIconTranslate.value = 0;
+    thumbIconScale.value = 1;
     shimmerTranslate.value = 0;
     processingOpacity.value = 0;
   }, [enabled, label]);
@@ -132,8 +132,7 @@ export function SwipeToConfirm({
   const panGesture = Gesture.Pan()
     .enabled(enabled)
     .onBegin(() => {
-      thumbScale.value = withTiming(1.05, { duration: 80 });
-      thumbIconTranslate.value = withTiming(4, { duration: 80 });
+      thumbScale.value = withTiming(1.03, { duration: 100 });
       runOnJS(triggerLightHaptic)();
     })
     .onChange((event) => {
@@ -145,9 +144,9 @@ export function SwipeToConfirm({
       const newX = clamp(event.translationX, 0, maxX);
       translateX.value = newX;
 
-      // Progressive icon translation (0 → 8px based on progress)
+      // Progressive icon scale (1.0 → 1.1 based on progress)
       const progress = newX / maxX;
-      thumbIconTranslate.value = progress * 8;
+      thumbIconScale.value = 1 + progress * 0.1;
 
       // Update shimmer position to follow thumb center
       shimmerTranslate.value = newX + THUMB_SIZE / 2 - SHIMMER_WIDTH / 2;
@@ -175,8 +174,8 @@ export function SwipeToConfirm({
           mass: 0.6,
         });
         thumbScale.value = withSequence(
-          withTiming(1.15, { duration: 100 }),
-          withTiming(1, { duration: 150 })
+          withTiming(1.08, { duration: 120 }),
+          withTiming(1, { duration: 200 })
         );
         processingOpacity.value = withTiming(1, { duration: 200 });
         runOnJS(triggerSuccessHaptic)();
@@ -194,7 +193,7 @@ export function SwipeToConfirm({
     })
     .onFinalize(() => {
       thumbScale.value = withTiming(1, { duration: 100 });
-      thumbIconTranslate.value = withTiming(0, { duration: 100 });
+      thumbIconScale.value = withTiming(1, { duration: 100 });
     });
 
   // ─── Animated styles ────────────────────────────────────────────────
@@ -233,15 +232,6 @@ export function SwipeToConfirm({
     };
   });
 
-  // Chevrons animation — subtle shimmer effect
-  const chevronStyle = useAnimatedStyle(() => {
-    const maxX = trackWidth.value - THUMB_SIZE - TRACK_PADDING * 2;
-    const progress = maxX > 0 ? translateX.value / maxX : 0;
-    return {
-      opacity: interpolate(progress, [0, 0.25], [0.4, 0]),
-    };
-  });
-
   // Checkmark on completion
   const checkmarkStyle = useAnimatedStyle(() => {
     return {
@@ -263,10 +253,10 @@ export function SwipeToConfirm({
     };
   });
 
-  // Thumb icon translate — moves within thumb during drag
+  // Thumb icon scale — scales within thumb during drag
   const thumbIconStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateX: thumbIconTranslate.value }],
+      transform: [{ scale: thumbIconScale.value }],
     };
   });
 
@@ -349,57 +339,31 @@ export function SwipeToConfirm({
 
         {/* Label text */}
         <Animated.View style={[styles.labelContainer, labelStyle]}>
-          <Callout
+          <Subhead
             style={{
               fontFamily: FontFamily.semibold,
               color: activeColor,
               textAlign: "center",
+              letterSpacing: 0.2,
+              lineHeight: 20,
             }}
           >
             {label}
-          </Callout>
-        </Animated.View>
-
-        {/* Chevron hints (>>>) */}
-        <Animated.View style={[styles.chevronContainer, chevronStyle]}>
-          <View style={styles.chevronGroup}>
-            <IconSymbol
-              name="chevron.right"
-              size={14}
-              color={activeColor}
-              style={{ opacity: 0.4 }}
-            />
-            <IconSymbol
-              name="chevron.right"
-              size={14}
-              color={activeColor}
-              style={{ opacity: 0.6 }}
-            />
-            <IconSymbol
-              name="chevron.right"
-              size={14}
-              color={activeColor}
-              style={{ opacity: 0.8 }}
-            />
-          </View>
-        </Animated.View>
-
-        {/* Completion checkmark (centered in track) */}
-        <Animated.View style={[styles.completionCheck, checkmarkStyle]}>
-          <IconSymbol name="checkmark" size={24} color={activeColor} />
+          </Subhead>
         </Animated.View>
 
         {/* Processing text — fades in on completion */}
         <Animated.View style={[styles.processingText, processingStyle]}>
-          <Callout
+          <Caption1
             style={{
-              fontFamily: FontFamily.semibold,
-              color: activeColor,
+              fontFamily: FontFamily.medium,
+              color: colors.muted,
               textAlign: "center",
+              letterSpacing: 0.1,
             }}
           >
-            Processing...
-          </Callout>
+            Confirmed
+          </Caption1>
         </Animated.View>
 
         {/* Draggable thumb */}
@@ -464,11 +428,11 @@ export function SwipeToConfirm({
                 thumbStyle,
               ]}
             >
-              {/* Arrow icon with translate animation */}
+              {/* Arrow icon with scale animation */}
               <Animated.View style={[arrowStyle, thumbIconStyle]}>
                 <IconSymbol
                   name="chevron.right"
-                  size={24}
+                  size={22}
                   color={activeColor}
                 />
               </Animated.View>
@@ -498,6 +462,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     overflow: "hidden",
     position: "relative",
+    paddingHorizontal: Spacing[1],
   },
   fill: {
     position: "absolute",
@@ -520,24 +485,10 @@ const styles = StyleSheet.create({
   },
   labelContainer: {
     position: "absolute",
-    left: THUMB_SIZE + TRACK_PADDING + Spacing[2],
-    right: Spacing[4],
+    left: THUMB_SIZE + TRACK_PADDING + Spacing[3],
+    right: Spacing[5],
+    paddingHorizontal: Spacing[2],
     alignItems: "center",
-  },
-  chevronContainer: {
-    position: "absolute",
-    right: Spacing[4],
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  chevronGroup: {
-    flexDirection: "row",
-    gap: -4,
-  },
-  completionCheck: {
-    position: "absolute",
-    alignItems: "center",
-    justifyContent: "center",
   },
   processingText: {
     position: "absolute",

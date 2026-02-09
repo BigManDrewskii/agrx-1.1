@@ -8,6 +8,8 @@ export type User = {
   name: string | null;
   email: string | null;
   loginMethod: string | null;
+  avatarUrl: string | null;
+  useFaceHash: boolean;
   lastSignedIn: Date;
 };
 

@@ -277,7 +277,7 @@ export default function AssetDetailScreen() {
           ) : (
             <CDSLineChart
               data={chartData}
-              width={360}
+              // width omitted - fills container (responsive)
               height={200}
               positive={isPositive}
               showGradient={true}
@@ -614,8 +614,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   chartContainer: {
+    width: "100%",                    // Fill available space (responsive)
     alignItems: "center",
-    paddingHorizontal: 16,
+    paddingHorizontal: Spacing[4],    // 16px
   },
   periodRow: {
     flexDirection: "row",

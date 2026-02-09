@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/typography";
 import { Footnote } from "@/components/ui/cds-typography";
 import { FontFamily } from "@/constants/typography";
+import { AvatarSettingsSection } from "@/components/ui/avatar-settings-section";
 
 // ─── Storage Keys ────────────────────────────────────────────────────────────
 
@@ -290,6 +291,7 @@ export default function SettingsScreen() {
         <ReAnimated.View entering={FadeInDown.duration(250).delay(240)}>
         <SectionLabel text="Account" />
         <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <AvatarSettingsSection isLast={false} />
           <SettingsRow
             label="Demo Mode"
             value={demoState.isDemo ? "Active" : "Inactive"}

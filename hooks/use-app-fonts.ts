@@ -1,8 +1,8 @@
 /**
  * Font loading hook for AGRX.
  *
- * Loads Inter (Regular, Medium, SemiBold, Bold) and
- * JetBrains Mono (Regular, Medium, Bold) via expo-font.
+ * Loads Noto Sans (Regular, Medium, SemiBold, Bold) with Greek support
+ * and Geist Mono (Regular, Medium, Bold) via expo-google-fonts.
  *
  * Usage in root layout:
  *   const [fontsLoaded, fontError] = useAppFonts();
@@ -10,25 +10,28 @@
  */
 import { useFonts } from "expo-font";
 import {
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-  Inter_700Bold,
-} from "@expo-google-fonts/inter";
+  NotoSans_400Regular,
+  NotoSans_500Medium,
+  NotoSans_600SemiBold,
+  NotoSans_700Bold,
+} from "@expo-google-fonts/noto-sans";
 import {
-  JetBrainsMono_400Regular,
-  JetBrainsMono_500Medium,
-  JetBrainsMono_700Bold,
-} from "@expo-google-fonts/jetbrains-mono";
+  GeistMono_400Regular,
+  GeistMono_500Medium,
+  GeistMono_700Bold,
+} from "@expo-google-fonts/geist-mono";
 
 export function useAppFonts() {
   return useFonts({
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
-    Inter_700Bold,
-    JetBrainsMono_400Regular,
-    JetBrainsMono_500Medium,
-    JetBrainsMono_700Bold,
+    // Noto Sans - expo-google-fonts pattern with Greek support
+    NotoSans_400Regular,
+    NotoSans_500Medium,
+    NotoSans_600SemiBold,
+    NotoSans_700Bold,
+
+    // Geist Mono - expo-google-fonts pattern
+    GeistMono_400Regular,
+    GeistMono_500Medium,
+    GeistMono_700Bold,
   });
 }

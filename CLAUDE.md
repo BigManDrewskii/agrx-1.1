@@ -8,10 +8,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Tech Stack:**
 - Frontend: React Native 0.81.5, Expo Router 6.0.19, React Query (TanStack Query)
-- Styling: Tailwind CSS + NativeWind
+- Styling: Tailwind CSS + NativeWind, Coinbase Design System (CDS Mobile v8.43.0)
 - Backend: Node.js/Express, tRPC, Drizzle ORM
 - Database: MySQL/TiDB
-- Auth: Manus OAuth
+- Auth: Manus OAuth (platform-specific: cookie on web, bearer token on native)
 
 ## Development Commands
 
@@ -32,6 +32,7 @@ pnpm format           # Prettier
 ### Testing
 ```bash
 pnpm test             # Run all tests with Vitest
+pnpm test <pattern>   # Run tests matching a pattern (e.g., `pnpm test stock`)
 ```
 
 ### Database
@@ -50,6 +51,7 @@ pnpm start            # Run production server (node dist/index.js)
 pnpm android          # Run on Android
 pnpm ios              # Run on iOS
 pnpm qr               # Generate QR code for Expo DevTools
+EXPO_PORT=8082 pnpm dev  # Start on custom port (useful for QR codes)
 ```
 
 ## Architecture
@@ -65,9 +67,12 @@ app/                      # Expo Router file-based routing
   trade-history/          # Trade history screen
   oauth/callback/         # OAuth callback handler
 components/               # Reusable UI components
-  ui/                     # Base UI components (Button, Card, etc.)
-constants/                # App constants (theme, typography, oauth)
+  ui/                     # Base UI components (CDS wrappers, typography, etc.)
+  features/               # Feature-specific components by screen area
+constants/                # App constants (theme, typography, oauth, spacing)
+hooks/                    # Custom React hooks (useAuth, useColors, useStocks, etc.)
 lib/                      # Core libraries and contexts
+  _core/                  # Framework-level code (DO NOT MODIFY)
   mock-data.ts            # 135+ Greek stocks with realistic ATHEX data
   demo-context.tsx        # Demo mode state (portfolio, trades, balance)
   watchlist-context.tsx   # User watchlist state
@@ -76,6 +81,7 @@ lib/                      # Core libraries and contexts
   theme-provider.tsx      # Dark/light mode theming
   trpc.ts                 # tRPC client configuration
 server/                   # Backend (Express + tRPC)
+  _core/                  # Framework-level code (DO NOT MODIFY)
   routers.ts              # Main tRPC router composition
   stockRouter.ts          # Stock data endpoints
   newsRouter.ts           # News endpoints
@@ -84,7 +90,7 @@ server/                   # Backend (Express + tRPC)
   newsService.ts          # Business logic for news
   db.ts                   # Database queries
   storage.ts              # S3 storage helpers
-  _core/                  # Framework-level code (DO NOT MODIFY)
+shared/                   # Shared types and constants between frontend/backend
 drizzle/                  # Database schema and migrations
   schema.ts               # Database table definitions
 __tests__/                # Frontend integration tests
@@ -96,13 +102,14 @@ tests/                    # Backend unit tests
 **Routing**: File-based with Expo Router. Main tabs in `app/(tabs)/`, modals in `app/`.
 
 **State Management** (layered in `app/_layout.tsx`):
-1. **ThemeProvider** - Dark/light mode
+1. **GestureHandlerRootView** - Gesture handling for Reanimated
 2. **DemoProvider** - Demo trading (portfolio, balance, trades)
 3. **WatchlistProvider** - User watchlist
 4. **ViewModeProvider** - Simple/Pro view toggle
-5. **NotificationProvider** - In-app notifications
+5. **tRPC Provider** - Type-safe API client
 6. **QueryClient** - React Query for server state
-7. **tRPC Provider** - Type-safe API client
+7. **NotificationProvider** - In-app notifications
+8. **ThemeProvider** + **CDSThemeProvider** - Dark/light mode theming (synced with CDS)
 
 **Context Providers**:
 - `DemoProvider` (`lib/demo-context.tsx`): Manages demo trading state including holdings, trades, balance. Persists to AsyncStorage.
@@ -122,6 +129,8 @@ export const appRouter = router({
   news: newsRouter,           // News feed
   notifications: notificationRouter // Notifications
 });
+
+// All API routes must start with /api/ for gateway routing
 ```
 
 **Adding New Features**:
@@ -187,6 +196,7 @@ try {
 - Mock external dependencies
 - Test happy path + error cases
 - Test edge cases (empty, null, boundaries)
+- Frontend tests use `http://127.0.0.1:3000/api/trpc` for integration testing
 
 ### Type Safety
 
@@ -195,11 +205,37 @@ try {
 - tRPC provides end-to-end type safety (backend to frontend)
 - Run `pnpm check` before committing
 
+### React Hooks Best Practices
+
+**useEffect Guidelines**:
+- Prefer derived values over state + effect patterns
+- Use `useMemo` for expensive calculations, not `useEffect`
+- When reviewing `useEffect` or `useState` for derived values, invoke `react-useeffect` skill
+
+**Custom Hooks** (in `hooks/`):
+- `useAuth()` - Authentication state with platform-specific handling
+- `useColors()` - Access theme colors with dark/light mode support
+- `useStocks()` - Stock data fetching with tRPC
+- `useNews()` - News feed data
+- `useMarketStatus()` - Market open/closed status
+
 ### Styling
 
 **Tailwind + NativeWind**: Use utility classes in `className` prop.
 **Theme Colors**: Access via `useColors()` hook from `@/hooks/use-colors`.
 **Dark Mode**: Automatic via `ThemeProvider`. Use `colors.surface`, `colors.text`, etc.
+**Coinbase Design System**: CDS Mobile v8.43.0 components are wrapped in `components/ui/cds-*.tsx` files. When building mobile UI, prefer using the `cds-mobile-ui` skill for CDS components.
+
+### Component Structure
+
+**UI Components** (`components/ui/`): Reusable, generic components like buttons, typography, charts, and CDS wrappers. These should have no business logic.
+
+**Feature Components** (`components/features/`): Screen-specific components organized by feature area:
+- `home/` - Home screen components
+- `markets/` - Markets screen components
+- `trading/` - Trade screen components
+- `portfolio/` - Portfolio screen components
+- `social/` - Social screen components
 
 ### Platform Considerations
 
@@ -207,11 +243,14 @@ try {
 - Safe areas handled automatically via `SafeAreaProvider`
 - Web uses cookie auth, native uses bearer token
 - Platform checks: `Platform.OS === 'web'`
+- Web-specific safe area injection in `app/_layout.tsx` via `subscribeSafeAreaInsets`
 
 **Tab Bar** (`app/(tabs)/_layout.tsx`):
-- 5 tabs: Home, Markets, Trade (floating), Portfolio, Social
+- 5 tabs: Home, Markets, Trade (floating center button), Portfolio, Social
 - Haptic feedback on tab press
-- 56pt height + safe area bottom padding
+- 60pt height + safe area bottom padding
+- Floating design with shadow/elevation
+- Trade tab has prominent elevated button style
 
 ### Common Patterns
 
@@ -289,8 +328,9 @@ Add random suffixes to file keys to prevent enumeration.
 
 - `@/constants/const.ts`: Shared constants
 - `@/constants/oauth.ts`: OAuth URLs and configuration
-- `@/constants/theme.ts`: Theme color definitions
+- `@/constants/theme.ts`: Theme color definitions (re-exports from `lib/_core/theme.ts`)
 - `@/constants/typography.ts`: Font families and sizes
+- `@/constants/spacing.ts`: 8px grid spacing system (use `Spacing[4]` for 16px, etc.)
 
 ## Important Notes
 
@@ -305,3 +345,9 @@ Add random suffixes to file keys to prevent enumeration.
 **Database**: Lazy-loaded connection. Check if DB exists before queries in `server/db.ts`.
 
 **Testing**: All tests must pass before marking work complete. Run `pnpm test` to verify.
+
+**tRPC v11 Transformer Placement**: The `transformer` (superjson) must be inside `httpBatchLink`, not at the root of `createClient`. This is already configured correctly in `lib/trpc.ts` — do not move it.
+
+**CDS Theme Sync**: The app uses both a custom ThemeProvider and CDS's CDSThemeProvider. They are synced in `app/_layout.tsx` via `CDSThemeWrapper` which passes the colorScheme to CDS.
+
+**Server Port Selection**: The backend server (`server/_core/index.ts`) automatically finds an available port starting from 3000, checking up to 20 ports if needed.

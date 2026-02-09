@@ -13,14 +13,24 @@
  *     showDots={true}
  *   />
  */
-import React, { useMemo } from "react";
-import { View, StyleSheet } from "react-native";
+import React, { useMemo, useState } from "react";
+import { View, StyleSheet, LayoutChangeEvent } from "react-native";
 import Svg, { Path, Defs, LinearGradient, Stop, Circle, Line } from "react-native-svg";
 import { useColors } from "@/hooks/use-colors";
+import { Spacing, Radius } from "@/constants/spacing";
+
+interface PaddingConfig {
+  top?: number;
+  right?: number;
+  bottom?: number;
+  left?: number;
+}
 
 interface CDSLineChartProps {
   data: number[];
+  /** Chart width - undefined fills container (responsive) */
   width?: number;
+  /** Chart height - maintains aspect ratio */
   height?: number;
   positive?: boolean;
   strokeWidth?: number;
@@ -36,11 +46,20 @@ interface CDSLineChartProps {
   gridLines?: number;
   /** Optional labels for x-axis */
   labels?: string[];
+  /** Optional custom padding override */
+  padding?: PaddingConfig;
 }
+
+const DEFAULT_PADDING = {
+  top: Spacing[5],    // 20px
+  right: Spacing[5],  // 20px
+  bottom: Spacing[6], // 24px
+  left: Spacing[12],  // 48px
+};
 
 export function CDSLineChart({
   data,
-  width = 320,
+  width: propWidth, // Can be undefined for responsive
   height = 180,
   positive,
   strokeWidth = 2,
@@ -50,11 +69,22 @@ export function CDSLineChart({
   showGrid = false,
   gridLines = 5,
   labels,
+  padding: paddingOverride,
 }: CDSLineChartProps) {
   const colors = useColors();
+  const [measuredWidth, setMeasuredWidth] = useState<number | undefined>(propWidth);
+
+  const handleLayout = (event: LayoutChangeEvent) => {
+    if (propWidth === undefined) {
+      const { width } = event.nativeEvent.layout;
+      setMeasuredWidth(width);
+    }
+  };
 
   const chartData = useMemo(() => {
+    const width = propWidth ?? measuredWidth;
     if (!data || data.length < 2) return null;
+    if (width === undefined) return null;
 
     const isPositive =
       positive !== undefined ? positive : data[data.length - 1] >= data[0];
@@ -64,7 +94,12 @@ export function CDSLineChart({
     const max = Math.max(...data);
     const range = max - min || 1;
 
-    const padding = { top: 20, right: 20, bottom: 30, left: 50 };
+    const padding = {
+      top: paddingOverride?.top ?? DEFAULT_PADDING.top,
+      right: paddingOverride?.right ?? DEFAULT_PADDING.right,
+      bottom: paddingOverride?.bottom ?? DEFAULT_PADDING.bottom,
+      left: paddingOverride?.left ?? DEFAULT_PADDING.left,
+    };
     const chartWidth = width - padding.left - padding.right;
     const chartHeight = height - padding.top - padding.bottom;
 
@@ -114,15 +149,16 @@ export function CDSLineChart({
       : null;
 
     return { points, path, fillPath, color, padding, gridLinesArr, isPositive };
-  }, [data, width, height, positive, colors.success, colors.error, showGradient, smooth, showGrid, gridLines]);
+  }, [data, propWidth, measuredWidth, height, positive, colors.success, colors.error, showGradient, smooth, showGrid, gridLines, paddingOverride]);
 
   if (!chartData) return null;
 
   const { points, path, fillPath, color, padding, gridLinesArr, isPositive } = chartData;
+  const finalWidth = propWidth ?? measuredWidth;
 
   return (
-    <View style={{ width, height }}>
-      <Svg width={width} height={height}>
+    <View style={{ width: propWidth ?? '100%', height }} onLayout={handleLayout}>
+      <Svg width={finalWidth} height={height}>
         <Defs>
           <LinearGradient id={`line-gradient-${color}`} x1="0" y1="0" x2="0" y2="1">
             <Stop offset="0%" stopColor={color} stopOpacity={0.2} />
@@ -136,7 +172,7 @@ export function CDSLineChart({
             key={i}
             x1={padding.left}
             y1={line.y}
-            x2={width - padding.right}
+            x2={finalWidth! - padding.right}
             y2={line.y}
             stroke={colors.border}
             strokeWidth={0.5}
@@ -169,7 +205,7 @@ export function CDSLineChart({
             key={i}
             cx={point.x}
             cy={point.y}
-            r={3}
+            r={Spacing[1]} // 4px using Spacing token
             fill={color}
             stroke={colors.background}
             strokeWidth={1}

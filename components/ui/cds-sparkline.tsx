@@ -16,6 +16,7 @@ import React, { useMemo } from "react";
 import { View, StyleSheet } from "react-native";
 import Svg, { Path, Defs, LinearGradient, Stop, Polyline } from "react-native-svg";
 import { useColors } from "@/hooks/use-colors";
+import { Spacing } from "@/constants/spacing";
 
 interface CDSSparklineProps {
   data: number[];
@@ -34,7 +35,7 @@ export function CDSSparkline({
   width = 60,
   height = 28,
   positive,
-  strokeWidth = 1.5,
+  strokeWidth = 1.5, // Thinner for mini charts (design intent)
   showGradient = true,
   smooth = true,
 }: CDSSparklineProps) {
@@ -51,7 +52,9 @@ export function CDSSparkline({
     const max = Math.max(...data);
     const range = max - min || 1;
 
-    const padding = 2;
+    // Mini charts need minimal padding for visibility at small sizes
+    // Using half of Spacing[1] (2px) for tight spacing
+    const padding = Spacing[1] / 2; // 2px
     const chartWidth = width - padding * 2;
     const chartHeight = height - padding * 2;
 

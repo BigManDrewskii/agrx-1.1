@@ -2,7 +2,7 @@
  * AGRX Typography System
  *
  * Defines the complete type scale used across the app.
- * Font families map to the loaded Inter and JetBrains Mono fonts.
+ * Font families map to the loaded Noto Sans (with Greek support) and Geist Mono fonts.
  *
  * Scale follows iOS HIG sizing conventions:
  *   - Large Title:  34pt  (hero numbers, portfolio value)
@@ -23,13 +23,13 @@
 // ─── Font Family Names ──────────────────────────────────────────────────────
 // These must match the keys passed to `useFonts()` in the root layout.
 export const FontFamily = {
-  regular:    "Inter_400Regular",
-  medium:     "Inter_500Medium",
-  semibold:   "Inter_600SemiBold",
-  bold:       "Inter_700Bold",
-  mono:       "JetBrainsMono_400Regular",
-  monoMedium: "JetBrainsMono_500Medium",
-  monoBold:   "JetBrainsMono_700Bold",
+  regular:    "NotoSans_400Regular",
+  medium:     "NotoSans_500Medium",
+  semibold:   "NotoSans_600SemiBold",
+  bold:       "NotoSans_700Bold",
+  mono:       "GeistMono_400Regular",
+  monoMedium: "GeistMono_500Medium",
+  monoBold:   "GeistMono_700Bold",
 } as const;
 
 // ─── Type Scale ─────────────────────────────────────────────────────────────

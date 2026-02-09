@@ -13,6 +13,7 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { CDSSegmentedTabs } from "@/components/ui/cds-segmented-tabs";
+import { Spacing } from "@/constants/spacing";
 
 interface BuySellToggleProps {
   isBuy: boolean;
@@ -34,7 +35,8 @@ export function BuySellToggle({ isBuy, onChange }: BuySellToggleProps) {
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 16,
-    marginBottom: 16,
+    marginHorizontal: Spacing[4],
+    marginBottom: Spacing[3],
+    marginTop: Spacing[2],
   },
 });

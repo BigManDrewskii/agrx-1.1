@@ -57,7 +57,7 @@ export function PortfolioHeroPro({
         style={{
           fontSize: 42,
           lineHeight: 50,
-          fontFamily: "JetBrainsMono_700Bold",
+          fontFamily: FontFamily.monoBold,
           color: colors.foreground,
         }}
       />

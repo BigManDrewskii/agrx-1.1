@@ -8,6 +8,7 @@ import { Platform } from "react-native";
 import { useColors } from "@/hooks/use-colors";
 import { useThemeContext } from "@/lib/theme-provider";
 import { FontFamily } from "@/constants/typography";
+import { Spacing, Radius } from "@/constants/spacing";
 
 export default function TabLayout() {
   const colors = useColors();
@@ -30,12 +31,26 @@ export default function TabLayout() {
           letterSpacing: 0.2,
         },
         tabBarStyle: {
-          paddingTop: 8,
+          // Floating container margins
+          marginHorizontal: Spacing[3], // 12px horizontal margin
+          marginBottom: Spacing[2], // 8px vertical margin
+
+          // Dimensions
+          height: 60, // Increased from 56
+          paddingTop: Spacing[2], // 8px (was hardcoded)
           paddingBottom: bottomPadding,
-          height: tabBarHeight,
+
+          // Styling
           backgroundColor: colors.surface,
-          borderTopColor: colors.border,
-          borderTopWidth: 0.5,
+          borderTopWidth: 0, // Remove border
+          borderRadius: Radius[500], // 24px corners
+
+          // Shadow for floating effect
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: 0.15,
+          shadowRadius: 16,
+          elevation: 12,
         },
       }}
     >
@@ -64,21 +79,21 @@ export default function TabLayout() {
           tabBarIcon: () => (
             <View
               style={{
-                width: 48,
-                height: 48,
-                borderRadius: 24,
+                width: 56,
+                height: 56,
+                borderRadius: Radius[500],
                 alignItems: "center",
                 justifyContent: "center",
-                marginTop: -12,
+                marginTop: -16,
                 backgroundColor: colors.primary,
                 shadowColor: colors.primary,
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 8,
-                elevation: 8,
+                shadowOffset: { width: 0, height: 6 },
+                shadowOpacity: 0.4,
+                shadowRadius: 12,
+                elevation: 10,
               }}
             >
-              <IconSymbol size={28} name="plus.circle.fill" color={colors.onPrimary} />
+              <IconSymbol size={32} name="plus.circle.fill" color={colors.onPrimary} />
             </View>
           ),
         }}

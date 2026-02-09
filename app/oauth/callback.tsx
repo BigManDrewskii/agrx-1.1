@@ -41,6 +41,8 @@ export default function OAuthCallback() {
                 name: userData.name,
                 email: userData.email,
                 loginMethod: userData.loginMethod,
+                avatarUrl: userData.avatarUrl ?? null,
+                useFaceHash: userData.useFaceHash ?? true,
                 lastSignedIn: new Date(userData.lastSignedIn || Date.now()),
               };
               await Auth.setUserInfo(userInfo);
@@ -153,6 +155,8 @@ export default function OAuthCallback() {
               name: result.user.name,
               email: result.user.email,
               loginMethod: result.user.loginMethod,
+              avatarUrl: result.user.avatarUrl ?? null,
+              useFaceHash: result.user.useFaceHash ?? true,
               lastSignedIn: new Date(result.user.lastSignedIn || Date.now()),
             };
             await Auth.setUserInfo(userInfo);
