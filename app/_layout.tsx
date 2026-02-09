@@ -45,9 +45,20 @@ export const unstable_settings = {
 function InnerLayout() {
   const { colorScheme } = useThemeContext();
 
+  // Shared screen options for consistent navigation
+  const screenOptions = {
+    headerShown: false,
+    // Enable smooth iOS-style transitions
+    gestureEnabled: Platform.OS === "ios",
+    // Card presentation (push) instead of modal
+    presentation: "card" as const,
+    // Consistent animation duration
+    animationDurationMillis: 350,
+  };
+
   return (
     <>
-      <Stack screenOptions={{ headerShown: false }}>
+      <Stack screenOptions={screenOptions}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="onboarding" options={{ animation: "fade" }} />
         <Stack.Screen name="asset/[id]" options={{ animation: "slide_from_right" }} />
