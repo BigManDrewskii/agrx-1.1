@@ -18,6 +18,7 @@ import ReAnimated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import { STAGGER_DELAY, STAGGER_MAX } from "@/lib/animations";
 import { useRouter } from "expo-router";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
+import { CDSButton } from "@/components/ui/cds-button";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useNotifications } from "@/lib/notification-context";
@@ -201,18 +202,14 @@ export default function PriceAlertsScreen() {
               watchlisted stocks hit your targets.
             </Caption1>
           </View>
-          <AnimatedPressable
-            variant="button"
+          <CDSButton
+            variant="primary"
             onPress={requestPermission}
-            style={[
-              styles.enableButton,
-              { backgroundColor: colors.primary },
-            ]}
+            style={styles.enableButton}
+            accessibilityLabel="Enable push notifications"
           >
-            <Caption1 style={{ color: colors.onPrimary, fontFamily: FontFamily.semibold }}>
-              Enable
-            </Caption1>
-          </AnimatedPressable>
+            Enable
+          </CDSButton>
         </ReAnimated.View>
       )}
 

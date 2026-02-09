@@ -10,6 +10,7 @@ import ReAnimated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import { STAGGER_DELAY, STAGGER_MAX } from "@/lib/animations";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { AnimatedPressable } from "@/components/ui/animated-pressable";
+import { CDSButton } from "@/components/ui/cds-button";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { AnimatedNumber, AnimatedPnLNumber } from "@/components/ui/animated-number";
@@ -525,26 +526,22 @@ export default function AssetDetailScreen() {
 
       {/* Bottom CTA */}
       <View style={[styles.ctaContainer, { backgroundColor: colors.background, borderTopColor: colors.border }]}>
-        <AnimatedPressable
-          variant="button"
+        <CDSButton
+          variant="success"
           onPress={() => router.push(`/(tabs)/trade?stockId=${id}&mode=buy`)}
-          style={[
-            styles.ctaButton,
-            { backgroundColor: colors.success },
-          ]}
+          style={styles.ctaButton}
+          accessibilityLabel={`Buy ${id}`}
         >
-          <Callout color="onPrimary" style={{ fontFamily: FontFamily.bold }}>Buy</Callout>
-        </AnimatedPressable>
-        <AnimatedPressable
-          variant="button"
+          Buy
+        </CDSButton>
+        <CDSButton
+          variant="destructive"
           onPress={() => router.push(`/(tabs)/trade?stockId=${id}&mode=sell`)}
-          style={[
-            styles.ctaButton,
-            { backgroundColor: colors.error },
-          ]}
+          style={styles.ctaButton}
+          accessibilityLabel={`Sell ${id}`}
         >
-          <Callout color="onPrimary" style={{ fontFamily: FontFamily.bold }}>Sell</Callout>
-        </AnimatedPressable>
+          Sell
+        </CDSButton>
       </View>
 
       {/* Share Card Modal */}

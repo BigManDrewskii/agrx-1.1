@@ -25,7 +25,7 @@ import * as Haptics from "expo-haptics";
 import { useColors } from "@/hooks/use-colors";
 import { FontFamily } from "@/constants/typography";
 
-type ButtonVariant = "primary" | "secondary" | "tertiary" | "destructive";
+type ButtonVariant = "primary" | "secondary" | "tertiary" | "destructive" | "success";
 
 interface CDSButtonProps {
   children: React.ReactNode;
@@ -105,6 +105,11 @@ export function CDSButton({
           backgroundColor: colors.error,
           borderWidth: 0,
         };
+      case "success":
+        return {
+          backgroundColor: colors.success,
+          borderWidth: 0,
+        };
       default:
         return {
           backgroundColor: colors.primary,
@@ -117,6 +122,7 @@ export function CDSButton({
     switch (variant) {
       case "primary":
       case "destructive":
+      case "success":
         return colors.onPrimary;
       case "secondary":
       case "tertiary":
