@@ -114,7 +114,7 @@ tests/                    # Backend unit tests
 **Context Providers**:
 - `DemoProvider` (`lib/demo-context.tsx`): Manages demo trading state including holdings, trades, balance. Persists to AsyncStorage.
 - `WatchlistProvider` (`lib/watchlist-context.tsx`): User's watchlist of stocks.
-- `ViewModeProvider` (`lib/viewmode-context.tsx`): Toggles between Simple and Pro UI modes.
+- `ViewModeProvider` (`lib/viewmode-context.tsx`): Toggles between Simple and Pro UI layouts.
 
 ### Backend Architecture
 

@@ -84,8 +84,8 @@ export function CDSChip({
         ]}
       >
         <Caption1
-          color={selected ? "onPrimary" : "foreground"}
           style={{
+            color: selected ? colors.onPrimary : colors.foreground,
             fontFamily: selected ? FontFamily.bold : FontFamily.medium,
           }}
         >
@@ -93,8 +93,10 @@ export function CDSChip({
         </Caption1>
         {count !== undefined && (
           <Caption2
-            color={selected ? "onPrimary" : "muted"}
-            style={{ fontFamily: FontFamily.medium }}
+            style={{
+              color: selected ? colors.onPrimary : colors.muted,
+              fontFamily: FontFamily.medium,
+            }}
           >
             {count}
           </Caption2>

@@ -275,9 +275,13 @@ export default function AssetDetailScreen() {
         <ReAnimated.View entering={FadeInDown.duration(250).delay(120)} style={styles.chartContainer}>
           {chartLoading ? (
             <ChartSkeleton />
+          ) : chartData.length < 2 ? (
+            <View style={[styles.chartEmpty, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+              <Footnote color="muted">No chart data available</Footnote>
+            </View>
           ) : (
             <CDSLineChart
-              data={chartData}
+              data={chartData.length > 0 ? chartData : (mockAsset?.sparkline ?? [])}
               // width omitted - fills container (responsive)
               height={200}
               positive={isPositive}
@@ -614,6 +618,14 @@ const styles = StyleSheet.create({
     width: "100%",                    // Fill available space (responsive)
     alignItems: "center",
     paddingHorizontal: Spacing[4],    // 16px
+  },
+  chartEmpty: {
+    width: "100%",
+    height: 200,
+    borderRadius: Radius[400],
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
   periodRow: {
     flexDirection: "row",
