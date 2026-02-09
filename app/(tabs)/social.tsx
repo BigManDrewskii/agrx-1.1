@@ -9,6 +9,7 @@ import { ScreenContainer } from "@/components/screen-container";
 import { ScreenHeader } from "@/components/layouts";
 import { PostCard, TabSelector, LeaderboardRow, AchievementCard } from "@/components/features/social";
 import { SocialFeedSkeleton } from "@/components/ui/skeleton";
+import { CDSEmptyState } from "@/components/ui/cds-empty-state";
 import { useColors } from "@/hooks/use-colors";
 import { Footnote } from "@/components/ui/cds-typography";
 import { Title3 } from "@/components/ui/cds-typography";
@@ -46,6 +47,15 @@ export default function SocialScreen() {
         <>
           {isLoading ? (
             <SocialFeedSkeleton count={3} />
+          ) : SOCIAL_FEED.length === 0 ? (
+            <CDSEmptyState
+              icon="bubble.left.fill"
+              title="No Posts Yet"
+              message="When you follow users and interact with posts, they'll appear here."
+              actionLabel="Explore Users"
+              onAction={() => {}}
+              style={styles.emptyState}
+            />
           ) : (
             <FlatList
               data={SOCIAL_FEED}
@@ -63,19 +73,30 @@ export default function SocialScreen() {
           contentContainerStyle={styles.leaderContent}
           showsVerticalScrollIndicator={false}
         >
-          <View
-            style={[
-              styles.leaderHeader,
-              { backgroundColor: colors.surface, borderColor: colors.border },
-            ]}
-          >
-            <Title3 style={{ marginBottom: 4 }}>Weekly Top Performers</Title3>
-            <Footnote color="muted">Based on portfolio return percentage</Footnote>
-          </View>
-          {LEADERBOARD.map((entry, index) => (
-            <LeaderboardRow key={entry.rank} entry={entry} index={index} />
-          ))}
-          <View style={{ height: 100 }} />
+          {LEADERBOARD.length === 0 ? (
+            <CDSEmptyState
+              icon="trophy"
+              title="No Leaderboard Yet"
+              message="Start trading to appear on the weekly leaderboard."
+              style={styles.emptyState}
+            />
+          ) : (
+            <>
+              <View
+                style={[
+                  styles.leaderHeader,
+                  { backgroundColor: colors.surface, borderColor: colors.border },
+                ]}
+              >
+                <Title3 style={{ marginBottom: 4 }}>Weekly Top Performers</Title3>
+                <Footnote color="muted">Based on portfolio return percentage</Footnote>
+              </View>
+              {LEADERBOARD.map((entry, index) => (
+                <LeaderboardRow key={entry.rank} entry={entry} index={index} />
+              ))}
+              <View style={{ height: 100 }} />
+            </>
+          )}
         </ScrollView>
       )}
 
@@ -84,12 +105,23 @@ export default function SocialScreen() {
           contentContainerStyle={styles.achievementsContent}
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.achievementsGrid}>
-            {ACHIEVEMENTS.map((achievement, index) => (
-              <AchievementCard key={achievement.id} achievement={achievement} index={index} />
-            ))}
-          </View>
-          <View style={{ height: 100 }} />
+          {ACHIEVEMENTS.length === 0 ? (
+            <CDSEmptyState
+              icon="medal.fill"
+              title="No Achievements Yet"
+              message="Complete trading milestones to earn badges and achievements."
+              style={styles.emptyState}
+            />
+          ) : (
+            <>
+              <View style={styles.achievementsGrid}>
+                {ACHIEVEMENTS.map((achievement, index) => (
+                  <AchievementCard key={achievement.id} achievement={achievement} index={index} />
+                ))}
+              </View>
+              <View style={{ height: 100 }} />
+            </>
+          )}
         </ScrollView>
       )}
     </ScreenContainer>
@@ -120,5 +152,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 12,
+  },
+  emptyState: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingBottom: 80,
   },
 });
